@@ -10,6 +10,9 @@ import '../../features/auth/presentation/views/phone_view.dart';
 import '../../features/profile/presentation/manager/profile_cubit/profile_cubit.dart';
 import '../../features/profile/presentation/views/profile_view.dart';
 import '../../features/profile/presentation/views/register_candidate_view.dart';
+import '../../features/onboarding/presentation/views/onboarding_view.dart';
+import '../../features/onboarding/presentation/views/role_picker_view.dart';
+import '../../features/onboarding/presentation/views/splash_view.dart';
 import '../navigation_bar/candidate_shell.dart';
 import '../services/service_locator.dart';
 import '../views/placeholder_view.dart';
@@ -25,17 +28,14 @@ abstract final class AppRouter {
     navigatorKey: parentKey,
     initialLocation: RoutesKeys.splash,
     routes: [
-      GoRoute(
-        path: RoutesKeys.splash,
-        builder: (_, _) => const PlaceholderView(title: 'zeno'),
-      ),
+      GoRoute(path: RoutesKeys.splash, builder: (_, _) => const SplashView()),
       GoRoute(
         path: RoutesKeys.onboarding,
-        builder: (_, _) => const PlaceholderView(title: 'التعريف بالتطبيق'),
+        builder: (_, _) => const OnboardingView(),
       ),
       GoRoute(
         path: RoutesKeys.rolePicker,
-        builder: (_, _) => const PlaceholderView(title: 'اختر طريقة الدخول'),
+        builder: (_, _) => const RolePickerView(),
       ),
       GoRoute(
         path: RoutesKeys.phone,

@@ -1,0 +1,14 @@
+.dart_tool/
+.packages
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/Flutter.framework
+ios/Flutter/ephemeral/
+android/.gradle/
+android/local.properties
+android/key.properties
+.fvm/versions
+# pubspec.lock مُتتبَّع عمداً (CLAUDE.md §1)

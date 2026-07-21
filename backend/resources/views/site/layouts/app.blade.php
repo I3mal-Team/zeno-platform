@@ -4,14 +4,21 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', 'زينو') — زينو</title>
-    <meta name="description" content="@yield('description', 'منصة الوظائف التشغيلية والخدمية والموسمية — الفرصة الأقرب إليك.')">
+    <meta name="description" content="@yield('description', 'منصة التوظيف المحلي التي تربط الباحثين عن عمل بالمنشآت القريبة منهم في السعودية.')">
+
+    <link rel="icon" href="{{ asset('assets/zeno-mark.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
-    @vite('resources/css/app.css')
+    <link href="https://iconsax.gitlab.io/i/icons.css" rel="stylesheet">
+
+    @vite('resources/css/site.css')
+    @stack('head')
 </head>
-<body class="bg-paper text-ink font-sans antialiased">
-    <x-site.header/>
-    <main>@yield('content')</main>
-    <x-site.footer/>
+<body>
+    <div style="direction:rtl;overflow-x:hidden;background:#FAF8F3">
+        @yield('content')
+    </div>
+    @stack('scripts')
 </body>
 </html>

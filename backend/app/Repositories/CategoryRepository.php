@@ -18,6 +18,16 @@ final class CategoryRepository
             ->get();
     }
 
+    /** @return Collection<int, Category> */
+    public function allActiveWithJobCounts(): Collection
+    {
+        return Category::query()
+            ->active()
+            ->withCount(['jobs' => fn ($q) => $q->published()])
+            ->orderBy('sort_order')
+            ->get();
+    }
+
     public function findByCode(string $code): ?Category
     {
         return Category::query()->where('code', $code)->first();

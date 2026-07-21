@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<link href="https://iconsax.gitlab.io/i/icons.css" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html{scroll-behavior:smooth}
+  body{font-family:'Tajawal',sans-serif;background:#FAF8F3;color:#2B2724}
+  .iconsax{display:inline-flex;align-items:center;justify-content:center;line-height:1;font-style:normal;direction:ltr}
+  a{text-decoration:none;color:inherit}
+  input,select,textarea,button{font-family:inherit}
+  .lnk{transition:color .18s ease}.lnk:hover{color:#2B2724}
+  .btn{transition:transform .14s ease,box-shadow .24s ease,background .2s ease,border-color .2s ease}
+  .btn:hover{transform:translateY(-2px)}.btn:active{transform:scale(.97)}
+  .cc{transition:transform .2s ease,box-shadow .26s ease,border-color .2s ease}
+  .cc:hover{transform:translateY(-3px);box-shadow:0 24px 42px -28px rgba(40,35,25,.3);border-color:#E4DFD4}
+  .fld:focus{border-color:#2B2724 !important}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  @keyframes pop{0%{transform:scale(.6)}60%{transform:scale(1.12)}100%{transform:scale(1)}}
+</style>
+</helmet>
+
+<div style="direction:rtl;overflow-x:hidden;background:#FAF8F3;min-height:100vh">
+
+  <!-- HEADER -->
+  <header style="position:sticky;top:0;z-index:60;background:rgba(250,248,243,.85);backdrop-filter:blur(14px);border-bottom:1px solid #EEEBE3">
+    <div style="max-width:1120px;margin:0 auto;padding:14px 26px;display:flex;align-items:center;justify-content:space-between;gap:20px">
+      <a href="Zeno-Landing.dc.html" style="display:flex;align-items:center"><img src="assets/zeno-logo.png" alt="zeno" style="height:32px;width:auto"></a>
+      <nav style="display:flex;align-items:center;gap:28px;font-size:15px;font-weight:700;color:#6C665C">
+        <a href="Zeno-Landing.dc.html" class="lnk">الرئيسية</a>
+        <a href="Zeno-Jobs.dc.html" class="lnk">الوظائف</a>
+        <a href="Zeno-About.dc.html" class="lnk">من نحن</a>
+        <a href="#" class="lnk" style="color:#2B2724">تواصل معنا</a>
+      </nav>
+      <a href="Zeno-Landing.dc.html#download" class="btn" style="background:#2B2724;color:#fff;font-size:14.5px;font-weight:800;padding:11px 20px;border-radius:13px">حمّل التطبيق</a>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section style="text-align:center;position:relative;overflow:hidden">
+    <div style="position:absolute;top:-140px;left:50%;transform:translateX(-50%);width:600px;height:380px;border-radius:50%;background:radial-gradient(circle,rgba(247,190,23,.15),transparent 66%);pointer-events:none"></div>
+    <div style="max-width:640px;margin:0 auto;padding:60px 26px 20px;position:relative">
+      <h1 style="font-size:46px;font-weight:900;color:#211F20;letter-spacing:-.01em">تواصل معنا</h1>
+      <p style="font-size:18px;color:#6C665C;font-weight:500;line-height:1.7;margin-top:14px">لديك سؤال، اقتراح، أو تحتاج مساعدة؟ فريقنا جاهز للرد عليك.</p>
+    </div>
+  </section>
+
+  <div style="max-width:1120px;margin:0 auto;padding:24px 26px 60px;display:grid;grid-template-columns:1fr 380px;gap:22px;align-items:start">
+
+    <!-- FORM -->
+    <div style="background:#fff;border:1px solid #EFEDE6;border-radius:24px;padding:32px">
+      <sc-if value="{{ sent }}" hint-placeholder-val="{{ false }}">
+        <div style="text-align:center;padding:40px 10px">
+          <div style="width:84px;height:84px;border-radius:26px;background:#E7F4EC;display:flex;align-items:center;justify-content:center;color:#1F8A4D;margin:0 auto;animation:pop .5s ease both"><i class="iconsax" style="font-size:44px" icon-name="tick-circle"></i></div>
+          <div style="font-size:24px;font-weight:900;color:#211F20;margin-top:20px">تم إرسال رسالتك</div>
+          <div style="font-size:15.5px;color:#6C665C;font-weight:500;margin-top:8px;line-height:1.6">شكرًا لتواصلك. سيرد عليك فريقنا خلال 24 ساعة عمل.</div>
+          <button onClick="{{ reset }}" class="btn" style="margin-top:22px;background:#F5F3EC;border:1px solid #E7E3DA;color:#2B2724;font-size:14.5px;font-weight:800;padding:12px 24px;border-radius:13px;cursor:pointer">إرسال رسالة أخرى</button>
+        </div>
+      </sc-if>
+      <sc-if value="{{ notSent }}" hint-placeholder-val="{{ true }}">
+        <div>
+          <div style="font-size:20px;font-weight:900;color:#211F20">أرسل لنا رسالة</div>
+          <div style="font-size:14px;color:#8A857A;font-weight:600;margin-top:4px">املأ النموذج وسنعود إليك سريعًا.</div>
+
+          <div style="display:flex;gap:14px;margin-top:22px">
+            <div style="flex:1"><div style="font-size:13.5px;font-weight:800;color:#6C665C;margin-bottom:8px">الاسم</div><input class="fld" placeholder="اسمك الكامل" style="width:100%;height:50px;border:1px solid #E7E3DA;border-radius:14px;background:#FBFAF7;padding:0 16px;font-size:15px;font-weight:600;outline:none;transition:border-color .18s ease"></div>
+            <div style="flex:1"><div style="font-size:13.5px;font-weight:800;color:#6C665C;margin-bottom:8px">البريد الإلكتروني</div><input class="fld" type="email" placeholder="you@email.com" style="width:100%;height:50px;border:1px solid #E7E3DA;border-radius:14px;background:#FBFAF7;padding:0 16px;font-size:15px;font-weight:600;outline:none;transition:border-color .18s ease;direction:ltr;text-align:right"></div>
+          </div>
+
+          <div style="margin-top:16px"><div style="font-size:13.5px;font-weight:800;color:#6C665C;margin-bottom:8px">نوع الطلب</div>
+            <div style="display:flex;flex-wrap:wrap;gap:9px">
+              <sc-for list="{{ topics }}" as="t" hint-placeholder-count="4">
+                <button onClick="{{ pickTopic }}" data-v="{{ t.v }}" class="btn" style="border:1px solid {{ t.bd }};background:{{ t.bg }};color:{{ t.fg }};font-size:14px;font-weight:800;padding:9px 16px;border-radius:12px;cursor:pointer">{{ t.t }}</button>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="margin-top:16px"><div style="font-size:13.5px;font-weight:800;color:#6C665C;margin-bottom:8px">رسالتك</div><textarea class="fld" placeholder="اكتب تفاصيل استفسارك هنا…" style="width:100%;height:130px;border:1px solid #E7E3DA;border-radius:14px;background:#FBFAF7;padding:13px 16px;font-size:15px;font-weight:600;outline:none;resize:none;transition:border-color .18s ease"></textarea></div>
+
+          <button onClick="{{ send }}" class="btn" style="width:100%;margin-top:20px;height:54px;border-radius:15px;background:#F7BE17;border:none;cursor:pointer;color:#2B2724;font-size:16px;font-weight:800;box-shadow:0 14px 26px -14px rgba(247,190,23,.6);display:flex;align-items:center;justify-content:center;gap:9px"><i class="iconsax" style="font-size:20px" icon-name="send-2"></i>إرسال الرسالة</button>
+        </div>
+      </sc-if>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <sc-for list="{{ channels }}" as="c" hint-placeholder-count="3">
+        <div class="cc" style="background:#fff;border:1px solid #EFEDE6;border-radius:20px;padding:22px;display:flex;align-items:center;gap:15px">
+          <div style="width:52px;height:52px;border-radius:15px;background:{{ c.bg }};display:flex;align-items:center;justify-content:center;color:{{ c.c }};flex:0 0 auto"><i class="iconsax" style="font-size:25px" icon-name="{{ c.ic }}"></i></div>
+          <div style="line-height:1.4"><div style="font-size:15.5px;font-weight:800;color:#2B2724">{{ c.t }}</div><div style="font-size:13.5px;color:#8A857A;font-weight:600;margin-top:2px;direction:ltr;text-align:right">{{ c.v }}</div></div>
+        </div>
+      </sc-for>
+
+      <div style="background:linear-gradient(155deg,#34302B,#26221F);border-radius:20px;padding:24px;position:relative;overflow:hidden">
+        <div style="position:absolute;top:-40px;left:-20px;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle,rgba(247,190,23,.14),transparent 66%)"></div>
+        <div style="position:relative">
+          <div style="font-size:16.5px;font-weight:900;color:#fff">ساعات العمل</div>
+          <div style="display:flex;flex-direction:column;gap:10px;margin-top:14px">
+            <div style="display:flex;align-items:center;justify-content:space-between;font-size:14px;font-weight:700"><span style="color:#B7B1A6">الأحد – الخميس</span><span style="color:#fff">9ص – 6م</span></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;font-size:14px;font-weight:700"><span style="color:#B7B1A6">الجمعة – السبت</span><span style="color:#F7BE17">مغلق</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer style="background:#26221F;color:#C7C2B8">
+    <div style="max-width:1120px;margin:0 auto;padding:40px 26px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px">
+      <img src="assets/zeno-logo.png" alt="zeno" style="height:30px;width:auto;filter:brightness(0) invert(1)">
+      <div style="display:flex;gap:26px;font-size:14.5px;font-weight:700"><a href="Zeno-Landing.dc.html" class="lnk" style="color:#B7B1A6">الرئيسية</a><a href="Zeno-Jobs.dc.html" class="lnk" style="color:#B7B1A6">الوظائف</a><a href="Zeno-About.dc.html" class="lnk" style="color:#B7B1A6">من نحن</a></div>
+      <div style="font-size:13.5px;color:#8A857A;font-weight:600">© 2026 زينو</div>
+    </div>
+  </footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { sent:false, topic:'support' };
+  pickTopic = (e)=> this.setState({topic:e.currentTarget.dataset.v});
+  send = ()=> this.setState({sent:true});
+  reset = ()=> this.setState({sent:false});
+  renderVals(){
+    const topic=this.state.topic;
+    return {
+      sent:this.state.sent, notSent:!this.state.sent,
+      send:this.send, reset:this.reset, pickTopic:this.pickTopic,
+      topics:[
+        {v:'support',t:'دعم فني'},{v:'employer',t:'أصحاب العمل'},{v:'partnership',t:'شراكة'},{v:'other',t:'أخرى'},
+      ].map(t=>({ ...t, bg: topic===t.v?'#2B2724':'#FBFAF7', fg: topic===t.v?'#fff':'#6C665C', bd: topic===t.v?'#2B2724':'#E7E3DA' })),
+      channels:[
+        {ic:'send-2',       t:'البريد الإلكتروني', v:'hello@zeno.sa',   bg:'#FDF1CC', c:'#8A6D12'},
+        {ic:'message-text', t:'واتساب الأعمال',    v:'+966 55 000 0000', bg:'#E7F4EC', c:'#1F8A4D'},
+        {ic:'location',     t:'المقر',             v:'الرياض، المملكة العربية السعودية', bg:'#E2EEF4', c:'#2E6E8A'},
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

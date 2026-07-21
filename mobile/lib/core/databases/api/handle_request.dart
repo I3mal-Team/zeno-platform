@@ -12,7 +12,7 @@ typedef GlobalFailureHandler = void Function(Failure failure);
 /// of every global reaction below.
 class RequestHandler {
   const RequestHandler({GlobalFailureHandler? onGlobalFailure})
-      : _onGlobalFailure = onGlobalFailure;
+    : _onGlobalFailure = onGlobalFailure;
 
   final GlobalFailureHandler? _onGlobalFailure;
 
@@ -36,19 +36,19 @@ class RequestHandler {
   }
 
   Failure _toFailure(ApiException e) => switch (e) {
-        NetworkException() => NetworkFailure(message: e.message),
-        ServerException() when e.code == ErrorCodes.validationFailed =>
-          ValidationFailure(
-            message: e.message,
-            details: e.details,
-            traceId: e.traceId,
-          ),
-        ServerException() => ServerFailure(
-            message: e.message,
-            code: e.code,
-            traceId: e.traceId,
-            details: e.details,
-            statusCode: e.statusCode,
-          ),
-      };
+    NetworkException() => NetworkFailure(message: e.message),
+    ServerException() when e.code == ErrorCodes.validationFailed =>
+      ValidationFailure(
+        message: e.message,
+        details: e.details,
+        traceId: e.traceId,
+      ),
+    ServerException() => ServerFailure(
+      message: e.message,
+      code: e.code,
+      traceId: e.traceId,
+      details: e.details,
+      statusCode: e.statusCode,
+    ),
+  };
 }

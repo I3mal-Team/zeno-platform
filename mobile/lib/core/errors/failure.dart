@@ -44,7 +44,7 @@ final class ServerFailure extends Failure {
 /// No response arrived: connection dropped or timed out.
 final class NetworkFailure extends Failure {
   const NetworkFailure({required super.message})
-      : super(code: ErrorCodes.networkUnavailable);
+    : super(code: ErrorCodes.networkUnavailable);
 }
 
 final class ValidationFailure extends Failure {
@@ -62,5 +62,5 @@ final class ValidationFailure extends Failure {
 
 final class CacheFailure extends Failure {
   const CacheFailure({required super.message})
-      : super(code: ErrorCodes.cacheError);
+    : super(code: ErrorCodes.cacheError);
 }

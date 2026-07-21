@@ -1,0 +1,85 @@
+name: backend
+
+on:
+  push:
+    branches: [main, develop]
+    paths: ['backend/**', 'contracts/**', '.github/workflows/backend.yml']
+  pull_request:
+    paths: ['backend/**', 'contracts/**', '.github/workflows/backend.yml']
+
+concurrency:
+  group: backend-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    working-directory: backend
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        # PostGIS, not plain postgres: the schema depends on geography columns
+        # and the suite runs against the same engine as production.
+        image: postgis/postgis:16-3.4-alpine
+        env:
+          POSTGRES_DB: zeno_test
+          POSTGRES_USER: zeno
+          POSTGRES_PASSWORD: secret
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U zeno"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+      redis:
+        image: redis:7-alpine
+        ports: ['6379:6379']
+
+    env:
+      DB_CONNECTION: pgsql
+      DB_HOST: localhost
+      DB_PORT: 5432
+      DB_DATABASE: zeno_test
+      DB_USERNAME: zeno
+      DB_PASSWORD: secret
+      REDIS_HOST: localhost
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: pdo_pgsql, redis, intl, gd, zip, bcmath, exif
+          coverage: none
+
+      - name: Cache composer
+        uses: actions/cache@v4
+        with:
+          path: backend/vendor
+          key: composer-${{ hashFiles('backend/composer.lock') }}
+
+      - run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Enable database extensions
+        run: |
+          PGPASSWORD=secret psql -h localhost -U zeno -d zeno_test \
+            -c "CREATE EXTENSION IF NOT EXISTS postgis;" \
+            -c "CREATE EXTENSION IF NOT EXISTS pgcrypto;" \
+            -c "CREATE EXTENSION IF NOT EXISTS pg_trgm;" \
+            -c "CREATE EXTENSION IF NOT EXISTS unaccent;"
+
+      - run: cp .env.example .env && php artisan key:generate
+
+      - name: Formatting
+        run: ./vendor/bin/pint --test
+
+      - name: Static analysis
+        run: ./vendor/bin/phpstan analyse --memory-limit=1G --no-progress
+
+      - name: Tests
+        run: ./vendor/bin/pest --colors=always

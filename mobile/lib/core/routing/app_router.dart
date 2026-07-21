@@ -72,7 +72,10 @@ abstract final class AppRouter {
   static StatefulShellBranch _branch(String path, String title) {
     return StatefulShellBranch(
       routes: [
-        GoRoute(path: path, builder: (_, _) => PlaceholderView(title: title)),
+        GoRoute(
+          path: path,
+          builder: (_, _) => PlaceholderView(title: title),
+        ),
       ],
     );
   }

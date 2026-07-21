@@ -29,8 +29,9 @@ class DioConsumer implements ApiConsumer {
     String path, {
     Object? body,
     Map<String, dynamic>? queryParameters,
-  }) =>
-      _send(() => _dio.post(path, data: body, queryParameters: queryParameters));
+  }) => _send(
+    () => _dio.post(path, data: body, queryParameters: queryParameters),
+  );
 
   @override
   Future<dynamic> patch(String path, {Object? body}) =>
@@ -76,12 +77,11 @@ class DioConsumer implements ApiConsumer {
   }
 
   String _networkMessage(DioExceptionType type) => switch (type) {
-        DioExceptionType.connectionTimeout ||
-        DioExceptionType.sendTimeout ||
-        DioExceptionType.receiveTimeout =>
-          'انتهت مهلة الاتصال. حاول مرة أخرى.',
-        DioExceptionType.connectionError =>
-          'تعذّر الاتصال بالإنترنت. تحقّق من اتصالك.',
-        _ => 'تعذّر إتمام الطلب. حاول مرة أخرى.',
-      };
+    DioExceptionType.connectionTimeout ||
+    DioExceptionType.sendTimeout ||
+    DioExceptionType.receiveTimeout => 'انتهت مهلة الاتصال. حاول مرة أخرى.',
+    DioExceptionType.connectionError =>
+      'تعذّر الاتصال بالإنترنت. تحقّق من اتصالك.',
+    _ => 'تعذّر إتمام الطلب. حاول مرة أخرى.',
+  };
 }

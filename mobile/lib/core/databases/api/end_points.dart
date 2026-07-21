@@ -7,10 +7,10 @@ abstract final class EndPoints {
   /// Resolved per access so switching environment at runtime takes effect
   /// without a restart.
   static String get baseUrl => switch (AppEnvironment.current) {
-        AppEnvironment.dev => _dev,
-        AppEnvironment.staging => _staging,
-        AppEnvironment.production => _production,
-      };
+    AppEnvironment.dev => _dev,
+    AppEnvironment.staging => _staging,
+    AppEnvironment.production => _production,
+  };
 
   static const requestOtp = '/auth/otp/request';
   static const verifyOtp = '/auth/otp/verify';

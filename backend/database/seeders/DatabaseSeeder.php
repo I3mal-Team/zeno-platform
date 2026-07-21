@@ -14,6 +14,7 @@ final class DatabaseSeeder extends Seeder
             CategorySeeder::class,
             ReferenceDataSeeder::class,
             CitySeeder::class,
+            AdminRoleSeeder::class,
         ]);
     }
 }

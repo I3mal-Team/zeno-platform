@@ -26,26 +26,24 @@ class ZenoApp extends StatelessWidget {
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       theme: _theme,
-      builder: (context, child) => Directionality(
-        textDirection: TextDirection.rtl,
-        child: child!,
-      ),
+      builder: (context, child) =>
+          Directionality(textDirection: TextDirection.rtl, child: child!),
     );
   }
 
   ThemeData get _theme => ThemeData(
-        fontFamily: AppTextStyles.fontFamily,
-        scaffoldBackgroundColor: AppColors.paper,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: AppColors.amber,
-          primary: AppColors.amber,
-          surface: AppColors.surface,
-        ),
-        appBarTheme: const AppBarTheme(
-          backgroundColor: AppColors.surface,
-          surfaceTintColor: Colors.transparent,
-          elevation: 0,
-        ),
-        useMaterial3: true,
-      );
+    fontFamily: AppTextStyles.fontFamily,
+    scaffoldBackgroundColor: AppColors.paper,
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: AppColors.amber,
+      primary: AppColors.amber,
+      surface: AppColors.surface,
+    ),
+    appBarTheme: const AppBarTheme(
+      backgroundColor: AppColors.surface,
+      surfaceTintColor: Colors.transparent,
+      elevation: 0,
+    ),
+    useMaterial3: true,
+  );
 }

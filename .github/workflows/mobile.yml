@@ -1,0 +1,44 @@
+name: mobile
+
+on:
+  push:
+    branches: [main, develop]
+    paths: ['mobile/**', 'contracts/**', '.github/workflows/mobile.yml']
+  pull_request:
+    paths: ['mobile/**', 'contracts/**', '.github/workflows/mobile.yml']
+
+concurrency:
+  group: mobile-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    working-directory: mobile
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          # Must match .fvmrc; a drift here means CI tests a different SDK
+          # than every developer machine.
+          flutter-version: '3.32.8'
+          channel: stable
+          cache: true
+
+      - run: flutter pub get
+
+      - run: flutter gen-l10n
+
+      - name: Formatting
+        run: dart format --set-exit-if-changed .
+
+      - name: Analysis
+        run: flutter analyze
+
+      - name: Tests
+        run: flutter test

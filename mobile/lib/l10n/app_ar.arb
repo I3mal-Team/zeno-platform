@@ -1,0 +1,29 @@
+{
+  "@@locale": "ar",
+
+  "appName": "زينو",
+
+  "commonRetry": "إعادة المحاولة",
+  "commonCancel": "إلغاء",
+  "commonConfirm": "تأكيد",
+  "commonNext": "التالي",
+  "commonSkip": "تخطّي",
+  "commonSave": "حفظ",
+  "commonSearch": "بحث",
+
+  "navHome": "الرئيسية",
+  "navNearby": "القريبة",
+  "navApplications": "طلباتي",
+  "navMessages": "الرسائل",
+  "navProfile": "حسابي",
+
+  "errorGeneric": "حدث خطأ غير متوقع. حاول مرة أخرى.",
+  "errorNoConnection": "تعذّر الاتصال بالإنترنت. تحقّق من اتصالك.",
+  "errorTimeout": "انتهت مهلة الاتصال. حاول مرة أخرى.",
+  "errorSessionExpired": "انتهت الجلسة. سجّل الدخول مرة أخرى.",
+
+  "emptyNoResults": "لا توجد نتائج مطابقة",
+  "emptyNoResultsHint": "جرّب كلمات مختلفة أو غيّر التصنيف",
+  "emptyNoApplications": "لا توجد طلبات بعد",
+  "emptyNoApplicationsHint": "تصفّح الوظائف وقدّم على أول فرصة تناسبك"
+}

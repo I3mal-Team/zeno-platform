@@ -16,6 +16,7 @@ abstract final class EndPoints {
   static const verifyOtp = '/auth/otp/verify';
   static const refreshSession = '/auth/refresh';
   static const logout = '/auth/logout';
+  static const logoutAll = '/auth/logout-all';
   static const currentUser = '/auth/me';
 
   static const candidateProfile = '/profile/candidate';

@@ -8,10 +8,14 @@ import 'package:package_info_plus/package_info_plus.dart';
 import '../databases/api/api_consumer.dart';
 import '../databases/api/dio_consumer.dart';
 import '../databases/api/handle_request.dart';
+import '../errors/error_codes.dart';
 import '../databases/api/interceptors/auth_interceptor.dart';
 import '../databases/api/interceptors/device_interceptor.dart';
 import '../databases/api/interceptors/locale_interceptor.dart';
+import '../managers/user_cubit/user_cubit.dart';
 import '../utils/secure_storage_manager.dart';
+import '../../features/auth/data/repos/auth_repo.dart';
+import '../../features/auth/data/repos/auth_repo_impl.dart';
 
 final getIt = GetIt.instance;
 
@@ -20,6 +24,7 @@ final getIt = GetIt.instance;
 Future<void> setupServiceLocator() async {
   await _registerPlatform();
   _registerNetworking();
+  _registerFeatures();
 }
 
 Future<void> _registerPlatform() async {
@@ -50,5 +55,24 @@ void _registerNetworking() {
 
   getIt.registerSingleton(dio);
   getIt.registerLazySingleton<ApiConsumer>(() => DioConsumer(getIt()));
-  getIt.registerLazySingleton(() => const RequestHandler());
+
+  // A lost session is handled once here rather than in every screen.
+  getIt.registerLazySingleton(
+    () => RequestHandler(
+      onGlobalFailure: (failure) {
+        if (failure.code == ErrorCodes.sessionExpired ||
+            failure.code == ErrorCodes.accountSuspended) {
+          getIt<UserCubit>().onSessionLost();
+        }
+      },
+    ),
+  );
+}
+
+void _registerFeatures() {
+  getIt.registerLazySingleton<AuthRepo>(
+    () => AuthRepoImpl(getIt(), getIt(), getIt()),
+  );
+
+  getIt.registerLazySingleton(() => UserCubit(getIt(), getIt()));
 }

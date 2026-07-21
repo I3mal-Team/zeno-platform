@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../features/auth/presentation/manager/otp_cubit/otp_cubit.dart';
+import '../../features/auth/presentation/manager/phone_cubit/phone_cubit.dart';
+import '../../features/auth/presentation/views/otp_view.dart';
+import '../../features/auth/presentation/views/phone_view.dart';
 import '../navigation_bar/candidate_shell.dart';
+import '../services/service_locator.dart';
 import '../views/placeholder_view.dart';
 import 'routes_keys.dart';
 
@@ -29,11 +36,25 @@ abstract final class AppRouter {
       ),
       GoRoute(
         path: RoutesKeys.phone,
-        builder: (_, _) => const PlaceholderView(title: 'أدخل رقم جوالك'),
+        builder: (_, state) {
+          final role = state.uri.queryParameters['role'] ?? 'candidate';
+
+          return BlocProvider(
+            create: (_) => PhoneCubit(getIt()),
+            child: PhoneView(role: role),
+          );
+        },
       ),
       GoRoute(
         path: RoutesKeys.otp,
-        builder: (_, _) => const PlaceholderView(title: 'أدخل رمز التحقق'),
+        builder: (_, state) => BlocProvider(
+          create: (_) => OtpCubit(
+            getIt(),
+            phone: state.uri.queryParameters['phone'] ?? '',
+            role: state.uri.queryParameters['role'] ?? 'candidate',
+          ),
+          child: const OtpView(),
+        ),
       ),
       GoRoute(
         path: RoutesKeys.registerCandidate,

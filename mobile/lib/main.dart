@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 
 import 'generated/l10n/app_localizations.dart';
 
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'core/managers/user_cubit/user_cubit.dart';
 import 'core/routing/app_router.dart';
 import 'core/services/service_locator.dart';
 import 'core/styles/app_colors.dart';
@@ -18,6 +21,13 @@ class ZenoApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => getIt<UserCubit>()..restore(),
+      child: _buildApp(),
+    );
+  }
+
+  Widget _buildApp() {
     return MaterialApp.router(
       title: 'zeno',
       debugShowCheckedModeBanner: false,

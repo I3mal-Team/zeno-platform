@@ -20,6 +20,7 @@ abstract final class EndPoints {
   static const currentUser = '/auth/me';
 
   static const candidateProfile = '/profile/candidate';
+  static const candidateAvatar = '/profile/candidate/avatar';
   static const employerProfile = '/profile/employer';
 
   static const jobs = '/jobs';

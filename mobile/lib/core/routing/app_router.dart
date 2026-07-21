@@ -7,6 +7,9 @@ import '../../features/auth/presentation/manager/otp_cubit/otp_cubit.dart';
 import '../../features/auth/presentation/manager/phone_cubit/phone_cubit.dart';
 import '../../features/auth/presentation/views/otp_view.dart';
 import '../../features/auth/presentation/views/phone_view.dart';
+import '../../features/profile/presentation/manager/profile_cubit/profile_cubit.dart';
+import '../../features/profile/presentation/views/profile_view.dart';
+import '../../features/profile/presentation/views/register_candidate_view.dart';
 import '../navigation_bar/candidate_shell.dart';
 import '../services/service_locator.dart';
 import '../views/placeholder_view.dart';
@@ -58,7 +61,10 @@ abstract final class AppRouter {
       ),
       GoRoute(
         path: RoutesKeys.registerCandidate,
-        builder: (_, _) => const PlaceholderView(title: 'أكمل بياناتك'),
+        builder: (_, _) => BlocProvider(
+          create: (_) => ProfileCubit(getIt()),
+          child: const RegisterCandidateView(),
+        ),
       ),
       GoRoute(
         path: RoutesKeys.registerEmployer,
@@ -72,7 +78,17 @@ abstract final class AppRouter {
           _branch(RoutesKeys.nearby, 'الوظائف القريبة مني'),
           _branch(RoutesKeys.applications, 'طلباتي'),
           _branch(RoutesKeys.messages, 'الرسائل'),
-          _branch(RoutesKeys.profile, 'حسابي'),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: RoutesKeys.profile,
+                builder: (_, _) => BlocProvider(
+                  create: (_) => ProfileCubit(getIt())..load(),
+                  child: const ProfileView(),
+                ),
+              ),
+            ],
+          ),
         ],
       ),
 

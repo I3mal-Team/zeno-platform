@@ -34,6 +34,10 @@ class DioConsumer implements ApiConsumer {
   );
 
   @override
+  Future<dynamic> put(String path, {Object? body}) =>
+      _send(() => _dio.put(path, data: body));
+
+  @override
   Future<dynamic> patch(String path, {Object? body}) =>
       _send(() => _dio.patch(path, data: body));
 

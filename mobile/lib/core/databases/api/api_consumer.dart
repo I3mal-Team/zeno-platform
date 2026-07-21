@@ -9,6 +9,8 @@ abstract interface class ApiConsumer {
     Map<String, dynamic>? queryParameters,
   });
 
+  Future<dynamic> put(String path, {Object? body});
+
   Future<dynamic> patch(String path, {Object? body});
 
   Future<dynamic> delete(String path, {Object? body});

@@ -16,6 +16,8 @@ import '../managers/user_cubit/user_cubit.dart';
 import '../utils/secure_storage_manager.dart';
 import '../../features/auth/data/repos/auth_repo.dart';
 import '../../features/auth/data/repos/auth_repo_impl.dart';
+import '../../features/profile/data/repos/profile_repo.dart';
+import '../../features/profile/data/repos/profile_repo_impl.dart';
 
 final getIt = GetIt.instance;
 
@@ -75,4 +77,8 @@ void _registerFeatures() {
   );
 
   getIt.registerLazySingleton(() => UserCubit(getIt(), getIt()));
+
+  getIt.registerLazySingleton<ProfileRepo>(
+    () => ProfileRepoImpl(getIt(), getIt()),
+  );
 }

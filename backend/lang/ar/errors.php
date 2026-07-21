@@ -15,6 +15,8 @@ return [
     'application_already_decided' => 'تم البتّ في هذا الطلب مسبقاً.',
     'vacancies_exhausted' => 'اكتمل عدد المطلوبين لهذه الوظيفة.',
     'job_not_active' => 'هذا الإعلان لم يعد متاحاً للتقديم.',
+    'job_not_editable' => 'لا يمكن تعديل هذا الإعلان في حالته الحالية.',
+    'job_invalid_transition' => 'لا يمكن تغيير حالة الإعلان بهذه الطريقة.',
     'subscription_required' => 'يلزم اشتراك سارٍ للتقديم على الوظائف.',
     'organization_not_verified' => 'يجب توثيق المنشأة قبل نشر الإعلانات.',
     'organization_missing' => 'أكمل بيانات المنشأة أولاً.',

@@ -21,6 +21,8 @@ tags:
   - name: Auth
   - name: Profile
   - name: Catalog
+  - name: Jobs
+  - name: Employer
 
 security:
   - bearerAuth: []
@@ -349,6 +351,260 @@ paths:
                         type: array
                         items: { $ref: '#/components/schemas/Category' }
 
+  /catalog/job-form:
+    get:
+      tags: [Catalog]
+      summary: Reference taxonomies for the publish form
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data: { $ref: '#/components/schemas/JobFormOptions' }
+
+  /jobs:
+    get:
+      tags: [Jobs]
+      summary: Browse published listings
+      security: []
+      parameters:
+        - { name: q, in: query, schema: { type: string } }
+        - { name: category, in: query, schema: { type: string }, description: Category code }
+        - { name: work_type, in: query, schema: { type: string }, description: Work-type code }
+        - { name: city, in: query, schema: { type: integer } }
+        - { name: salary_min, in: query, schema: { type: number } }
+        - { name: per_page, in: query, schema: { type: integer, maximum: 50 } }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items: { $ref: '#/components/schemas/JobCard' }
+                      meta: { $ref: '#/components/schemas/Pagination' }
+
+  /jobs/{slug}:
+    get:
+      tags: [Jobs]
+      summary: Open a listing by slug
+      description: >-
+        Returns an active listing to anyone. A paused listing is still returned
+        via its direct link (D-12) with `is_open_for_applications: false`;
+        listings in any other status return 404.
+      security: []
+      parameters:
+        - { name: slug, in: path, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data: { $ref: '#/components/schemas/JobDetail' }
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorEnvelope' }
+
+  /employer/jobs:
+    get:
+      tags: [Employer]
+      summary: The employer's own listings, any status
+      parameters:
+        - { name: status, in: query, schema: { type: string } }
+        - { name: per_page, in: query, schema: { type: integer, maximum: 50 } }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items: { $ref: '#/components/schemas/JobCard' }
+                      meta: { $ref: '#/components/schemas/Pagination' }
+    post:
+      tags: [Employer]
+      summary: Publish a listing
+      description: >-
+        Goes live at once for a verified or previously-approved organization,
+        else enters `pending_review` (D-15).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/JobInput' }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data: { $ref: '#/components/schemas/JobDetail' }
+        '403':
+          description: Employer has no organization (ORGANIZATION_MISSING)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorEnvelope' }
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorEnvelope' }
+
+  /employer/jobs/{uuid}:
+    parameters:
+      - { name: uuid, in: path, required: true, schema: { type: string, format: uuid } }
+    get:
+      tags: [Employer]
+      summary: Show one of the employer's listings
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data: { $ref: '#/components/schemas/JobDetail' }
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorEnvelope' }
+    put:
+      tags: [Employer]
+      summary: Edit a listing
+      description: >-
+        Allowed until the listing is terminally closed. A material change to a
+        listing that already has applicants records a revision and notifies each
+        applicant (D-14).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/JobInput' }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data: { $ref: '#/components/schemas/JobDetail' }
+        '422':
+          description: Not editable (JOB_NOT_EDITABLE) or validation failed
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorEnvelope' }
+
+  /employer/jobs/{uuid}/pause:
+    post:
+      tags: [Employer]
+      summary: Pause an active listing
+      parameters:
+        - { name: uuid, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data: { $ref: '#/components/schemas/JobDetail' }
+        '422':
+          description: Illegal transition (JOB_INVALID_TRANSITION)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorEnvelope' }
+
+  /employer/jobs/{uuid}/resume:
+    post:
+      tags: [Employer]
+      summary: Resume a paused listing
+      parameters:
+        - { name: uuid, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data: { $ref: '#/components/schemas/JobDetail' }
+
+  /employer/jobs/{uuid}/fill:
+    post:
+      tags: [Employer]
+      summary: Mark a listing as filled
+      parameters:
+        - { name: uuid, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data: { $ref: '#/components/schemas/JobDetail' }
+
+  /employer/jobs/{uuid}/close:
+    post:
+      tags: [Employer]
+      summary: Close a listing
+      parameters:
+        - { name: uuid, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data: { $ref: '#/components/schemas/JobDetail' }
+
 components:
   securitySchemes:
     bearerAuth:
@@ -407,6 +663,8 @@ components:
         - OTP_MAX_ATTEMPTS
         - OTP_RESEND_COOLDOWN
         - JOB_NOT_ACTIVE
+        - JOB_NOT_EDITABLE
+        - JOB_INVALID_TRANSITION
         - APPLICATION_ALREADY_EXISTS
         - APPLICATION_ALREADY_DECIDED
         - VACANCIES_EXHAUSTED
@@ -546,3 +804,140 @@ components:
         name: { type: string, examples: ['مطاعم ومقاهي'] }
         icon: { type: string }
         color_token: { type: string }
+
+    ReferenceOption:
+      type: object
+      properties:
+        id: { type: integer }
+        code: { type: string }
+        name: { type: string }
+
+    JobFormOptions:
+      type: object
+      properties:
+        categories:
+          type: array
+          items: { $ref: '#/components/schemas/Category' }
+        work_types:
+          type: array
+          items: { $ref: '#/components/schemas/ReferenceOption' }
+        salary_units:
+          type: array
+          items: { $ref: '#/components/schemas/ReferenceOption' }
+        gender_requirements:
+          type: array
+          items: { $ref: '#/components/schemas/ReferenceOption' }
+        nationality_requirements:
+          type: array
+          items: { $ref: '#/components/schemas/ReferenceOption' }
+
+    JobStatus:
+      type: string
+      enum: [draft, pending_review, active, paused, filled, expired, closed, rejected, removed]
+
+    ContactChannel:
+      type: string
+      enum: [app, whatsapp, both]
+
+    Salary:
+      type: object
+      properties:
+        amount: { type: number }
+        amount_max: { type: [number, 'null'] }
+        currency: { type: string, examples: ['SAR'] }
+        formatted: { type: string, examples: ['4,500 – 6,000'] }
+        unit: { type: string, examples: ['شهرياً'] }
+
+    JobCard:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        title: { type: string }
+        slug: { type: string }
+        salary: { $ref: '#/components/schemas/Salary' }
+        category: { $ref: '#/components/schemas/Category' }
+        work_type: { type: string }
+        city: { type: string }
+        district: { type: [string, 'null'] }
+        organization:
+          type: object
+          properties:
+            name: { type: string }
+            is_verified: { type: boolean }
+        status: { $ref: '#/components/schemas/JobStatus' }
+        contact_channel: { $ref: '#/components/schemas/ContactChannel' }
+        published_at: { type: [string, 'null'], format: date-time }
+        applications_count:
+          type: integer
+          description: Present only on the employer's own list.
+
+    JobDetail:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        title: { type: string }
+        slug: { type: string }
+        description: { type: [string, 'null'] }
+        salary: { $ref: '#/components/schemas/Salary' }
+        category: { $ref: '#/components/schemas/Category' }
+        work_type: { type: string }
+        hours_per_week: { type: [integer, 'null'] }
+        shift_note: { type: [string, 'null'] }
+        vacancies_count: { type: integer }
+        requirements:
+          type: object
+          properties:
+            gender: { type: string }
+            nationality: { type: string }
+        location:
+          type: object
+          properties:
+            city: { type: string }
+            district: { type: [string, 'null'] }
+            address_line: { type: [string, 'null'] }
+        organization:
+          type: object
+          properties:
+            id: { type: string, format: uuid }
+            name: { type: string }
+            is_verified: { type: boolean }
+        status: { $ref: '#/components/schemas/JobStatus' }
+        status_label: { type: string }
+        is_open_for_applications: { type: boolean }
+        contact_channel: { $ref: '#/components/schemas/ContactChannel' }
+        published_at: { type: [string, 'null'], format: date-time }
+        expires_at: { type: [string, 'null'], format: date-time }
+
+    JobInput:
+      type: object
+      required:
+        - title
+        - category_id
+        - work_type_id
+        - salary_unit_id
+        - gender_requirement_id
+        - nationality_requirement_id
+        - salary_amount
+        - vacancies_count
+        - city_id
+        - contact_channel
+      properties:
+        title: { type: string, minLength: 3, maxLength: 120 }
+        description: { type: string, maxLength: 5000 }
+        category_id: { type: integer }
+        work_type_id: { type: integer }
+        salary_unit_id: { type: integer }
+        gender_requirement_id: { type: integer }
+        nationality_requirement_id: { type: integer }
+        salary_amount: { type: number, minimum: 0 }
+        salary_amount_max: { type: number, description: Must be >= salary_amount }
+        hours_per_week: { type: integer, minimum: 1, maximum: 168 }
+        shift_note: { type: string, maxLength: 160 }
+        vacancies_count: { type: integer, minimum: 1, maximum: 999 }
+        city_id: { type: integer }
+        district_id: { type: integer, description: Must belong to city_id }
+        address_line: { type: string, maxLength: 255 }
+        latitude: { type: number, minimum: -90, maximum: 90 }
+        longitude: { type: number, minimum: -180, maximum: 180 }
+        contact_channel: { $ref: '#/components/schemas/ContactChannel' }
+        expires_at: { type: string, format: date-time }

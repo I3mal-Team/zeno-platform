@@ -43,6 +43,12 @@ final class OrganizationRepository
         return $organization;
     }
 
+    /** Grants the sticky trust that lets later listings skip review (D-15). */
+    public function enableAutoPublish(Organization $organization): void
+    {
+        $organization->forceFill(['auto_publish_jobs' => true])->save();
+    }
+
     public function update(Organization $organization, OrganizationData $data): Organization
     {
         $organization->update([

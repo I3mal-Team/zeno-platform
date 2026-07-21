@@ -9,4 +9,7 @@ return [
     'signed_out_everywhere' => 'تم تسجيل الخروج من جميع الأجهزة.',
     'profile_saved' => 'تم حفظ البيانات بنجاح.',
     'avatar_saved' => 'تم تحديث الصورة الشخصية.',
+    'job_published' => 'تم نشر الإعلان.',
+    'job_updated' => 'تم تحديث الإعلان.',
+    'job_status_updated' => 'تم تحديث حالة الإعلان.',
 ];

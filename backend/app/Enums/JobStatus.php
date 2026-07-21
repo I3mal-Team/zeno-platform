@@ -37,6 +37,49 @@ enum JobStatus: string
         return $this === self::Active;
     }
 
+    /**
+     * A paused listing is unreachable through search yet still openable by a
+     * candidate who already applied — the direct-link exception of D-12.
+     */
+    public function isReachableByDirectLink(): bool
+    {
+        return $this === self::Active || $this === self::Paused;
+    }
+
+    /** A candidate may only apply while the listing is actively taking applicants. */
+    public function acceptsApplications(): bool
+    {
+        return $this === self::Active;
+    }
+
+    /** Content stays editable until the listing is terminally closed or gone. */
+    public function isEditable(): bool
+    {
+        return ! in_array($this, [self::Closed, self::Expired, self::Removed, self::Rejected], true);
+    }
+
+    /**
+     * The transitions an employer may drive themselves. Moderation outcomes
+     * (pending_review → active/rejected) and system events (expiry) live
+     * outside this map.
+     *
+     * @return list<self>
+     */
+    public function employerTransitions(): array
+    {
+        return match ($this) {
+            self::Active => [self::Paused, self::Filled, self::Closed],
+            self::Paused => [self::Active, self::Closed],
+            self::Filled => [self::Active, self::Closed],
+            default => [],
+        };
+    }
+
+    public function canTransitionTo(self $target): bool
+    {
+        return in_array($target, $this->employerTransitions(), true);
+    }
+
     public function badgeForeground(): string
     {
         return match ($this) {

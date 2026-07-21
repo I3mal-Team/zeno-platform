@@ -7,6 +7,10 @@ import '../../features/auth/presentation/manager/otp_cubit/otp_cubit.dart';
 import '../../features/auth/presentation/manager/phone_cubit/phone_cubit.dart';
 import '../../features/auth/presentation/views/otp_view.dart';
 import '../../features/auth/presentation/views/phone_view.dart';
+import '../../features/jobs/presentation/manager/browse_cubit/browse_cubit.dart';
+import '../../features/jobs/presentation/manager/job_detail_cubit/job_detail_cubit.dart';
+import '../../features/jobs/presentation/views/browse_view.dart';
+import '../../features/jobs/presentation/views/job_detail_view.dart';
 import '../../features/profile/presentation/manager/profile_cubit/profile_cubit.dart';
 import '../../features/profile/presentation/views/profile_view.dart';
 import '../../features/profile/presentation/views/register_candidate_view.dart';
@@ -74,7 +78,17 @@ abstract final class AppRouter {
       StatefulShellRoute.indexedStack(
         builder: (_, _, shell) => CandidateShell(shell: shell),
         branches: [
-          _branch(RoutesKeys.browse, 'أحدث الوظائف'),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: RoutesKeys.browse,
+                builder: (_, _) => BlocProvider(
+                  create: (_) => BrowseCubit(getIt())..load(),
+                  child: const BrowseView(),
+                ),
+              ),
+            ],
+          ),
           _branch(RoutesKeys.nearby, 'الوظائف القريبة مني'),
           _branch(RoutesKeys.applications, 'طلباتي'),
           _branch(RoutesKeys.messages, 'الرسائل'),
@@ -95,8 +109,11 @@ abstract final class AppRouter {
       GoRoute(
         path: RoutesKeys.jobDetail,
         parentNavigatorKey: parentKey,
-        builder: (_, state) =>
-            PlaceholderView(title: 'وظيفة ${state.pathParameters['id']}'),
+        builder: (_, state) => BlocProvider(
+          create: (_) =>
+              JobDetailCubit(getIt())..load(state.pathParameters['id'] ?? ''),
+          child: const JobDetailView(),
+        ),
       ),
       GoRoute(
         path: RoutesKeys.notifications,

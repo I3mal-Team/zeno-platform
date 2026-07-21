@@ -1,0 +1,19 @@
+<?php
+
+declare(strict_types=1);
+
+use App\Http\Controllers\Api\V1\Employer\JobController;
+use App\Http\Controllers\Api\V1\Employer\JobStatusController;
+use Illuminate\Support\Facades\Route;
+
+Route::middleware('auth:sanctum')->prefix('employer')->name('employer.')->group(function () {
+    Route::get('jobs', [JobController::class, 'index'])->name('jobs.index');
+    Route::post('jobs', [JobController::class, 'store'])->name('jobs.store');
+    Route::get('jobs/{uuid}', [JobController::class, 'show'])->name('jobs.show');
+    Route::put('jobs/{uuid}', [JobController::class, 'update'])->name('jobs.update');
+
+    Route::post('jobs/{uuid}/pause', [JobStatusController::class, 'pause'])->name('jobs.pause');
+    Route::post('jobs/{uuid}/resume', [JobStatusController::class, 'resume'])->name('jobs.resume');
+    Route::post('jobs/{uuid}/fill', [JobStatusController::class, 'fill'])->name('jobs.fill');
+    Route::post('jobs/{uuid}/close', [JobStatusController::class, 'close'])->name('jobs.close');
+});

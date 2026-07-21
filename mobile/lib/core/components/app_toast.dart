@@ -11,6 +11,9 @@ abstract final class AppToast {
   static void success(BuildContext context, String message) =>
       _show(context, message, AppColors.successFg);
 
+  static void info(BuildContext context, String message) =>
+      _show(context, message, AppColors.amber);
+
   static void _show(BuildContext context, String message, Color accent) {
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()

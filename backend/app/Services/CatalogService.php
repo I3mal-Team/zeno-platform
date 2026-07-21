@@ -9,6 +9,7 @@ use App\Models\City;
 use App\Models\District;
 use App\Repositories\CategoryRepository;
 use App\Repositories\CityRepository;
+use App\Repositories\JobReferenceRepository;
 use Illuminate\Database\Eloquent\Collection;
 
 final class CatalogService
@@ -16,6 +17,7 @@ final class CatalogService
     public function __construct(
         private readonly CategoryRepository $categories,
         private readonly CityRepository $cities,
+        private readonly JobReferenceRepository $jobReferences,
     ) {}
 
     /** @return Collection<int, Category> */
@@ -34,5 +36,17 @@ final class CatalogService
     public function districtsFor(int $cityId): Collection
     {
         return $this->cities->districtsFor($cityId);
+    }
+
+    /** The taxonomies a publish form needs beyond categories and cities. */
+    public function jobFormOptions(): JobFormOptions
+    {
+        return new JobFormOptions(
+            categories: $this->categories->allActive(),
+            workTypes: $this->jobReferences->workTypes(),
+            salaryUnits: $this->jobReferences->salaryUnits(),
+            genderRequirements: $this->jobReferences->genderRequirements(),
+            nationalityRequirements: $this->jobReferences->nationalityRequirements(),
+        );
     }
 }

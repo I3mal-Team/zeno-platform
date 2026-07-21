@@ -23,6 +23,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
  * @property string|null $commercial_registration
  * @property string|null $about
  * @property VerificationStatus $verification_status
+ * @property bool $auto_publish_jobs
  * @property City|null $city
  */
 class Organization extends Model implements HasMedia
@@ -34,7 +35,7 @@ class Organization extends Model implements HasMedia
     protected $fillable = [
         'uuid', 'type', 'name', 'slug', 'commercial_registration',
         'responsible_person_name', 'city_id', 'about',
-        'verification_status', 'status',
+        'verification_status', 'auto_publish_jobs', 'status',
     ];
 
     protected $hidden = ['commercial_registration'];
@@ -42,6 +43,7 @@ class Organization extends Model implements HasMedia
     /** Mirrors the column defaults so a freshly created model is complete. */
     protected $attributes = [
         'verification_status' => 'unverified',
+        'auto_publish_jobs' => false,
         'status' => 'active',
     ];
 
@@ -50,6 +52,7 @@ class Organization extends Model implements HasMedia
         return [
             'type' => OrganizationType::class,
             'verification_status' => VerificationStatus::class,
+            'auto_publish_jobs' => 'boolean',
             'commercial_registration' => 'encrypted',
             'verified_at' => 'datetime',
         ];
@@ -71,6 +74,15 @@ class Organization extends Model implements HasMedia
     public function isVerified(): bool
     {
         return $this->verification_status === VerificationStatus::Verified;
+    }
+
+    /**
+     * A listing skips review when the organization is verified or has already
+     * had one approved — the sticky trust of D-15.
+     */
+    public function mayPublishWithoutReview(): bool
+    {
+        return $this->isVerified() || $this->auto_publish_jobs;
     }
 
     public function registerMediaCollections(): void

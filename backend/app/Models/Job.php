@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\ContactChannel;
 use App\Enums\JobStatus;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 
@@ -21,9 +23,13 @@ use Illuminate\Support\Carbon;
  * @property string|null $salary_amount_max
  * @property int $vacancies_count
  * @property JobStatus $status
+ * @property ContactChannel $contact_channel
  * @property Carbon|null $published_at
  * @property Carbon|null $expires_at
+ * @property Carbon|null $closed_at
+ * @property string|null $closed_reason
  * @property int $views_count
+ * @property int $organization_id
  * @property Organization $organization
  * @property Category $category
  * @property WorkType $workType
@@ -35,6 +41,21 @@ class Job extends Model
 {
     use SoftDeletes;
 
+    /**
+     * Fields whose change after a listing has applicants alters the offer
+     * itself, so each applicant must be told (D-14). Value is the label used
+     * in the change record and notification.
+     */
+    public const MATERIAL_FIELDS = [
+        'salary_amount' => 'الراتب',
+        'salary_amount_max' => 'الحد الأعلى للراتب',
+        'work_type_id' => 'نوع الدوام',
+        'city_id' => 'المدينة',
+        'district_id' => 'الحي',
+        'vacancies_count' => 'عدد الشواغر',
+        'contact_channel' => 'طريقة التواصل',
+    ];
+
     protected $fillable = [
         'uuid', 'organization_id', 'created_by_user_id', 'title', 'slug',
         'description', 'category_id', 'work_type_id', 'salary_unit_id',
@@ -43,6 +64,7 @@ class Job extends Model
         'hours_per_week', 'shift_note', 'vacancies_count',
         'city_id', 'district_id', 'address_line',
         'contact_channel', 'status', 'published_at', 'expires_at',
+        'closed_at', 'closed_reason',
     ];
 
     protected $attributes = [
@@ -57,6 +79,7 @@ class Job extends Model
     {
         return [
             'status' => JobStatus::class,
+            'contact_channel' => ContactChannel::class,
             'published_at' => 'datetime',
             'expires_at' => 'datetime',
             'closed_at' => 'datetime',
@@ -114,11 +137,34 @@ class Job extends Model
         return $this->belongsTo(NationalityRequirement::class);
     }
 
+    /** @return HasMany<Application, $this> */
+    public function applications(): HasMany
+    {
+        return $this->hasMany(Application::class);
+    }
+
+    /** @return HasMany<JobRevision, $this> */
+    public function revisions(): HasMany
+    {
+        return $this->hasMany(JobRevision::class);
+    }
+
     /** @param  Builder<Job>  $query */
     public function scopePublished(Builder $query): void
     {
         $query->where('status', JobStatus::Active->value)
             ->where(fn (Builder $q) => $q->whereNull('expires_at')->orWhere('expires_at', '>', now()));
+    }
+
+    /** @param  Builder<Job>  $query */
+    public function scopeForOrganization(Builder $query, int $organizationId): void
+    {
+        $query->where('organization_id', $organizationId);
+    }
+
+    public function isExpired(): bool
+    {
+        return $this->expires_at !== null && $this->expires_at->isPast();
     }
 
     public function formattedSalary(): string

@@ -2,14 +2,35 @@
 
 declare(strict_types=1);
 
-arch('services do not access the database')
+// The DB facade is permitted for transactions, which belong to the use case and
+// therefore to the service. Query builders are not.
+arch('services do not query the database')
     ->expect('App\Services')
     ->not->toUse([
-        'Illuminate\Support\Facades\DB',
         'Illuminate\Database\Eloquent\Builder',
         'Illuminate\Database\Query\Builder',
         'Illuminate\Database\Connection',
     ]);
+
+test('services use the DB facade only for transactions', function () {
+    $offenders = [];
+
+    foreach (glob(dirname(__DIR__, 2).'/app/Services/*.php') ?: [] as $file) {
+        $source = (string) file_get_contents($file);
+
+        preg_match_all('/DB::(\w+)/', $source, $matches);
+
+        foreach ($matches[1] as $method) {
+            if ($method !== 'transaction') {
+                $offenders[] = basename($file).' calls DB::'.$method;
+            }
+        }
+    }
+
+    expect($offenders)->toBeEmpty(
+        'Data access belongs in a repository: '.implode(', ', $offenders)
+    );
+});
 
 // The load-bearing rule: with this in place, business logic cannot fork per
 // surface, because a service can never know which surface called it.

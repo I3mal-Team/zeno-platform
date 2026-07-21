@@ -5,12 +5,9 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * جداول الطوابير.
- *
- * ملاحظة مقصودة: جدول `jobs` الافتراضي في Laravel محذوف من هنا عمداً — الاسم
- * محجوز لجدول الدومين (إعلانات الوظائف) في docs/10-domain-model §4.1.
- * السائق المعتمد للطوابير هو Redis عبر Horizon، فالجدول غير مطلوب أصلاً.
- * لو احتيج سائق قاعدة البيانات مستقبلاً فليُسمَّ `queue_jobs` لا `jobs`.
+ * Laravel's default `jobs` table is deliberately omitted: that name belongs to
+ * the domain table for job postings. Queues run on Redis, so it is unused. If a
+ * database queue driver is ever needed, name its table `queue_jobs`.
  */
 return new class extends Migration
 {

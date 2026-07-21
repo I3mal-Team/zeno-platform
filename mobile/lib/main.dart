@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'core/styles/app_colors.dart';
 import 'core/styles/app_text_styles.dart';
 
-/// جذر التركيب. الترتيب الإلزامي للتهيئة موثّق في `CLAUDE.md §11`
-/// ويُضاف إليه في موضعه الصحيح — لا في آخر الدالة.
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(const ZenoApp());
@@ -18,7 +16,6 @@ class ZenoApp extends StatelessWidget {
     return MaterialApp(
       title: 'zeno',
       debugShowCheckedModeBanner: false,
-      // التطبيق عربي RTL بالكامل (D-36).
       locale: const Locale('ar'),
       supportedLocales: const [Locale('ar')],
       theme: ThemeData(

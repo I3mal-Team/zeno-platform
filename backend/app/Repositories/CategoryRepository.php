@@ -7,9 +7,6 @@ namespace App\Repositories;
 use App\Models\Category;
 use Illuminate\Database\Eloquent\Collection;
 
-/**
- * الطبقة الوحيدة التي تلمس قاعدة البيانات لكيان التصنيف.
- */
 final class CategoryRepository
 {
     /** @return Collection<int, Category> */

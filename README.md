@@ -1,130 +1,113 @@
-# zeno — منصة الوظائف التشغيلية
+# zeno
 
-منصة توظيف سعودية قائمة على القرب الجغرافي، للوظائف التشغيلية والخدمية والموسمية —
-مطاعم، نظافة، نقل، فعاليات، مبيعات، أمن، صيانة، وحرف.
+A proximity-based job marketplace for Saudi Arabia, focused on operational and
+seasonal work: hospitality, cleaning, logistics, events, retail, security,
+maintenance and skilled trades.
 
-تربط المرشحين بأصحاب العمل القريبين منهم، وتتيح التقديم والتواصل بأقل عدد من الخطوات.
+It connects candidates with employers near them and keeps applying and getting
+in touch down to a handful of steps.
 
----
+## Contents
 
-## المحتويات
-
-| المجلد | الوصف |
+| Directory | Purpose |
 |---|---|
-| `backend/` | Laravel 13 — API للموبايل · موقع Blade · لوحتا Filament |
-| `mobile/` | تطبيق Flutter (مرشح + صاحب عمل) |
-| `contracts/` | `openapi.yaml` — **مصدر الحقيقة للعقد بين الأسطح** |
-| `docs/` | المواصفات الهندسية والمنتجية |
-| `design/` | البروتوتايب التفاعلي الأصلي + `HANDOVER.md` (**مرجع — لا يُبنى**) |
-| `docker/` | تعريفات الحاويات |
+| `backend/` | Laravel API, public site, and two Filament panels |
+| `mobile/` | Flutter app for candidates and employers |
+| `contracts/` | `openapi.yaml` — the source of truth for the API contract |
+| `docs/` | Product and engineering specifications |
+| `design/` | Interactive prototype and design handover (reference only) |
+| `docker/` | Container definitions |
 
----
+## Getting started
 
-## البدء
-
-**المتطلبات:** Docker · FVM (لتطبيق فلاتر)
+Requires Docker, and FVM for the mobile app.
 
 ```bash
-cp backend/.env.example backend/.env     # ثم اضبط القيم
-make up                                  # تشغيل كل الخدمات
+cp backend/.env.example backend/.env
+make up
 make art c="key:generate"
 make migrate
+make seed
 ```
 
-| الخدمة | العنوان |
+| Service | URL |
 |---|---|
-| التطبيق | http://localhost:8000 |
-| لوحة الإدارة | http://localhost:8000/admin |
-| داشبورد صاحب العمل | http://localhost:8000/employer |
-| Meilisearch | http://localhost:57700 |
-| Mailpit | http://localhost:58025 |
-| PostgreSQL | `localhost:55432` |
-| Redis | `localhost:56379` |
+| Application | http://localhost:8000 |
+| Admin panel | http://localhost:8000/admin |
+| Employer dashboard | http://localhost:8000/employer |
 
-> البورتات في نطاق `5xxxx` عمداً — تجنّباً للتعارض مع مشاريع أخرى على نفس الجهاز.
+Ports are configurable through `.env`; the defaults sit outside the usual range
+so the stack can run alongside other projects.
 
-`make help` يعرض كل الأوامر.
+Run `make help` for the full command list.
 
----
+## Architecture
 
-## المعمارية
-
-### الباك إند — أربع قواعد ملزمة
+### Backend
 
 ```
 Route → FormRequest → Controller → Service → Repository → Model
                           ↓
-                    Resource → ApiResponse trait
+                    Resource → ApiResponse
 ```
 
-1. **لا منطق أعمال في الـ Controller**
-2. **لا استعلامات في الـ Service**
-3. **التحقق في الـ Request**
-4. **الاستجابة عبر Resource + trait موحّد**
+1. No business logic in controllers
+2. No queries in services
+3. Validation lives in form requests
+4. Responses go through resources and the shared envelope
 
-هذه القواعد **مفروضة آلياً** عبر `tests/Architecture/` وتحجب الدمج — لا تعتمد على المراجعة البشرية.
+These are enforced by `tests/Architecture`, which blocks merges. They are not
+review conventions.
 
-### فصل الأسطح
+### Surface separation
 
-كل ما هو **فوق** الـ Service منفصل لكل سطح. وكل ما هو **من** الـ Service فنازل مشترك ولا يُكرَّر.
+Everything above the service layer is split per surface. Everything from the
+service down is shared and never duplicated.
 
 ```
-منفصل:  Routes · Controllers · Requests · Responses · Middleware · Guards · Tests
-        ├─ Api/V1   ├─ Web   ├─ Filament/Employer   ├─ Filament/Admin
+split:   Routes · Controllers · Requests · Responses · Middleware · Guards · Tests
+         ├─ Api/V1   ├─ Site   ├─ Filament/Employer   ├─ Filament/Admin
                               ↓
-مشترك:  Services · Repositories · Models · DTOs · Enums · Events · Policies
+shared:  Services · Repositories · Models · Data · Enums · Events · Policies
 ```
 
-> ⛔ **ممنوع** `app/Services/Api/` أو `app/Services/Web/`. تفريع الدومين حسب السطح هو ما أنتج
-> ثلاث سكيمات متناقضة في البروتوتايب.
+Forking the domain per surface is what produced three contradictory schemas in
+the prototype, so `app/Services/Api` and friends are rejected by a test.
 
-### الموبايل
+### Mobile
 
-feature-first · Cubit · get_it · `Either<Failure,T>` · go_router · `ApiConsumer`.
-القواعد الكاملة في [`CLAUDE_TEMPLATE.md`](CLAUDE_TEMPLATE.md).
+Feature-first structure, Cubit for state, `get_it` for injection,
+`Either<Failure, T>` at repository boundaries, `go_router` for navigation, and a
+single `ApiConsumer` abstraction over HTTP. The full rulebook is in
+`CLAUDE_TEMPLATE.md`.
 
----
+## Documentation
 
-## الوثائق
+Specifications live in `docs/`, covering the domain model and database schema,
+architecture and stack, the sprint roadmap, and the open decisions register.
 
-| المستند | المحتوى |
-|---|---|
-| [`docs/10-domain-model-and-database-schema.md`](docs/10-domain-model-and-database-schema.md) | ~40 جدول بالقيود والفهارس والاحتفاظ وتصنيف PDPL · ERD · مخططات الحالة |
-| [`docs/18-architecture-and-stack.md`](docs/18-architecture-and-stack.md) | المعمارية · الحزم · المونوريبو |
-| [`docs/21-development-roadmap-and-sprints.md`](docs/21-development-roadmap-and-sprints.md) | 11 سبرنت بمعايير خروج واعتماديات |
-| [`docs/22-open-decisions-and-product-questions.md`](docs/22-open-decisions-and-product-questions.md) | 45 قرار — 23 محسوم · الباقي مفتوح |
-| [`design/HANDOVER.md`](design/HANDOVER.md) | تسليم التصميم — التوكنز والشاشات (مرجع UI) |
+Source material ranks in this order when two sources disagree:
 
-### ترتيب حجّية المصادر
+1. The client project description governs business rules
+2. The design handover governs UI and design tokens
+3. The prototype is mocked throughout and is not production code
 
-1. **`docs/source/project-description.pdf`** — وصف العميل · **الحاكم في قواعد العمل**
-2. **`design/HANDOVER.md`** — **الحاكم في الـ UI والتوكنز**
-3. **`design/*.dc.html`** — البروتوتايب · بيانات وهمية · **ليس كوداً إنتاجياً**
+Silence in a higher-ranked source is not agreement with a lower one; it means
+the decision is still open.
 
-عند التعارض: الأول يكسب في قواعد العمل، والثاني في التصميم. والصمت ليس تعارضاً.
+## Workflow
 
----
-
-## سير العمل
-
-- الفرع الأساسي `main` · التطوير من `develop`
-- الفروع: `feat/…` `fix/…` `refactor/…` `chore/…` `docs/…` `test/…`
-- الكوميت: `type(scope): summary` — والـ scope يبدأ بالمنطقة
-  `feat(api/jobs):` · `feat(mobile/auth):` · `feat(admin/reports):` · `chore(ci):`
-- الإصدارات مستقلة: `backend-v1.0.0` · `mobile-v1.0.0+1`
-- **تعديل `contracts/openapi.yaml` يستدعي مراجعة الفريقين**
+Git Flow. `main` is production, `develop` is integration, and work happens on
+`feature/*` branches. See `CONTRIBUTING.md`.
 
 ```bash
-make check      # pint + phpstan + pest — نفس ما يشغّله CI
-make m-analyze  # تحليل فلاتر
+make check      # pint, phpstan, pest
+make m-analyze  # flutter analyze
 ```
 
----
+## Confidentiality
 
-## التراخيص والخصوصية
+Private repository. It contains client-owned specifications and design assets.
 
-مستودع خاص. يحتوي على وصف مشروع ومواد تصميم مملوكة للعميل.
-ممنوع مشاركة محتوياته خارج الفريق.
-
-**ممنوع رفع:** `.env` · مفاتيح التوقيع · `google-services.json` · حسابات الخدمة.
-كلها في `.gitignore` وتأتي من أسرار الـ CI.
+Secrets never enter the repository: environment files, signing keys and service
+account credentials all come from CI secrets.

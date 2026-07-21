@@ -17,10 +17,8 @@ use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
 use Throwable;
 
 /**
- * يحوّل أي استثناء إلى غلاف الخطأ الموحّد.
- *
- * كل كود يخرج من هنا يجب أن يقابله ثابت في
- * `mobile/lib/core/errors/error_codes.dart`.
+ * Maps every throwable onto the shared error envelope. Each code emitted here
+ * must have a matching client constant.
  */
 final class ApiExceptionRenderer
 {
@@ -38,7 +36,6 @@ final class ApiExceptionRenderer
             ],
         ];
 
-        // التفاصيل التشخيصية للمطوّر فقط — لا تتسرّب لعميل إنتاجي.
         if (config('app.debug') && $status >= 500) {
             $payload['error']['debug'] = [
                 'exception' => $e::class,

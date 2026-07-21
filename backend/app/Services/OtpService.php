@@ -10,6 +10,7 @@ use App\Exceptions\Domain\OtpInvalidException;
 use App\Exceptions\Domain\OtpMaxAttemptsException;
 use App\Exceptions\Domain\OtpResendCooldownException;
 use App\Repositories\OtpChallengeRepository;
+use App\Settings\OtpSettings;
 use App\Support\Otp\OtpCodeGenerator;
 use App\Support\Sms\SmsGateway;
 use Illuminate\Support\Facades\Hash;
@@ -20,6 +21,7 @@ final class OtpService
         private readonly OtpChallengeRepository $challenges,
         private readonly OtpCodeGenerator $generator,
         private readonly SmsGateway $sms,
+        private readonly OtpSettings $settings,
     ) {}
 
     /**
@@ -35,7 +37,7 @@ final class OtpService
         $this->assertWithinWindow($phoneE164);
 
         $code = $this->generator->generate(config('integrations.otp.length'));
-        $expiresAt = now()->addMinutes(config('otp.expiry_minutes'));
+        $expiresAt = now()->addMinutes($this->settings->expiry_minutes);
 
         $this->challenges->create(
             $phoneE164,
@@ -60,7 +62,7 @@ final class OtpService
             throw new OtpExpiredException;
         }
 
-        if ($challenge->attempts >= config('otp.max_attempts')) {
+        if ($challenge->attempts >= $this->settings->max_attempts) {
             throw new OtpMaxAttemptsException;
         }
 
@@ -82,7 +84,7 @@ final class OtpService
         }
 
         $elapsed = $latest->created_at->diffInSeconds(now());
-        $cooldown = (int) config('otp.resend_cooldown_seconds');
+        $cooldown = $this->settings->resend_cooldown_seconds;
 
         if ($elapsed < $cooldown) {
             throw new OtpResendCooldownException((int) ceil($cooldown - $elapsed));
@@ -95,9 +97,9 @@ final class OtpService
      */
     private function assertWithinWindow(string $phoneE164): void
     {
-        $since = now()->subMinutes(config('otp.window_minutes'));
+        $since = now()->subMinutes($this->settings->window_minutes);
 
-        if ($this->challenges->countSince($phoneE164, $since) >= config('otp.max_requests_per_window')) {
+        if ($this->challenges->countSince($phoneE164, $since) >= $this->settings->max_requests_per_window) {
             throw new OtpMaxAttemptsException;
         }
     }

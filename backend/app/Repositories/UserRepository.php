@@ -36,6 +36,24 @@ final class UserRepository
         $user->forceFill(['last_active_at' => now()])->saveQuietly();
     }
 
+    public function suspend(User $user, string $reason): void
+    {
+        $user->forceFill([
+            'status' => UserStatus::Suspended->value,
+            'suspended_reason' => $reason,
+            'suspended_at' => now(),
+        ])->save();
+    }
+
+    public function setStatus(User $user, UserStatus $status): void
+    {
+        $user->forceFill([
+            'status' => $status->value,
+            'suspended_reason' => null,
+            'suspended_at' => null,
+        ])->save();
+    }
+
     public function deleteAllTokens(User $user): void
     {
         $user->tokens()->delete();

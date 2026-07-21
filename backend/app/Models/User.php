@@ -22,6 +22,12 @@ class User extends Authenticatable implements FilamentUser
 
     protected $hidden = ['remember_token'];
 
+    /** Mirrors the column defaults so a freshly created model is complete. */
+    protected $attributes = [
+        'status' => 'active',
+        'locale' => 'ar',
+    ];
+
     /** @return list<string> */
     public function uniqueIds(): array
     {

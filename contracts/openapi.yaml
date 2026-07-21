@@ -19,6 +19,7 @@ servers:
 
 tags:
   - name: Auth
+  - name: Profile
   - name: Catalog
 
 security:
@@ -168,6 +169,167 @@ paths:
             application/json:
               schema: { $ref: '#/components/schemas/SuccessEnvelope' }
 
+  /profile/candidate:
+    get:
+      tags: [Profile]
+      summary: The signed-in candidate's profile
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data: { $ref: '#/components/schemas/CandidateProfile' }
+        '404':
+          description: NOT_FOUND, meaning no profile has been created yet
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorEnvelope' }
+    put:
+      tags: [Profile]
+      summary: Create or replace the profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CandidateProfileInput' }
+      responses:
+        '200':
+          description: Saved
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data: { $ref: '#/components/schemas/CandidateProfile' }
+        '422':
+          description: VALIDATION_FAILED
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorEnvelope' }
+
+  /profile/candidate/avatar:
+    post:
+      tags: [Profile]
+      summary: Replace the profile photo
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [avatar]
+              properties:
+                avatar: { type: string, format: binary }
+      responses:
+        '200':
+          description: Saved
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data: { $ref: '#/components/schemas/CandidateProfile' }
+
+  /profile/employer:
+    get:
+      tags: [Profile]
+      summary: The signed-in employer's organisation
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data: { $ref: '#/components/schemas/Organization' }
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorEnvelope' }
+    put:
+      tags: [Profile]
+      summary: Create or replace the organisation
+      description: >
+        An individual employer also gets an organisation, so ownership follows
+        one path regardless of account type.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/OrganizationInput' }
+      responses:
+        '200':
+          description: Saved
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data: { $ref: '#/components/schemas/Organization' }
+        '422':
+          description: VALIDATION_FAILED
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorEnvelope' }
+
+  /cities:
+    get:
+      tags: [Catalog]
+      summary: Active cities
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items: { $ref: '#/components/schemas/City' }
+
+  /cities/{city}/districts:
+    get:
+      tags: [Catalog]
+      summary: Districts of a city
+      security: []
+      parameters:
+        - name: city
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items: { $ref: '#/components/schemas/District' }
+
   /categories:
     get:
       tags: [Catalog]
@@ -275,6 +437,95 @@ components:
         status: { type: string, enum: [active, suspended, deleted] }
         phone_verified: { type: boolean }
         created_at: { type: string, format: date-time }
+
+    CandidateProfile:
+      type: object
+      properties:
+        full_name: { type: string }
+        age:
+          type: [integer, 'null']
+          description: Derived from the birth date; never stored.
+        birth_date: { type: [string, 'null'], format: date }
+        nationality_code: { type: [string, 'null'] }
+        city: { $ref: '#/components/schemas/CityRef' }
+        job_title: { type: [string, 'null'] }
+        years_of_experience: { type: [integer, 'null'] }
+        skills:
+          type: array
+          items: { type: string }
+        bio: { type: [string, 'null'] }
+        completion_percentage: { type: integer, minimum: 0, maximum: 100 }
+        avatar_url: { type: [string, 'null'] }
+
+    CandidateProfileInput:
+      type: object
+      required: [full_name]
+      properties:
+        full_name: { type: string, minLength: 3, maxLength: 120 }
+        national_id:
+          type: string
+          description: Encrypted at rest and never returned.
+        national_id_type: { type: string, enum: [national, iqama] }
+        birth_date: { type: string, format: date }
+        nationality_code: { type: string, minLength: 2, maxLength: 2 }
+        city_id: { type: integer }
+        job_title: { type: string, maxLength: 120 }
+        years_of_experience: { type: integer, minimum: 0, maximum: 60 }
+        skills:
+          type: array
+          maxItems: 20
+          items: { type: string, maxLength: 40 }
+        bio: { type: string, maxLength: 1000 }
+
+    Organization:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        type: { type: string, enum: [individual, company] }
+        name: { type: string }
+        slug: { type: string }
+        responsible_person_name: { type: [string, 'null'] }
+        city: { $ref: '#/components/schemas/CityRef' }
+        about: { type: [string, 'null'] }
+        verification_status:
+          type: string
+          enum: [unverified, pending, verified, rejected]
+        is_verified: { type: boolean }
+        logo_url: { type: [string, 'null'] }
+
+    OrganizationInput:
+      type: object
+      required: [type, name]
+      properties:
+        type: { type: string, enum: [individual, company] }
+        name: { type: string, minLength: 2, maxLength: 160 }
+        responsible_person_name: { type: string, maxLength: 120 }
+        commercial_registration:
+          type: string
+          description: Required for a company. Encrypted at rest, never returned.
+        city_id: { type: integer }
+        about: { type: string, maxLength: 2000 }
+
+    CityRef:
+      type: [object, 'null']
+      properties:
+        id: { type: integer }
+        name: { type: string }
+
+    City:
+      type: object
+      properties:
+        id: { type: integer }
+        code: { type: string }
+        name: { type: string, examples: ['الرياض'] }
+        region: { type: [string, 'null'] }
+
+    District:
+      type: object
+      properties:
+        id: { type: integer }
+        code: { type: string }
+        name: { type: string, examples: ['حي العليا'] }
 
     Category:
       type: object

@@ -1,0 +1,70 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Repositories;
+
+use App\Data\Profile\OrganizationData;
+use App\Enums\OrganizationRole;
+use App\Enums\VerificationStatus;
+use App\Models\Organization;
+use Illuminate\Support\Str;
+
+final class OrganizationRepository
+{
+    public function findForUser(int $userId): ?Organization
+    {
+        return Organization::query()
+            ->with('city')
+            ->whereHas('members', fn ($q) => $q->where('users.id', $userId))
+            ->first();
+    }
+
+    public function create(OrganizationData $data, int $ownerId): Organization
+    {
+        $organization = Organization::query()->create([
+            'uuid' => (string) Str::uuid(),
+            'type' => $data->type->value,
+            'name' => $data->name,
+            'slug' => $this->uniqueSlug($data->name),
+            'commercial_registration' => $data->commercialRegistration,
+            'responsible_person_name' => $data->responsiblePersonName,
+            'city_id' => $data->cityId,
+            'about' => $data->about,
+            'verification_status' => VerificationStatus::Unverified->value,
+            'status' => 'active',
+        ]);
+
+        $organization->members()->attach($ownerId, [
+            'role' => OrganizationRole::Owner->value,
+            'joined_at' => now(),
+        ]);
+
+        return $organization;
+    }
+
+    public function update(Organization $organization, OrganizationData $data): Organization
+    {
+        $organization->update([
+            'type' => $data->type->value,
+            'name' => $data->name,
+            'commercial_registration' => $data->commercialRegistration,
+            'responsible_person_name' => $data->responsiblePersonName,
+            'city_id' => $data->cityId,
+            'about' => $data->about,
+        ]);
+
+        return $organization->fresh(['city']);
+    }
+
+    /**
+     * Arabic names transliterate to empty slugs, so the uuid tail is what keeps
+     * the value unique and non-empty.
+     */
+    private function uniqueSlug(string $name): string
+    {
+        $base = Str::slug($name);
+
+        return ($base !== '' ? $base.'-' : '').Str::lower(Str::random(6));
+    }
+}

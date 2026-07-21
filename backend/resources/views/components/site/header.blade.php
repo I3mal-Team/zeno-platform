@@ -6,8 +6,8 @@
       <a href="{{ route('site.home') }}#features" class="lnk">المميزات</a>
       <a href="{{ route('site.home') }}#how" class="lnk">كيف يعمل</a>
       <a href="{{ route('site.jobs.index') }}" class="lnk">الوظائف</a>
-      <a href="{{ route('site.home') }}#employers" class="lnk">لأصحاب العمل</a>
-      <a href="{{ route('site.home') }}#faq" class="lnk">الأسئلة</a>
+      <a href="{{ route('site.pricing') }}" class="lnk">لأصحاب العمل</a>
+      <a href="{{ route('site.about') }}" class="lnk">من نحن</a>
     </nav>
 
     <div style="display:flex;align-items:center;gap:11px">

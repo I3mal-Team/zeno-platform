@@ -24,12 +24,13 @@ final class Footer extends Component
             'أصحاب العمل' => [
                 'لوحة التحكم' => route('employer.dashboard'),
                 'انشر وظيفة' => route('employer.dashboard'),
-                'الأسعار' => $home.'#employers',
+                'الأسعار' => route('site.pricing'),
             ],
             'الشركة' => [
                 'الأسئلة الشائعة' => $home.'#faq',
-                'من نحن' => $home.'#employers',
-                'تواصل معنا' => $home.'#download',
+                'من نحن' => route('site.about'),
+                'تواصل معنا' => route('site.contact'),
+                'الشروط والخصوصية' => route('site.terms'),
             ],
         ];
     }

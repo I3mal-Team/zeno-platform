@@ -2,10 +2,7 @@
 
 declare(strict_types=1);
 
-/**
- * الرسائل المعروضة للمستخدم. العميل يتفرّع على الكود لا على النص،
- * فتعديل الصياغة هنا لا يكسر أي عميل.
- */
+// Clients branch on the error code, so rewording these breaks nothing.
 return [
     'unknown' => 'حدث خطأ غير متوقع. حاول مرة أخرى.',
     'validation_failed' => 'تحقّق من البيانات المدخلة.',

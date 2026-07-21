@@ -19,8 +19,8 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        // مسارات الـ API ترجع الغلاف الموحّد دائماً. الـ controllers لا تمسك
-        // استثناءات؛ هذا هو المكان الوحيد الذي يتحوّل فيه الاستثناء إلى استجابة.
+        // Controllers never catch; this is the only place a throwable becomes
+        // a response.
         $exceptions->render(function (Throwable $e, Request $request) {
             if ($request->is('api/*') || $request->expectsJson()) {
                 return app(ApiExceptionRenderer::class)->render($e, $request);

@@ -8,13 +8,9 @@ use RuntimeException;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * أساس كل استثناءات قواعد العمل.
- *
- * الـ Services ترمي هذه الاستثناءات؛ المعالج المركزي يحوّلها إلى غلاف الخطأ.
- * الـ controllers لا تمسك استثناءات.
- *
- * كل صنف يرث هذا يجب أن يقابله ثابت في
- * `mobile/lib/core/errors/error_codes.dart` — الكود هو العقد، لا الرسالة.
+ * Base for business-rule failures. Services throw these; the central renderer
+ * turns them into the error envelope. Every subclass must have a matching
+ * constant on the client, since the code is the contract, not the message.
  */
 abstract class DomainException extends RuntimeException
 {
@@ -23,10 +19,8 @@ abstract class DomainException extends RuntimeException
         parent::__construct(__('errors.'.$this->messageKey()));
     }
 
-    /** الكود الثابت الذي يتفرّع عليه العميل. */
     abstract public function errorCode(): string;
 
-    /** مفتاح الرسالة في `lang/{locale}/errors.php`. */
     abstract protected function messageKey(): string;
 
     public function statusCode(): int
@@ -34,11 +28,7 @@ abstract class DomainException extends RuntimeException
         return Response::HTTP_UNPROCESSABLE_ENTITY;
     }
 
-    /**
-     * حقول إضافية تساعد العميل على العرض دون تحليل الرسالة.
-     *
-     * @return array<string, mixed>
-     */
+    /** @return array<string, mixed> */
     public function details(): array
     {
         return [];

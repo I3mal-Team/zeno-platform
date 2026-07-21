@@ -12,10 +12,8 @@ use Illuminate\Http\Resources\Json\ResourceCollection;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * الغلاف الموحّد لاستجابات الـ API.
- *
- * تطبيق الموبايل يفكّ هذا الشكل مرة واحدة مركزياً في `handleRequest`، فأي
- * انحراف عنه يكسر كل الشاشات دفعة واحدة. لا تُرجع `response()->json()` مباشرة.
+ * The single response envelope for the API. Clients unwrap this shape once,
+ * centrally, so any deviation breaks every screen at the same time.
  */
 trait ApiResponse
 {
@@ -47,12 +45,7 @@ trait ApiResponse
         return $this->successResponse(null, $message, Response::HTTP_OK);
     }
 
-    /**
-     * الأخطاء تُبنى من معالج الاستثناءات المركزي، لا من الـ controllers.
-     * موجودة هنا للحالات النادرة التي يعرف فيها الـ controller الخطأ مباشرة.
-     *
-     * @param  array<string, mixed>  $details
-     */
+    /** @param  array<string, mixed>  $details */
     protected function errorResponse(
         string $code,
         string $message,
@@ -70,12 +63,7 @@ trait ApiResponse
         ], $status);
     }
 
-    /**
-     * الترقيم يخرج في `meta` لا مبعثراً في الجذر — تطبيق الموبايل يعتمد
-     * على `PaginatedResponse<T>` واحد لكل القوائم.
-     *
-     * @return array<string, mixed>|null
-     */
+    /** @return array<string, mixed>|null */
     private function extractMeta(mixed $data): ?array
     {
         $paginator = match (true) {
@@ -88,9 +76,8 @@ trait ApiResponse
             return null;
         }
 
-        // `total` و `last_page` متاحان فقط مع الترقيم العادّ. الترقيم البسيط
-        // (`simplePaginate`) لا يعرف الإجمالي، فيخرجان `null` لا يُحذفان —
-        // ثبات الشكل شرط لعميل الموبايل.
+        // simplePaginate cannot know the total, so these stay null rather than
+        // disappearing: clients rely on the shape being constant.
         $countable = $paginator instanceof LengthAwarePaginator;
 
         return [

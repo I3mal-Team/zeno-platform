@@ -73,6 +73,7 @@ abstract final class AppRouter {
           create: (_) => OtpCubit(
             getIt(),
             phone: state.uri.queryParameters['phone'] ?? '',
+            country: state.uri.queryParameters['country'] ?? 'SA',
             role: state.uri.queryParameters['role'] ?? 'candidate',
           ),
           child: const OtpView(),

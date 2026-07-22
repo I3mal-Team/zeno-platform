@@ -57,6 +57,7 @@ abstract final class EndPoints {
   static String notificationRead(String id) => '/notifications/$id/read';
   static const deviceTokens = '/notifications/devices';
 
+  static const countries = '/countries';
   static const categories = '/categories';
   static const cities = '/cities';
   static String districts(String cityId) => '/cities/$cityId/districts';

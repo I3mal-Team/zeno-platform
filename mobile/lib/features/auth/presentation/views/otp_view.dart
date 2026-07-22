@@ -13,6 +13,7 @@ import '../../../../core/styles/app_colors.dart';
 import '../../../../core/styles/app_dimensions.dart';
 import '../../../../core/styles/app_text_styles.dart';
 import '../manager/otp_cubit/otp_cubit.dart';
+import '../widgets/auth_header.dart';
 
 class OtpView extends StatelessWidget {
   const OtpView({super.key});
@@ -20,8 +21,8 @@ class OtpView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
-      body: BlocConsumer<OtpCubit, OtpState>(
+      body: SafeArea(
+        child: BlocConsumer<OtpCubit, OtpState>(
         listener: (context, state) {
           switch (state) {
             case OtpVerified(:final session):
@@ -49,6 +50,8 @@ class OtpView extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                const AuthHeader(),
+                const SizedBox(height: AppDimensions.space32),
                 Text('أدخل رمز التحقق', style: AppTextStyles.displayLg),
                 const SizedBox(height: AppDimensions.space8),
                 Text(
@@ -70,6 +73,7 @@ class OtpView extends StatelessWidget {
             ),
           );
         },
+        ),
       ),
     );
   }

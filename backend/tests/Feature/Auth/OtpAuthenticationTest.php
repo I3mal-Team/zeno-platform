@@ -58,6 +58,26 @@ it('normalises every accepted phone format to one stored value', function (strin
     '05 1234 5678',
 ]);
 
+it('normalises a number typed for another supported country', function () {
+    $this->seed(Database\Seeders\CountrySeeder::class);
+
+    test()->postJson('/api/v1/auth/otp/request', [
+        'phone' => '01001234567',
+        'country' => 'EG',
+    ])->assertOk();
+
+    expect(OtpChallenge::query()->value('phone_e164'))->toBe('+201001234567');
+});
+
+it('rejects a number typed for a country the form does not offer', function () {
+    test()->postJson('/api/v1/auth/otp/request', [
+        'phone' => '0512345678',
+        'country' => 'ZZ',
+    ])
+        ->assertStatus(422)
+        ->assertJsonPath('error.code', 'VALIDATION_FAILED');
+});
+
 it('rejects a number that is not a Saudi mobile', function (string $input) {
     requestOtp($input)
         ->assertStatus(422)

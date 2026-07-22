@@ -10,11 +10,16 @@ import '../../../data/repos/auth_repo.dart';
 part 'otp_state.dart';
 
 class OtpCubit extends Cubit<OtpState> {
-  OtpCubit(this._repo, {required this.phone, required this.role})
-    : super(const OtpInitial());
+  OtpCubit(
+    this._repo, {
+    required this.phone,
+    required this.country,
+    required this.role,
+  }) : super(const OtpInitial());
 
   final AuthRepo _repo;
   final String phone;
+  final String country;
   final String role;
 
   String code = '';
@@ -33,14 +38,16 @@ class OtpCubit extends Cubit<OtpState> {
     safeEmit(const OtpVerifying());
 
     final result = await _repo.verifyOtp(
-      VerifyOtpParam(phone: phone, code: code, role: role),
+      VerifyOtpParam(phone: phone, country: country, code: code, role: role),
     );
 
     safeEmit(result.fold(OtpError.new, OtpVerified.new));
   }
 
   Future<void> resend() async {
-    final result = await _repo.requestOtp(RequestOtpParam(phone: phone));
+    final result = await _repo.requestOtp(
+      RequestOtpParam(phone: phone, country: country),
+    );
 
     safeEmit(result.fold(OtpError.new, OtpResent.new));
   }

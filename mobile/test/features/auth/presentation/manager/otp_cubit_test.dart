@@ -25,14 +25,20 @@ void main() {
 
   setUpAll(() {
     registerFallbackValue(
-      const VerifyOtpParam(phone: '', code: '', role: 'candidate'),
+      const VerifyOtpParam(
+        phone: '',
+        country: 'SA',
+        code: '',
+        role: 'candidate',
+      ),
     );
-    registerFallbackValue(const RequestOtpParam(phone: ''));
+    registerFallbackValue(const RequestOtpParam(phone: '', country: 'SA'));
   });
 
   setUp(() => repo = MockAuthRepo());
 
-  OtpCubit build() => OtpCubit(repo, phone: '0512345678', role: 'candidate');
+  OtpCubit build() =>
+      OtpCubit(repo, phone: '0512345678', country: 'SA', role: 'candidate');
 
   blocTest<OtpCubit, OtpState>(
     'emits verified when the code is accepted',

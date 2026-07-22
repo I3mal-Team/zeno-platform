@@ -7,6 +7,7 @@ import '../../../../core/errors/failure.dart';
 import '../../../../core/params/auth_params.dart';
 import '../../../../core/utils/secure_storage_manager.dart';
 import '../models/auth_session_model.dart';
+import '../models/country_model.dart';
 import '../models/user_model.dart';
 import 'auth_repo.dart';
 
@@ -16,6 +17,16 @@ class AuthRepoImpl implements AuthRepo {
   final ApiConsumer _api;
   final RequestHandler _handle;
   final SecureStorageManager _storage;
+
+  @override
+  Future<Either<Failure, List<CountryModel>>> fetchCountries() {
+    return _handle(
+      () => _api.get(EndPoints.countries),
+      (data) => (data as List<dynamic>)
+          .map((e) => CountryModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+  }
 
   @override
   Future<Either<Failure, int>> requestOtp(RequestOtpParam param) {

@@ -8,6 +8,15 @@ uses(RefreshDatabase::class);
 
 beforeEach(fn () => $this->seed());
 
+it('lists the active dial codes for the sign-in form', function () {
+    test()->getJson('/api/v1/countries')
+        ->assertOk()
+        ->assertJsonPath('data.0.iso2', 'SA')
+        ->assertJsonPath('data.0.dial_code', '+966')
+        ->assertJsonPath('data.0.placeholder', '5X XXX XXXX')
+        ->assertJsonPath('data.1.iso2', 'EG');
+});
+
 it('lists categories without a session', function () {
     test()->getJson('/api/v1/categories')
         ->assertOk()

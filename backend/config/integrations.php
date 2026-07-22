@@ -16,6 +16,10 @@ return [
         ],
     ],
 
+    // D-01: applying is free at launch. Flip this on (and build billing) when a
+    // paid candidate plan is introduced; SubscriptionService already gates on it.
+    'candidate_subscription_required' => env('CANDIDATE_SUBSCRIPTION_REQUIRED', false),
+
     'otp' => [
         'generator' => env('OTP_GENERATOR', 'random'),
 

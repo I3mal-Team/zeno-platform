@@ -36,6 +36,9 @@ abstract final class EndPoints {
 
   static const applications = '/applications';
   static String application(String id) => '/applications/$id';
+  static String applyToJob(String slug) => '/jobs/$slug/apply';
+  static String withdrawApplication(String reference) =>
+      '/applications/$reference/withdraw';
 
   static const conversations = '/conversations';
   static String messages(String conversationId) =>

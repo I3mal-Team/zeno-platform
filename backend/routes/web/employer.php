@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Employer\ApplicantController;
 use App\Http\Controllers\Employer\DashboardController;
 use App\Http\Controllers\Employer\JobController;
 use App\Http\Controllers\Employer\JobStatusController;
@@ -25,4 +26,9 @@ Route::prefix('employer')
         Route::post('jobs/{uuid}/pause', [JobStatusController::class, 'pause'])->name('jobs.pause');
         Route::post('jobs/{uuid}/resume', [JobStatusController::class, 'resume'])->name('jobs.resume');
         Route::post('jobs/{uuid}/close', [JobStatusController::class, 'close'])->name('jobs.close');
+
+        Route::get('applicants', [ApplicantController::class, 'index'])->name('applicants.index');
+        Route::get('applications/{id}', [ApplicantController::class, 'show'])->name('applicants.show');
+        Route::post('applications/{id}/accept', [ApplicantController::class, 'accept'])->name('applicants.accept');
+        Route::post('applications/{id}/reject', [ApplicantController::class, 'reject'])->name('applicants.reject');
     });

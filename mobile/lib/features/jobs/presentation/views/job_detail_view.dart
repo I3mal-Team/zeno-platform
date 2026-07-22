@@ -5,6 +5,7 @@ import '../../../../core/components/app_toast.dart';
 import '../../../../core/styles/app_colors.dart';
 import '../../../../core/styles/app_text_styles.dart';
 import '../../../../core/styles/category_visuals.dart';
+import '../../../applications/presentation/manager/apply_cubit/apply_cubit.dart';
 import '../../data/models/job_detail_model.dart';
 import '../manager/job_detail_cubit/job_detail_cubit.dart';
 
@@ -429,28 +430,54 @@ class _ApplyBar extends StatelessWidget {
             Expanded(
               child: SizedBox(
                 height: 50,
-                child: FilledButton(
-                  onPressed: job.isOpenForApplications
-                      // Application flow arrives with sprint 5.
-                      ? () => AppToast.info(
-                          context,
-                          'ستتوفر إمكانية التقديم قريباً.',
-                        )
-                      : null,
-                  style: FilledButton.styleFrom(
-                    backgroundColor: AppColors.amber,
-                    foregroundColor: AppColors.charcoalSoft,
-                    disabledBackgroundColor: AppColors.border,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(17),
-                    ),
-                  ),
-                  child: Text(
-                    job.isOpenForApplications
-                        ? 'تقديم على الوظيفة'
-                        : 'غير متاح للتقديم',
-                    style: AppTextStyles.button,
-                  ),
+                child: BlocConsumer<ApplyCubit, ApplyState>(
+                  listener: (context, state) {
+                    if (state case ApplyDone(:final application)) {
+                      AppToast.success(
+                        context,
+                        'تم إرسال طلبك — رقم الطلب ${application.reference}',
+                      );
+                    }
+                    if (state case ApplyFailed(:final failure)) {
+                      AppToast.error(context, failure.message);
+                    }
+                  },
+                  builder: (context, state) {
+                    final applied = state is ApplyDone;
+                    final canApply = job.isOpenForApplications && !applied;
+
+                    return FilledButton(
+                      onPressed: canApply
+                          ? () => context.read<ApplyCubit>().apply(job.slug)
+                          : null,
+                      style: FilledButton.styleFrom(
+                        backgroundColor: AppColors.amber,
+                        foregroundColor: AppColors.charcoalSoft,
+                        disabledBackgroundColor: applied
+                            ? AppColors.successBg
+                            : AppColors.border,
+                        disabledForegroundColor: applied
+                            ? AppColors.successFg
+                            : AppColors.textMuted,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(17),
+                        ),
+                      ),
+                      child: state is ApplySubmitting
+                          ? const SizedBox(
+                              width: 22,
+                              height: 22,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2.4,
+                                color: AppColors.charcoalSoft,
+                              ),
+                            )
+                          : Text(
+                              _label(job.isOpenForApplications, applied),
+                              style: AppTextStyles.button,
+                            ),
+                    );
+                  },
                 ),
               ),
             ),
@@ -458,6 +485,12 @@ class _ApplyBar extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _label(bool open, bool applied) {
+    if (applied) return 'تم التقديم';
+
+    return open ? 'تقديم على الوظيفة' : 'غير متاح للتقديم';
   }
 }
 

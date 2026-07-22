@@ -4,24 +4,30 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\ApplicationStatus;
+use App\Enums\ContactChannel;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
- * Lean placeholder for the sprint-5 application flow. It exists now so a job
- * edit can find and notify the candidates who already applied (D-14).
- *
  * @property int $id
  * @property string $reference_number
  * @property int $job_id
  * @property int $candidate_id
  * @property int $organization_id
- * @property string $status
+ * @property ApplicationStatus $status
+ * @property ContactChannel $contact_channel
+ * @property string $profile_access_token
+ * @property Carbon $profile_access_expires_at
+ * @property Carbon|null $viewed_at
+ * @property Carbon|null $decided_at
  * @property Carbon|null $withdrawn_at
+ * @property Carbon $created_at
  * @property Job $job
  * @property User $candidate
+ * @property Organization $organization
  */
 class Application extends Model
 {
@@ -31,12 +37,19 @@ class Application extends Model
     protected $fillable = [
         'reference_number', 'job_id', 'candidate_id', 'organization_id',
         'status', 'contact_channel', 'profile_access_token',
-        'profile_access_expires_at',
+        'profile_access_expires_at', 'viewed_at', 'decided_at',
+        'decided_by_user_id', 'withdrawn_at',
+    ];
+
+    protected $attributes = [
+        'status' => 'submitted',
     ];
 
     protected function casts(): array
     {
         return [
+            'status' => ApplicationStatus::class,
+            'contact_channel' => ContactChannel::class,
             'profile_access_expires_at' => 'datetime',
             'viewed_at' => 'datetime',
             'decided_at' => 'datetime',
@@ -56,9 +69,31 @@ class Application extends Model
         return $this->belongsTo(User::class, 'candidate_id');
     }
 
+    /** @return BelongsTo<Organization, $this> */
+    public function organization(): BelongsTo
+    {
+        return $this->belongsTo(Organization::class);
+    }
+
     /** @param  Builder<Application>  $query */
     public function scopeLive(Builder $query): void
     {
         $query->whereIn('status', self::LIVE_STATUSES);
+    }
+
+    /** @param  Builder<Application>  $query */
+    public function scopeForOrganization(Builder $query, int $organizationId): void
+    {
+        $query->where('organization_id', $organizationId);
+    }
+
+    /**
+     * The employer may see the candidate's profile while the application is
+     * live and the token has not expired (D-21). Withdrawal or rejection ends
+     * it, and access is always scoped to the owning organization.
+     */
+    public function profileAccessActive(): bool
+    {
+        return $this->status->isLive() && $this->profile_access_expires_at->isFuture();
     }
 }

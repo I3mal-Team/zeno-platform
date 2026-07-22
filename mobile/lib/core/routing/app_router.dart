@@ -7,6 +7,9 @@ import '../../features/auth/presentation/manager/otp_cubit/otp_cubit.dart';
 import '../../features/auth/presentation/manager/phone_cubit/phone_cubit.dart';
 import '../../features/auth/presentation/views/otp_view.dart';
 import '../../features/auth/presentation/views/phone_view.dart';
+import '../../features/applications/presentation/manager/apply_cubit/apply_cubit.dart';
+import '../../features/applications/presentation/manager/applications_cubit/applications_cubit.dart';
+import '../../features/applications/presentation/views/my_applications_view.dart';
 import '../../features/employer/presentation/manager/employer_jobs_cubit/employer_jobs_cubit.dart';
 import '../../features/employer/presentation/manager/employer_profile_cubit/employer_profile_cubit.dart';
 import '../../features/employer/presentation/manager/publish_job_cubit/publish_job_cubit.dart';
@@ -113,7 +116,17 @@ abstract final class AppRouter {
             ],
           ),
           _branch(RoutesKeys.nearby, 'الوظائف القريبة مني'),
-          _branch(RoutesKeys.applications, 'طلباتي'),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: RoutesKeys.applications,
+                builder: (_, _) => BlocProvider(
+                  create: (_) => ApplicationsCubit(getIt())..load(),
+                  child: const MyApplicationsView(),
+                ),
+              ),
+            ],
+          ),
           _branch(RoutesKeys.messages, 'الرسائل'),
           StatefulShellBranch(
             routes: [
@@ -132,9 +145,15 @@ abstract final class AppRouter {
       GoRoute(
         path: RoutesKeys.jobDetail,
         parentNavigatorKey: parentKey,
-        builder: (_, state) => BlocProvider(
-          create: (_) =>
-              JobDetailCubit(getIt())..load(state.pathParameters['id'] ?? ''),
+        builder: (_, state) => MultiBlocProvider(
+          providers: [
+            BlocProvider(
+              create: (_) =>
+                  JobDetailCubit(getIt())
+                    ..load(state.pathParameters['id'] ?? ''),
+            ),
+            BlocProvider(create: (_) => ApplyCubit(getIt())),
+          ],
           child: const JobDetailView(),
         ),
       ),

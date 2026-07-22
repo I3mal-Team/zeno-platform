@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Api\V1\Employer\ApplicantController;
 use App\Http\Controllers\Api\V1\Employer\JobController;
 use App\Http\Controllers\Api\V1\Employer\JobStatusController;
 use Illuminate\Support\Facades\Route;
@@ -16,4 +17,9 @@ Route::middleware('auth:sanctum')->prefix('employer')->name('employer.')->group(
     Route::post('jobs/{uuid}/resume', [JobStatusController::class, 'resume'])->name('jobs.resume');
     Route::post('jobs/{uuid}/fill', [JobStatusController::class, 'fill'])->name('jobs.fill');
     Route::post('jobs/{uuid}/close', [JobStatusController::class, 'close'])->name('jobs.close');
+
+    Route::get('jobs/{uuid}/applications', [ApplicantController::class, 'index'])->name('applicants.index');
+    Route::get('applications/{id}', [ApplicantController::class, 'show'])->name('applicants.show');
+    Route::post('applications/{id}/accept', [ApplicantController::class, 'accept'])->name('applicants.accept');
+    Route::post('applications/{id}/reject', [ApplicantController::class, 'reject'])->name('applicants.reject');
 });

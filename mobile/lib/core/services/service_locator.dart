@@ -16,6 +16,8 @@ import '../managers/user_cubit/user_cubit.dart';
 import '../utils/secure_storage_manager.dart';
 import '../../features/auth/data/repos/auth_repo.dart';
 import '../../features/auth/data/repos/auth_repo_impl.dart';
+import '../../features/applications/data/repos/applications_repo.dart';
+import '../../features/applications/data/repos/applications_repo_impl.dart';
 import '../../features/employer/data/repos/employer_repo.dart';
 import '../../features/employer/data/repos/employer_repo_impl.dart';
 import '../../features/jobs/data/repos/jobs_repo.dart';
@@ -90,5 +92,9 @@ void _registerFeatures() {
 
   getIt.registerLazySingleton<EmployerRepo>(
     () => EmployerRepoImpl(getIt(), getIt()),
+  );
+
+  getIt.registerLazySingleton<ApplicationsRepo>(
+    () => ApplicationsRepoImpl(getIt(), getIt()),
   );
 }

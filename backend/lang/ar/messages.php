@@ -12,4 +12,8 @@ return [
     'job_published' => 'تم نشر الإعلان.',
     'job_updated' => 'تم تحديث الإعلان.',
     'job_status_updated' => 'تم تحديث حالة الإعلان.',
+    'application_submitted' => 'تم إرسال طلبك بنجاح.',
+    'application_withdrawn' => 'تم سحب الطلب.',
+    'application_accepted' => 'تم قبول المتقدم.',
+    'application_rejected' => 'تم رفض المتقدم.',
 ];

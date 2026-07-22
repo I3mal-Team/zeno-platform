@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Events\ApplicationDecided;
+use App\Events\ApplicationSubmitted;
 use App\Events\JobMateriallyChanged;
 use App\Listeners\NotifyApplicantsOfJobChange;
+use App\Listeners\NotifyCandidateOfDecision;
+use App\Listeners\NotifyEmployerOfApplication;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Event;
@@ -33,5 +37,7 @@ class AppServiceProvider extends ServiceProvider
         ]);
 
         Event::listen(JobMateriallyChanged::class, NotifyApplicantsOfJobChange::class);
+        Event::listen(ApplicationSubmitted::class, NotifyEmployerOfApplication::class);
+        Event::listen(ApplicationDecided::class, NotifyCandidateOfDecision::class);
     }
 }

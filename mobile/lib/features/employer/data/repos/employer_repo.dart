@@ -6,6 +6,8 @@ import '../../../../core/params/profile_params.dart';
 import '../../../jobs/data/models/job_detail_model.dart';
 import '../../../jobs/data/models/job_model.dart';
 import '../../../profile/data/models/city_model.dart';
+import '../models/applicant_model.dart';
+import '../models/applicant_profile_model.dart';
 import '../models/job_form_options.dart';
 import '../models/organization_model.dart';
 
@@ -23,4 +25,12 @@ abstract interface class EmployerRepo {
   Future<Either<Failure, List<JobModel>>> listJobs();
 
   Future<Either<Failure, JobDetailModel>> publishJob(PublishJobParam param);
+
+  Future<Either<Failure, List<ApplicantModel>>> listApplicants(String jobUuid);
+
+  Future<Either<Failure, ApplicantProfileModel>> viewApplicant(int id);
+
+  Future<Either<Failure, Unit>> acceptApplicant(int id);
+
+  Future<Either<Failure, Unit>> rejectApplicant(int id);
 }

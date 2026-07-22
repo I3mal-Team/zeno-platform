@@ -76,14 +76,13 @@ class _BrowseHeader extends StatelessWidget {
             children: [
               Text('أحدث الوظائف', style: AppTextStyles.displayLg),
               const Spacer(),
-              BlocBuilder<BrowseCubit, BrowseState>(
-                builder: (_, state) => Text(
-                  state is BrowseLoaded ? '${state.jobs.length} نتيجة' : '',
-                  style: AppTextStyles.caption.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.textMuted,
-                  ),
+              IconButton(
+                onPressed: () => context.push(RoutesKeys.notifications),
+                icon: const Icon(
+                  Icons.notifications_none_rounded,
+                  color: AppColors.textStrong,
                 ),
+                tooltip: 'الإشعارات',
               ),
             ],
           ),

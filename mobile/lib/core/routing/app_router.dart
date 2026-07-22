@@ -10,9 +10,13 @@ import '../../features/auth/presentation/views/phone_view.dart';
 import '../../features/applications/presentation/manager/apply_cubit/apply_cubit.dart';
 import '../../features/applications/presentation/manager/applications_cubit/applications_cubit.dart';
 import '../../features/applications/presentation/views/my_applications_view.dart';
+import '../../features/employer/presentation/manager/applicant_profile_cubit/applicant_profile_cubit.dart';
+import '../../features/employer/presentation/manager/applicants_cubit/applicants_cubit.dart';
 import '../../features/employer/presentation/manager/employer_jobs_cubit/employer_jobs_cubit.dart';
 import '../../features/employer/presentation/manager/employer_profile_cubit/employer_profile_cubit.dart';
 import '../../features/employer/presentation/manager/publish_job_cubit/publish_job_cubit.dart';
+import '../../features/employer/presentation/views/applicant_profile_view.dart';
+import '../../features/employer/presentation/views/applicants_view.dart';
 import '../../features/employer/presentation/views/employer_jobs_view.dart';
 import '../../features/employer/presentation/views/post_job_view.dart';
 import '../../features/employer/presentation/views/register_employer_view.dart';
@@ -20,6 +24,8 @@ import '../../features/jobs/presentation/manager/browse_cubit/browse_cubit.dart'
 import '../../features/jobs/presentation/manager/job_detail_cubit/job_detail_cubit.dart';
 import '../../features/jobs/presentation/views/browse_view.dart';
 import '../../features/jobs/presentation/views/job_detail_view.dart';
+import '../../features/notifications/presentation/manager/notifications_cubit/notifications_cubit.dart';
+import '../../features/notifications/presentation/views/notifications_view.dart';
 import '../../features/profile/presentation/manager/profile_cubit/profile_cubit.dart';
 import '../../features/profile/presentation/views/profile_view.dart';
 import '../../features/profile/presentation/views/register_candidate_view.dart';
@@ -100,6 +106,25 @@ abstract final class AppRouter {
           child: const PostJobView(),
         ),
       ),
+      GoRoute(
+        path: RoutesKeys.employerJobApplicantsPath,
+        builder: (_, state) => BlocProvider(
+          create: (_) =>
+              ApplicantsCubit(getIt(), state.pathParameters['uuid'] ?? '')
+                ..load(),
+          child: const ApplicantsView(),
+        ),
+      ),
+      GoRoute(
+        path: RoutesKeys.employerApplicantPath,
+        builder: (_, state) => BlocProvider(
+          create: (_) => ApplicantProfileCubit(
+            getIt(),
+            int.parse(state.pathParameters['id'] ?? '0'),
+          )..load(),
+          child: const ApplicantProfileView(),
+        ),
+      ),
 
       StatefulShellRoute.indexedStack(
         builder: (_, _, shell) => CandidateShell(shell: shell),
@@ -160,7 +185,10 @@ abstract final class AppRouter {
       GoRoute(
         path: RoutesKeys.notifications,
         parentNavigatorKey: parentKey,
-        builder: (_, _) => const PlaceholderView(title: 'الإشعارات'),
+        builder: (_, _) => BlocProvider(
+          create: (_) => NotificationsCubit(getIt())..load(),
+          child: const NotificationsView(),
+        ),
       ),
     ],
   );

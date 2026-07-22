@@ -12,6 +12,9 @@
 
     <div style="display:flex;align-items:center;gap:11px">
       @auth
+        <a href="{{ route('notifications.index') }}" title="الإشعارات" style="position:relative;width:40px;height:40px;border-radius:12px;background:#fff;border:1px solid #E7E3DA;display:flex;align-items:center;justify-content:center;color:#2B2724"><i class="iconsax" style="font-size:19px" icon-name="bell-2"></i>
+          @if (($notificationsUnread ?? 0) > 0)<span style="position:absolute;top:-5px;left:-5px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:#F7BE17;color:#2B2724;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center">{{ $notificationsUnread > 9 ? '9+' : $notificationsUnread }}</span>@endif
+        </a>
         @if (auth()->user()->role === 'employer')
           <a href="{{ route('employer.dashboard') }}" class="lnk hide-sm" style="font-size:14.5px;font-weight:800;color:#2B2724;display:flex;align-items:center;gap:6px"><i class="iconsax" style="font-size:18px" icon-name="task-list"></i>لوحة التحكم</a>
         @endif

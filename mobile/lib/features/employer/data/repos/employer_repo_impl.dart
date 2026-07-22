@@ -9,6 +9,8 @@ import '../../../../core/params/profile_params.dart';
 import '../../../jobs/data/models/job_detail_model.dart';
 import '../../../jobs/data/models/job_model.dart';
 import '../../../profile/data/models/city_model.dart';
+import '../models/applicant_model.dart';
+import '../models/applicant_profile_model.dart';
 import '../models/job_form_options.dart';
 import '../models/organization_model.dart';
 import 'employer_repo.dart';
@@ -70,6 +72,40 @@ class EmployerRepoImpl implements EmployerRepo {
     return _handle(
       () => _api.post(EndPoints.employerJobs, body: param.toJson()),
       (data) => JobDetailModel.fromJson(data as Map<String, dynamic>),
+    );
+  }
+
+  @override
+  Future<Either<Failure, List<ApplicantModel>>> listApplicants(String jobUuid) {
+    return _handle(
+      () => _api.get(EndPoints.employerJobApplicants(jobUuid)),
+      (data) => (data as List<dynamic>)
+          .map((e) => ApplicantModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+  }
+
+  @override
+  Future<Either<Failure, ApplicantProfileModel>> viewApplicant(int id) {
+    return _handle(
+      () => _api.get(EndPoints.employerApplicant(id)),
+      (data) => ApplicantProfileModel.fromJson(data as Map<String, dynamic>),
+    );
+  }
+
+  @override
+  Future<Either<Failure, Unit>> acceptApplicant(int id) {
+    return _handle(
+      () => _api.post(EndPoints.employerApplicantAccept(id)),
+      (_) => unit,
+    );
+  }
+
+  @override
+  Future<Either<Failure, Unit>> rejectApplicant(int id) {
+    return _handle(
+      () => _api.post(EndPoints.employerApplicantReject(id)),
+      (_) => unit,
     );
   }
 }

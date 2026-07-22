@@ -10,10 +10,14 @@ use App\Events\JobMateriallyChanged;
 use App\Listeners\NotifyApplicantsOfJobChange;
 use App\Listeners\NotifyCandidateOfDecision;
 use App\Listeners\NotifyEmployerOfApplication;
+use App\Services\NotificationService;
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\View as ViewFacade;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -39,5 +43,15 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(JobMateriallyChanged::class, NotifyApplicantsOfJobChange::class);
         Event::listen(ApplicationSubmitted::class, NotifyEmployerOfApplication::class);
         Event::listen(ApplicationDecided::class, NotifyCandidateOfDecision::class);
+
+        // The bell in the site header and employer topbar needs the live unread
+        // count wherever it renders.
+        ViewFacade::composer(
+            ['components.site.header', 'components.employer.topbar'],
+            function (View $view) {
+                $user = Auth::guard('web')->user();
+                $view->with('notificationsUnread', $user === null ? 0 : app(NotificationService::class)->unreadCount($user));
+            },
+        );
     }
 }

@@ -7,6 +7,7 @@ namespace App\Listeners;
 use App\Events\ApplicationSubmitted;
 use App\Models\User;
 use App\Notifications\ApplicationSubmittedNotification;
+use App\Support\Notifications\RealtimeNotifier;
 
 final class NotifyEmployerOfApplication
 {
@@ -15,6 +16,16 @@ final class NotifyEmployerOfApplication
         $application = $event->application->loadMissing('job');
         $employer = User::query()->find($application->job->created_by_user_id);
 
-        $employer?->notify(new ApplicationSubmittedNotification($application));
+        if ($employer === null) {
+            return;
+        }
+
+        $employer->notify(new ApplicationSubmittedNotification($application));
+
+        RealtimeNotifier::push($employer->id, [
+            'type' => 'application_submitted',
+            'reference' => $application->reference_number,
+            'job_title' => $application->job->title,
+        ]);
     }
 }

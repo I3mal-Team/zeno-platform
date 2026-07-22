@@ -33,6 +33,13 @@ abstract final class EndPoints {
   static String employerJobPause(String uuid) => '/employer/jobs/$uuid/pause';
   static String employerJobResume(String uuid) => '/employer/jobs/$uuid/resume';
   static String employerJobClose(String uuid) => '/employer/jobs/$uuid/close';
+  static String employerJobApplicants(String uuid) =>
+      '/employer/jobs/$uuid/applications';
+  static String employerApplicant(int id) => '/employer/applications/$id';
+  static String employerApplicantAccept(int id) =>
+      '/employer/applications/$id/accept';
+  static String employerApplicantReject(int id) =>
+      '/employer/applications/$id/reject';
 
   static const applications = '/applications';
   static String application(String id) => '/applications/$id';
@@ -45,6 +52,9 @@ abstract final class EndPoints {
       '/conversations/$conversationId/messages';
 
   static const notifications = '/notifications';
+  static const notificationsUnread = '/notifications/unread-count';
+  static const notificationsReadAll = '/notifications/read-all';
+  static String notificationRead(String id) => '/notifications/$id/read';
   static const deviceTokens = '/notifications/devices';
 
   static const categories = '/categories';

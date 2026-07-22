@@ -51,7 +51,12 @@ class EmployerJobsView extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(20, 8, 20, 96),
               itemCount: jobs.length,
               separatorBuilder: (_, _) => const SizedBox(height: 12),
-              itemBuilder: (_, index) => _EmployerJobTile(job: jobs[index]),
+              itemBuilder: (_, index) => _EmployerJobTile(
+                job: jobs[index],
+                onTap: () => context.push(
+                  RoutesKeys.employerJobApplicants(jobs[index].id),
+                ),
+              ),
             ),
           ),
         },
@@ -61,75 +66,83 @@ class EmployerJobsView extends StatelessWidget {
 }
 
 class _EmployerJobTile extends StatelessWidget {
-  const _EmployerJobTile({required this.job});
+  const _EmployerJobTile({required this.job, required this.onTap});
 
   final JobModel job;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final (tint, _) = AppColors.categoryTint(job.categoryCode);
 
-    return Container(
-      padding: const EdgeInsets.all(15),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        border: Border.all(color: AppColors.border),
+    return Material(
+      color: AppColors.surface,
+      borderRadius: BorderRadius.circular(20),
+      child: InkWell(
+        onTap: onTap,
         borderRadius: BorderRadius.circular(20),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+        child: Container(
+          padding: const EdgeInsets.all(15),
+          decoration: BoxDecoration(
+            border: Border.all(color: AppColors.border),
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: 46,
-                height: 46,
-                decoration: BoxDecoration(
-                  color: tint,
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: Icon(
-                  CategoryVisuals.icon(job.categoryCode),
-                  color: Colors.white,
-                  size: 23,
-                ),
+              Row(
+                children: [
+                  Container(
+                    width: 46,
+                    height: 46,
+                    decoration: BoxDecoration(
+                      color: tint,
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Icon(
+                      CategoryVisuals.icon(job.categoryCode),
+                      color: Colors.white,
+                      size: 23,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      job.title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTextStyles.titleMd,
+                    ),
+                  ),
+                  _StatusBadge(status: job.status),
+                ],
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  job.title,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTextStyles.titleMd,
-                ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Text(
+                    '${job.salary.formatted} ريال',
+                    style: AppTextStyles.titleSm,
+                  ),
+                  const Spacer(),
+                  const Icon(
+                    Icons.people_alt_rounded,
+                    size: 17,
+                    color: AppColors.textMuted,
+                  ),
+                  const SizedBox(width: 5),
+                  Text(
+                    '${job.applicationsCount ?? 0} متقدم',
+                    style: AppTextStyles.caption.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textBody,
+                    ),
+                  ),
+                ],
               ),
-              _StatusBadge(status: job.status),
             ],
           ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Text(
-                '${job.salary.formatted} ريال',
-                style: AppTextStyles.titleSm,
-              ),
-              const Spacer(),
-              const Icon(
-                Icons.people_alt_rounded,
-                size: 17,
-                color: AppColors.textMuted,
-              ),
-              const SizedBox(width: 5),
-              Text(
-                '${job.applicationsCount ?? 0} متقدم',
-                style: AppTextStyles.caption.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.textBody,
-                ),
-              ),
-            ],
-          ),
-        ],
+        ),
       ),
     );
   }

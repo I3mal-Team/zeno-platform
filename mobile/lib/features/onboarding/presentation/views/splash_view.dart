@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -16,11 +17,16 @@ class SplashView extends StatefulWidget {
 }
 
 class _SplashViewState extends State<SplashView>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _controller = AnimationController(
+    with TickerProviderStateMixin {
+  late final AnimationController _breathe = AnimationController(
     vsync: this,
     duration: const Duration(milliseconds: 1500),
   )..repeat(reverse: true);
+
+  late final AnimationController _spin = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1000),
+  )..repeat();
 
   Timer? _timer;
 
@@ -36,7 +42,8 @@ class _SplashViewState extends State<SplashView>
   @override
   void dispose() {
     _timer?.cancel();
-    _controller.dispose();
+    _breathe.dispose();
+    _spin.dispose();
     super.dispose();
   }
 
@@ -46,7 +53,7 @@ class _SplashViewState extends State<SplashView>
       body: DecoratedBox(
         decoration: const BoxDecoration(
           gradient: RadialGradient(
-            center: Alignment(0, -.36),
+            center: Alignment(0, -0.36),
             radius: 1.3,
             colors: [Color(0xFFFFFFFF), Color(0xFFF4F2EC)],
           ),
@@ -61,6 +68,7 @@ class _SplashViewState extends State<SplashView>
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
+                    // Static track ring.
                     Container(
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
@@ -70,18 +78,18 @@ class _SplashViewState extends State<SplashView>
                         ),
                       ),
                     ),
-                    const SizedBox(
-                      width: 148,
-                      height: 148,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 3,
-                        color: AppColors.amber,
+                    // Rotating amber arc sweeping the top-right of the ring.
+                    RotationTransition(
+                      turns: _spin,
+                      child: CustomPaint(
+                        size: const Size.square(148),
+                        painter: _ArcPainter(),
                       ),
                     ),
                     ScaleTransition(
-                      scale: Tween(begin: 1.0, end: 1.08).animate(
+                      scale: Tween(begin: 1.0, end: 1.09).animate(
                         CurvedAnimation(
-                          parent: _controller,
+                          parent: _breathe,
                           curve: Curves.easeInOut,
                         ),
                       ),
@@ -100,15 +108,46 @@ class _SplashViewState extends State<SplashView>
                 style: AppTextStyles.displayLg.copyWith(
                   fontSize: 32,
                   fontWeight: FontWeight.w800,
-                  letterSpacing: -.6,
+                  letterSpacing: -0.6,
                 ),
               ),
               const SizedBox(height: AppDimensions.space6),
-              Text('جارٍ التحميل...', style: AppTextStyles.caption),
+              Text(
+                'جارٍ التحميل...',
+                style: AppTextStyles.caption.copyWith(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: const Color(0xFF9A958A),
+                ),
+              ),
             ],
           ),
         ),
       ),
     );
   }
+}
+
+/// The amber quarter-plus arc that rides on the splash ring.
+class _ArcPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = AppColors.amber
+      ..strokeWidth = 3
+      ..strokeCap = StrokeCap.round
+      ..style = PaintingStyle.stroke;
+
+    // Start at the top and sweep 130° through the right side.
+    canvas.drawArc(
+      Rect.fromLTWH(1.5, 1.5, size.width - 3, size.height - 3),
+      -math.pi / 2,
+      math.pi * 0.72,
+      false,
+      paint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

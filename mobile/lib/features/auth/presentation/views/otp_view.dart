@@ -1,12 +1,13 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/components/app_button.dart';
 import '../../../../core/components/app_toast.dart';
+import '../../../../core/components/screen_background.dart';
+import '../../../../core/databases/api/end_points.dart';
 import '../../../../core/managers/user_cubit/user_cubit.dart';
 import '../../../../core/routing/routes_keys.dart';
 import '../../../../core/styles/app_colors.dart';
@@ -14,101 +15,149 @@ import '../../../../core/styles/app_dimensions.dart';
 import '../../../../core/styles/app_text_styles.dart';
 import '../manager/otp_cubit/otp_cubit.dart';
 import '../widgets/auth_header.dart';
+import '../widgets/auth_hero.dart';
+import '../widgets/otp_boxes.dart';
 
 class OtpView extends StatelessWidget {
   const OtpView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: BlocConsumer<OtpCubit, OtpState>(
-        listener: (context, state) {
-          switch (state) {
-            case OtpVerified(:final session):
-              context.read<UserCubit>().onSignedIn(session.user);
-              final isEmployer = context.read<OtpCubit>().role == 'employer';
-              context.go(switch ((session.isNewUser, isEmployer)) {
-                (true, true) => RoutesKeys.registerEmployer,
-                (true, false) => RoutesKeys.registerCandidate,
-                (false, true) => RoutesKeys.employerJobs,
-                (false, false) => RoutesKeys.browse,
-              });
-            case OtpResent():
-              AppToast.success(context, 'تم إرسال رمز جديد.');
-            case OtpError(:final failure):
-              AppToast.error(context, failure.message);
-            default:
-              break;
-          }
-        },
-        builder: (context, state) {
-          final cubit = context.read<OtpCubit>();
+    final fillController = OtpBoxesController();
 
-          return Padding(
-            padding: const EdgeInsets.all(AppDimensions.screenPadding),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const AuthHeader(),
-                const SizedBox(height: AppDimensions.space32),
-                Text('أدخل رمز التحقق', style: AppTextStyles.displayLg),
-                const SizedBox(height: AppDimensions.space8),
-                Text(
-                  'الرمز المكوّن من ${OtpCubit.codeLength} أرقام أُرسل إلى ${cubit.phone}',
-                  style: AppTextStyles.bodyLg,
+    return Scaffold(
+      body: ScreenBackground(
+        child: SafeArea(
+          child: BlocConsumer<OtpCubit, OtpState>(
+            listener: (context, state) {
+              switch (state) {
+                case OtpVerified(:final session):
+                  context.read<UserCubit>().onSignedIn(session.user);
+                  final isEmployer =
+                      context.read<OtpCubit>().role == 'employer';
+                  context.go(switch ((session.isNewUser, isEmployer)) {
+                    (true, true) => RoutesKeys.registerEmployer,
+                    (true, false) => RoutesKeys.registerCandidate,
+                    (false, true) => RoutesKeys.employerJobs,
+                    (false, false) => RoutesKeys.browse,
+                  });
+                case OtpResent():
+                  AppToast.success(context, 'تم إرسال رمز جديد.');
+                case OtpError(:final failure):
+                  AppToast.error(context, failure.message);
+                default:
+                  break;
+              }
+            },
+            builder: (context, state) {
+              final cubit = context.read<OtpCubit>();
+
+              return Padding(
+                padding: const EdgeInsets.fromLTRB(26, 10, 26, 28),
+                child: Column(
+                  children: [
+                    const AuthHeader(),
+                    const SizedBox(height: AppDimensions.space16),
+                    const Center(
+                      child: AuthHero(
+                        icon: Icons.verified_user_rounded,
+                        discSize: 90,
+                      ),
+                    ),
+                    const SizedBox(height: AppDimensions.space20),
+                    Text(
+                      'أدخل رمز التحقق',
+                      style: AppTextStyles.displayLg.copyWith(fontSize: 24),
+                    ),
+                    const SizedBox(height: AppDimensions.space8),
+                    _SentToLine(phone: cubit.phone),
+                    const SizedBox(height: AppDimensions.space26),
+                    OtpBoxes(
+                      length: OtpCubit.codeLength,
+                      controller: fillController,
+                      onChanged: cubit.onCodeChanged,
+                    ),
+                    const SizedBox(height: AppDimensions.space20),
+                    _ResendRow(onResend: cubit.resend),
+                    if (AppEnvironment.current == AppEnvironment.dev) ...[
+                      const SizedBox(height: AppDimensions.space12),
+                      _AutoFillButton(
+                        onTap: () => fillController.fill('4829'),
+                      ),
+                    ],
+                    const Spacer(),
+                    AppButton(
+                      label: 'تأكيد ومتابعة',
+                      icon: Icons.check_circle_rounded,
+                      dark: true,
+                      isLoading: state is OtpVerifying,
+                      onPressed: cubit.verify,
+                    ),
+                  ],
                 ),
-                const SizedBox(height: AppDimensions.space32),
-                _CodeField(onChanged: cubit.onCodeChanged),
-                const SizedBox(height: AppDimensions.space20),
-                _ResendRow(onResend: cubit.resend),
-                const Spacer(),
-                AppButton(
-                  label: 'تأكيد ومتابعة',
-                  isLoading: state is OtpVerifying,
-                  onPressed: cubit.verify,
-                ),
-                const SizedBox(height: AppDimensions.space16),
-              ],
-            ),
-          );
-        },
+              );
+            },
+          ),
         ),
       ),
     );
   }
 }
 
-class _CodeField extends StatelessWidget {
-  const _CodeField({required this.onChanged});
+class _SentToLine extends StatelessWidget {
+  const _SentToLine({required this.phone});
 
-  final ValueChanged<String> onChanged;
+  final String phone;
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
-      onChanged: onChanged,
-      keyboardType: TextInputType.number,
+    return Text.rich(
+      TextSpan(
+        text: 'الرمز المكوّن من ${OtpCubit.codeLength} أرقام أُرسل إلى ',
+        style: AppTextStyles.bodyLg.copyWith(color: AppColors.textMuted),
+        children: [
+          TextSpan(
+            text: phone,
+            style: AppTextStyles.bodyLg.copyWith(
+              color: AppColors.textStrong,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        ],
+      ),
       textAlign: TextAlign.center,
-      textDirection: TextDirection.ltr,
-      maxLength: OtpCubit.codeLength,
-      autofocus: true,
-      style: AppTextStyles.otpDigit.copyWith(letterSpacing: 18),
-      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-      decoration: InputDecoration(
-        counterText: '',
-        filled: true,
-        fillColor: AppColors.surface,
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppDimensions.radiusControl),
-          borderSide: const BorderSide(color: AppColors.borderStrong),
+    );
+  }
+}
+
+class _AutoFillButton extends StatelessWidget {
+  const _AutoFillButton({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
+        decoration: BoxDecoration(
+          color: AppColors.warningBg,
+          borderRadius: BorderRadius.circular(11),
         ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppDimensions.radiusControl),
-          borderSide: const BorderSide(color: AppColors.charcoal, width: 1.5),
-        ),
-        contentPadding: const EdgeInsets.symmetric(
-          vertical: AppDimensions.space16,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.bolt_rounded, size: 17, color: AppColors.warningFg),
+            const SizedBox(width: AppDimensions.space6),
+            Text(
+              'تعبئة تلقائية (تجريبي)',
+              style: AppTextStyles.caption.copyWith(
+                fontSize: 13,
+                color: AppColors.warningFg,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -161,11 +210,18 @@ class _ResendRowState extends State<_ResendRow> {
     final canResend = _remaining <= 0;
 
     return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text('لم يصلك الرمز؟', style: AppTextStyles.bodyMd),
+        Text(
+          'لم يصلك الرمز؟',
+          style: AppTextStyles.bodyMd.copyWith(
+            color: AppColors.textMuted,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
         const SizedBox(width: AppDimensions.space6),
-        TextButton(
-          onPressed: canResend
+        GestureDetector(
+          onTap: canResend
               ? () async {
                   await widget.onResend();
                   if (mounted) _startCountdown();
@@ -174,7 +230,8 @@ class _ResendRowState extends State<_ResendRow> {
           child: Text(
             canResend ? 'إعادة الإرسال' : 'إعادة الإرسال بعد $_remaining ث',
             style: AppTextStyles.titleSm.copyWith(
-              color: canResend ? AppColors.textStrong : AppColors.textMuted,
+              color: canResend ? AppColors.warningFg : AppColors.textMuted,
+              fontWeight: FontWeight.w800,
             ),
           ),
         ),

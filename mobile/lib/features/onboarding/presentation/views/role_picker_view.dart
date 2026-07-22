@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/components/screen_background.dart';
+import '../../../../core/motion/motion.dart';
 import '../../../../core/routing/routes_keys.dart';
 import '../../../../core/styles/app_colors.dart';
 import '../../../../core/styles/app_dimensions.dart';
+import '../../../../core/styles/app_shadows.dart';
 import '../../../../core/styles/app_text_styles.dart';
 
 /// The admin entry the prototype put here is deliberately absent: the admin
@@ -59,28 +61,34 @@ class RolePickerView extends StatelessWidget {
                     ),
                   ),
                 ),
-                _RoleCard(
-                  title: 'أبحث عن عمل',
-                  subtitle: 'تصفّح الوظائف القريبة وقدّم بسهولة',
-                  icon: Icons.person_search_rounded,
-                  iconColor: const Color(0xFF7A5E0E),
-                  discGradient: const [Color(0xFFFDEFC2), Color(0xFFF6D783)],
-                  glowColor: AppColors.amber,
-                  borderColor: const Color(0xFFF1ECDD),
-                  onTap: () =>
-                      context.push('${RoutesKeys.phone}?role=candidate'),
+                Entrance(
+                  index: 0,
+                  child: _RoleCard(
+                    title: 'أبحث عن عمل',
+                    subtitle: 'تصفّح الوظائف القريبة وقدّم بسهولة',
+                    icon: Icons.person_search_rounded,
+                    iconColor: const Color(0xFF7A5E0E),
+                    discGradient: const [Color(0xFFFDEFC2), Color(0xFFF6D783)],
+                    glowColor: AppColors.amber,
+                    borderColor: const Color(0xFFF1ECDD),
+                    onTap: () =>
+                        context.push('${RoutesKeys.phone}?role=candidate'),
+                  ),
                 ),
                 const SizedBox(height: AppDimensions.space12),
-                _RoleCard(
-                  title: 'أبحث عن موظفين',
-                  subtitle: 'انشر وظيفة وتواصل مع المرشحين',
-                  icon: Icons.work_rounded,
-                  iconColor: AppColors.amber,
-                  discGradient: const [Color(0xFF3A352F), Color(0xFF241F1C)],
-                  glowColor: AppColors.charcoalSoft,
-                  borderColor: const Color(0xFFECE9E2),
-                  onTap: () =>
-                      context.push('${RoutesKeys.phone}?role=employer'),
+                Entrance(
+                  index: 1,
+                  child: _RoleCard(
+                    title: 'أبحث عن موظفين',
+                    subtitle: 'انشر وظيفة وتواصل مع المرشحين',
+                    icon: Icons.work_rounded,
+                    iconColor: AppColors.amber,
+                    discGradient: const [Color(0xFF3A352F), Color(0xFF241F1C)],
+                    glowColor: AppColors.charcoalSoft,
+                    borderColor: const Color(0xFFECE9E2),
+                    onTap: () =>
+                        context.push('${RoutesKeys.phone}?role=employer'),
+                  ),
                 ),
               ],
             ),
@@ -114,59 +122,47 @@ class _RoleCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: AppColors.surface,
-      borderRadius: BorderRadius.circular(24),
-      elevation: 0,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(24),
-        child: Container(
-          padding: const EdgeInsets.all(17),
-          decoration: BoxDecoration(
-            border: Border.all(color: borderColor),
-            borderRadius: BorderRadius.circular(24),
-            boxShadow: [
-              BoxShadow(
-                color: const Color(0xFF282319).withValues(alpha: .18),
-                blurRadius: 38,
-                offset: const Offset(0, 18),
-                spreadRadius: -24,
-              ),
-            ],
-          ),
-          child: Row(
-            children: [
-              _RoleDisc(
-                icon: icon,
-                iconColor: iconColor,
-                gradient: discGradient,
-                ringColor: glowColor.withValues(alpha: .3),
-              ),
-              const SizedBox(width: AppDimensions.space16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(title, style: AppTextStyles.titleMd),
-                    const SizedBox(height: AppDimensions.space2),
-                    Text(
-                      subtitle,
-                      style: AppTextStyles.caption.copyWith(
-                        fontWeight: FontWeight.w500,
-                        height: 1.5,
-                      ),
+    return Pressable(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(17),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          border: Border.all(color: borderColor),
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: AppShadows.card,
+        ),
+        child: Row(
+          children: [
+            _RoleDisc(
+              icon: icon,
+              iconColor: iconColor,
+              gradient: discGradient,
+              ringColor: glowColor.withValues(alpha: .3),
+            ),
+            const SizedBox(width: AppDimensions.space16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: AppTextStyles.titleMd),
+                  const SizedBox(height: AppDimensions.space2),
+                  Text(
+                    subtitle,
+                    style: AppTextStyles.caption.copyWith(
+                      fontWeight: FontWeight.w500,
+                      height: 1.5,
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              const Icon(
-                Icons.chevron_left_rounded,
-                size: 26,
-                color: Color(0xFFC9C4B9),
-              ),
-            ],
-          ),
+            ),
+            const Icon(
+              Icons.chevron_left_rounded,
+              size: 26,
+              color: Color(0xFFC9C4B9),
+            ),
+          ],
         ),
       ),
     );

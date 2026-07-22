@@ -22,8 +22,9 @@ abstract final class AppDimensions {
   static const radiusIconTile = 14.0;
   static const radiusPill = 100.0;
 
-  static const buttonHeight = 52.0;
-  static const inputHeight = 52.0;
+  static const buttonHeight = 54.0;
+  static const inputHeight = 54.0;
+  static const radiusButton = 18.0;
   static const iconButtonSize = 42.0;
   static const iconTileSize = 52.0;
   static const avatarSize = 44.0;

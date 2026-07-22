@@ -1,19 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/components/app_button.dart';
 import '../../../../core/components/screen_background.dart';
+import '../../../../core/motion/motion.dart';
 import '../../../../core/routing/routes_keys.dart';
 import '../../../../core/styles/app_colors.dart';
 import '../../../../core/styles/app_dimensions.dart';
+import '../../../../core/styles/app_shadows.dart';
 import '../../../../core/styles/app_text_styles.dart';
-
-typedef _Slide = ({
-  IconData icon,
-  List<IconData> orbiting,
-  String title,
-  String body,
-});
+import 'widgets/dashed_shapes.dart';
 
 class OnboardingView extends StatefulWidget {
   const OnboardingView({super.key});
@@ -26,31 +21,19 @@ class _OnboardingViewState extends State<OnboardingView> {
   final _controller = PageController();
   int _index = 0;
 
-  static const _slides = <_Slide>[
-    (
-      icon: Icons.location_on_rounded,
-      orbiting: [Icons.local_cafe_rounded, Icons.local_shipping_rounded],
-      title: 'فرصتك القادمة قريبة منك',
-      body:
-          'اكتشف وظائف تشغيلية وخدمية وموسمية بالقرب من موقعك، وقدّم في ثوانٍ معدودة.',
-    ),
-    (
-      icon: Icons.grid_view_rounded,
-      orbiting: [Icons.storefront_rounded, Icons.cleaning_services_rounded],
-      title: 'كل الخدمات في مكان واحد',
-      body:
-          'مطاعم، نظافة، نقل، فعاليات، مبيعات، أمن وصيانة — تصنيفات تناسب كل مهارة.',
-    ),
-    (
-      icon: Icons.forum_rounded,
-      orbiting: [Icons.phone_iphone_rounded, Icons.check_circle_rounded],
-      title: 'تواصل وقدّم بأبسط الخطوات',
-      body:
-          'سجّل برقم جوالك، قدّم على الوظيفة، وتواصل داخل التطبيق أو عبر واتساب.',
-    ),
+  static const _titles = [
+    'فرصتك القادمة قريبة منك',
+    'كل الخدمات في مكان واحد',
+    'تواصل وقدّم بأبسط الخطوات',
   ];
 
-  bool get _isLast => _index == _slides.length - 1;
+  static const _bodies = [
+    'اكتشف وظائف تشغيلية وخدمية وموسمية بالقرب من موقعك، وقدّم في ثوانٍ معدودة.',
+    'مطاعم، نظافة، نقل، فعاليات، مبيعات، أمن وصيانة — تصنيفات تناسب كل مهارة.',
+    'سجّل برقم جوالك، قدّم على الوظيفة، وتواصل داخل التطبيق أو عبر واتساب.',
+  ];
+
+  bool get _isLast => _index == _titles.length - 1;
 
   @override
   void dispose() {
@@ -63,7 +46,7 @@ class _OnboardingViewState extends State<OnboardingView> {
 
     _controller.nextPage(
       duration: AppDimensions.durationBase,
-      curve: Curves.easeOut,
+      curve: AppMotion.easeOut,
     );
   }
 
@@ -81,24 +64,26 @@ class _OnboardingViewState extends State<OnboardingView> {
                   child: AnimatedOpacity(
                     opacity: _isLast ? 0 : 1,
                     duration: AppDimensions.durationFast,
-                    child: TextButton(
-                      onPressed: _isLast
+                    child: Pressable(
+                      onTap: _isLast
                           ? null
                           : () => context.go(RoutesKeys.rolePicker),
-                      style: TextButton.styleFrom(
-                        backgroundColor: AppColors.charcoalSoft.withValues(
-                          alpha: .05,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppDimensions.space16,
+                          vertical: AppDimensions.space8,
                         ),
-                        shape: RoundedRectangleBorder(
+                        decoration: BoxDecoration(
+                          color: AppColors.charcoalSoft.withValues(alpha: .05),
                           borderRadius: BorderRadius.circular(
                             AppDimensions.space12,
                           ),
                         ),
-                      ),
-                      child: Text(
-                        'تخطّي',
-                        style: AppTextStyles.caption.copyWith(
-                          fontWeight: FontWeight.w800,
+                        child: Text(
+                          'تخطّي',
+                          style: AppTextStyles.caption.copyWith(
+                            fontWeight: FontWeight.w800,
+                          ),
                         ),
                       ),
                     ),
@@ -108,48 +93,47 @@ class _OnboardingViewState extends State<OnboardingView> {
               Expanded(
                 child: PageView.builder(
                   controller: _controller,
-                  itemCount: _slides.length,
+                  itemCount: _titles.length,
                   onPageChanged: (index) => setState(() => _index = index),
-                  itemBuilder: (context, index) =>
-                      _SlideView(slide: _slides[index]),
+                  itemBuilder: (context, index) => _SlideView(
+                    index: index,
+                    title: _titles[index],
+                    body: _bodies[index],
+                  ),
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(28, 0, 28, 30),
-                child: Column(
+                padding: const EdgeInsets.fromLTRB(30, 0, 30, 30),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        for (var i = 0; i < _slides.length; i++)
+                        for (var i = 0; i < _titles.length; i++)
                           GestureDetector(
                             onTap: () => _controller.animateToPage(
                               i,
                               duration: AppDimensions.durationBase,
-                              curve: Curves.easeOut,
+                              curve: AppMotion.easeOut,
                             ),
                             child: AnimatedContainer(
                               duration: AppDimensions.durationFast,
                               margin: const EdgeInsets.symmetric(horizontal: 3),
-                              width: i == _index ? 22 : 8,
-                              height: 8,
+                              width: i == _index ? 22 : 7,
+                              height: 7,
                               decoration: BoxDecoration(
                                 color: i == _index
                                     ? AppColors.amber
-                                    : AppColors.border,
-                                borderRadius: BorderRadius.circular(
-                                  AppDimensions.radiusPill,
-                                ),
+                                    : AppColors.borderStrong,
+                                borderRadius: BorderRadius.circular(4),
                               ),
                             ),
                           ),
                       ],
                     ),
-                    const SizedBox(height: AppDimensions.space26),
-                    AppButton(
-                      label: _isLast ? 'ابدأ الآن' : 'التالي',
-                      onPressed: _next,
-                    ),
+                    _isLast
+                        ? _StartButton(onTap: _next)
+                        : _NextButton(onTap: _next),
                   ],
                 ),
               ),
@@ -161,10 +145,85 @@ class _OnboardingViewState extends State<OnboardingView> {
   }
 }
 
-class _SlideView extends StatelessWidget {
-  const _SlideView({required this.slide});
+/// The amber pill shown on the last slide.
+class _StartButton extends StatelessWidget {
+  const _StartButton({required this.onTap});
 
-  final _Slide slide;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
+
+    return Pressable(
+      onTap: onTap,
+      child: Container(
+        height: 56,
+        padding: const EdgeInsets.symmetric(horizontal: AppDimensions.space26),
+        decoration: BoxDecoration(
+          color: AppColors.amber,
+          borderRadius: BorderRadius.circular(AppDimensions.radiusButton),
+          boxShadow: AppShadows.amberGlow,
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('ابدأ الآن', style: AppTextStyles.button),
+            const SizedBox(width: AppDimensions.space8),
+            Transform.flip(
+              flipX: isRtl,
+              child: const Icon(
+                Icons.arrow_forward_rounded,
+                size: 22,
+                color: AppColors.textStrong,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// The dark square arrow shown on the earlier slides.
+class _NextButton extends StatelessWidget {
+  const _NextButton({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
+
+    return Pressable(
+      onTap: onTap,
+      child: Container(
+        width: 56,
+        height: 56,
+        decoration: BoxDecoration(
+          color: AppColors.charcoalSoft,
+          borderRadius: BorderRadius.circular(AppDimensions.radiusButton),
+          boxShadow: AppShadows.charcoalGlow,
+        ),
+        child: Transform.flip(
+          flipX: isRtl,
+          child: const Icon(
+            Icons.arrow_forward_rounded,
+            size: 26,
+            color: AppColors.amber,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SlideView extends StatelessWidget {
+  const _SlideView({required this.index, required this.title, required this.body});
+
+  final int index;
+  final String title;
+  final String body;
 
   @override
   Widget build(BuildContext context) {
@@ -173,16 +232,20 @@ class _SlideView extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          _SlideArt(slide: slide),
+          switch (index) {
+            0 => const _LocationArt(),
+            1 => const _GridArt(),
+            _ => const _ConnectArt(),
+          },
           const SizedBox(height: AppDimensions.space26),
           Text(
-            slide.title,
+            title,
             textAlign: TextAlign.center,
             style: AppTextStyles.displayLg.copyWith(fontSize: 24),
           ),
           const SizedBox(height: AppDimensions.space10),
           Text(
-            slide.body,
+            body,
             textAlign: TextAlign.center,
             style: AppTextStyles.bodyLg.copyWith(height: 1.7),
           ),
@@ -192,10 +255,52 @@ class _SlideView extends StatelessWidget {
   }
 }
 
-class _SlideArt extends StatelessWidget {
-  const _SlideArt({required this.slide});
+/// A soft-tinted rounded tile holding a category icon, floating in place.
+class _FloatTile extends StatelessWidget {
+  const _FloatTile({
+    required this.size,
+    required this.radius,
+    required this.background,
+    required this.icon,
+    required this.iconColor,
+    required this.iconSize,
+    this.amplitude = 11,
+    this.border,
+    this.shadow,
+  });
 
-  final _Slide slide;
+  final double size;
+  final double radius;
+  final Color background;
+  final IconData icon;
+  final Color iconColor;
+  final double iconSize;
+  final double amplitude;
+  final Color? border;
+  final List<BoxShadow>? shadow;
+
+  @override
+  Widget build(BuildContext context) {
+    return Floating(
+      amplitude: amplitude,
+      child: Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          color: background,
+          borderRadius: BorderRadius.circular(radius),
+          border: border != null ? Border.all(color: border!) : null,
+          boxShadow: shadow,
+        ),
+        child: Icon(icon, size: iconSize, color: iconColor),
+      ),
+    );
+  }
+}
+
+/// Slide 1 — a location hero encircled by a slow dashed ring and category tiles.
+class _LocationArt extends StatelessWidget {
+  const _LocationArt();
 
   @override
   Widget build(BuildContext context) {
@@ -203,8 +308,10 @@ class _SlideArt extends StatelessWidget {
       width: 280,
       height: 264,
       child: Stack(
+        clipBehavior: Clip.none,
         alignment: Alignment.center,
         children: [
+          const DashedRing(size: 248),
           Container(
             width: 190,
             height: 190,
@@ -219,35 +326,74 @@ class _SlideArt extends StatelessWidget {
               ),
             ),
           ),
-          Container(
-            width: 144,
-            height: 144,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: const RadialGradient(
-                center: Alignment(-.36, -.48),
-                colors: [Color(0xFFFBD46B), Color(0xFFF2A50E)],
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFFF2A50E).withValues(alpha: .5),
-                  blurRadius: 50,
-                  offset: const Offset(0, 26),
-                  spreadRadius: -18,
+          Floating(
+            child: Container(
+              width: 144,
+              height: 144,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: const RadialGradient(
+                  center: Alignment(-.36, -.48),
+                  colors: [Color(0xFFFBD46B), Color(0xFFF2A50E)],
                 ),
-              ],
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFFF2A50E).withValues(alpha: .5),
+                    blurRadius: 50,
+                    offset: const Offset(0, 26),
+                    spreadRadius: -18,
+                  ),
+                ],
+              ),
+              child: const Icon(
+                Icons.location_on_rounded,
+                size: 68,
+                color: Colors.white,
+              ),
             ),
-            child: Icon(slide.icon, size: 64, color: Colors.white),
           ),
           Positioned(
             top: 4,
             right: 6,
-            child: _FloatingTile(icon: slide.orbiting.first),
+            child: _FloatTile(
+              size: 58,
+              radius: 18,
+              background: AppColors.surface,
+              border: const Color(0xFFF0EDE6),
+              shadow: AppShadows.card,
+              icon: Icons.local_cafe_rounded,
+              iconColor: const Color(0xFF8A6D2E),
+              iconSize: 28,
+              amplitude: 12,
+            ),
           ),
           Positioned(
             bottom: 14,
             left: 2,
-            child: _FloatingTile(icon: slide.orbiting.last),
+            child: _FloatTile(
+              size: 54,
+              radius: 17,
+              background: AppColors.surface,
+              border: const Color(0xFFF0EDE6),
+              shadow: AppShadows.card,
+              icon: Icons.local_shipping_rounded,
+              iconColor: const Color(0xFF2E6E8A),
+              iconSize: 27,
+              amplitude: 9,
+            ),
+          ),
+          Positioned(
+            top: 46,
+            left: 24,
+            child: _FloatTile(
+              size: 48,
+              radius: 15,
+              background: AppColors.charcoalSoft,
+              icon: Icons.cleaning_services_rounded,
+              iconColor: AppColors.amber,
+              iconSize: 24,
+              amplitude: 13,
+            ),
           ),
         ],
       ),
@@ -255,30 +401,173 @@ class _SlideArt extends StatelessWidget {
   }
 }
 
-class _FloatingTile extends StatelessWidget {
-  const _FloatingTile({required this.icon});
+/// Slide 2 — the six category tiles.
+class _GridArt extends StatelessWidget {
+  const _GridArt();
 
-  final IconData icon;
+  static const _tiles = <(Color, IconData, Color)>[
+    (Color(0xFFFDF1CC), Icons.local_cafe_rounded, Color(0xFF8A6D12)),
+    (Color(0xFFE2EEF4), Icons.cleaning_services_rounded, Color(0xFF2E6E8A)),
+    (Color(0xFFE6F0E1), Icons.local_shipping_rounded, Color(0xFF4F7A2E)),
+    (Color(0xFFECE6F4), Icons.auto_awesome_rounded, Color(0xFF6A4E8A)),
+    (Color(0xFFF8E3E1), Icons.shield_rounded, Color(0xFFB2453A)),
+    (Color(0xFFE0EFEC), Icons.storefront_rounded, Color(0xFF2E7A6B)),
+  ];
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 58,
-      height: 58,
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        border: Border.all(color: const Color(0xFFF0EDE6)),
-        borderRadius: BorderRadius.circular(18),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF282319).withValues(alpha: .2),
-            blurRadius: 28,
-            offset: const Offset(0, 16),
-            spreadRadius: -14,
+    return SizedBox(
+      width: 268,
+      height: 264,
+      child: Center(
+        child: GridView.count(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          crossAxisCount: 3,
+          mainAxisSpacing: 13,
+          crossAxisSpacing: 13,
+          children: [
+            for (final (index, tile) in _tiles.indexed)
+              _FloatTile(
+                size: 80,
+                radius: 21,
+                background: tile.$1,
+                icon: tile.$2,
+                iconColor: tile.$3,
+                iconSize: 34,
+                amplitude: index.isEven ? 11 : 9,
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Slide 3 — the candidate and employer discs linked by a dashed connector.
+class _ConnectArt extends StatelessWidget {
+  const _ConnectArt();
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 290,
+      height: 248,
+      child: Stack(
+        clipBehavior: Clip.none,
+        alignment: Alignment.center,
+        children: [
+          const Positioned(
+            top: 128,
+            left: 34,
+            right: 34,
+            child: DashedLine(),
+          ),
+          Positioned(
+            left: 8,
+            top: 92,
+            child: _BigDisc(
+              gradient: const [Color(0xFFFBD46B), Color(0xFFF2A50E)],
+              glow: const Color(0xFFF2A50E),
+              icon: Icons.person_rounded,
+              iconColor: Colors.white,
+            ),
+          ),
+          Positioned(
+            right: 8,
+            top: 92,
+            child: _BigDisc(
+              gradient: const [Color(0xFF3A352F), Color(0xFF241F1C)],
+              glow: AppColors.charcoalSoft,
+              icon: Icons.work_rounded,
+              iconColor: AppColors.amber,
+              amplitude: 10,
+            ),
+          ),
+          Positioned(
+            top: 8,
+            child: _FloatTile(
+              size: 84,
+              radius: 26,
+              background: AppColors.surface,
+              border: const Color(0xFFF0EDE6),
+              shadow: AppShadows.card,
+              icon: Icons.forum_rounded,
+              iconColor: const Color(0xFF8A6D12),
+              iconSize: 40,
+            ),
+          ),
+          Positioned(
+            bottom: 10,
+            left: 60,
+            child: _FloatTile(
+              size: 44,
+              radius: 14,
+              background: const Color(0xFFE7F4EC),
+              icon: Icons.check_circle_rounded,
+              iconColor: const Color(0xFF1F8A4D),
+              iconSize: 24,
+              amplitude: 8,
+            ),
+          ),
+          Positioned(
+            bottom: 22,
+            right: 58,
+            child: _FloatTile(
+              size: 44,
+              radius: 14,
+              background: const Color(0xFFFDF3D6),
+              icon: Icons.call_rounded,
+              iconColor: const Color(0xFF8A6D12),
+              iconSize: 22,
+              amplitude: 10,
+            ),
           ),
         ],
       ),
-      child: Icon(icon, size: 28, color: const Color(0xFF8A6D2E)),
+    );
+  }
+}
+
+class _BigDisc extends StatelessWidget {
+  const _BigDisc({
+    required this.gradient,
+    required this.glow,
+    required this.icon,
+    required this.iconColor,
+    this.amplitude = 13,
+  });
+
+  final List<Color> gradient;
+  final Color glow;
+  final IconData icon;
+  final Color iconColor;
+  final double amplitude;
+
+  @override
+  Widget build(BuildContext context) {
+    return Floating(
+      amplitude: amplitude,
+      child: Container(
+        width: 88,
+        height: 88,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(27),
+          gradient: RadialGradient(
+            center: const Alignment(-.4, -.48),
+            colors: gradient,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: glow.withValues(alpha: .6),
+              blurRadius: 40,
+              offset: const Offset(0, 22),
+              spreadRadius: -16,
+            ),
+          ],
+        ),
+        child: Icon(icon, size: 42, color: iconColor),
+      ),
     );
   }
 }

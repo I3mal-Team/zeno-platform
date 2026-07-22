@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Employer\DashboardController;
+use App\Http\Controllers\Employer\JobController;
+use App\Http\Controllers\Employer\JobStatusController;
 use App\Http\Controllers\Employer\RegisterController;
 use Illuminate\Support\Facades\Route;
 
@@ -13,4 +15,14 @@ Route::prefix('employer')
         Route::get('register', [RegisterController::class, 'show'])->name('register');
         Route::post('register', [RegisterController::class, 'store'])->name('register.store');
         Route::get('/', DashboardController::class)->name('dashboard');
+
+        Route::get('jobs', [JobController::class, 'index'])->name('jobs.index');
+        Route::get('jobs/create', [JobController::class, 'create'])->name('jobs.create');
+        Route::post('jobs', [JobController::class, 'store'])->name('jobs.store');
+        Route::get('jobs/{uuid}/edit', [JobController::class, 'edit'])->name('jobs.edit');
+        Route::put('jobs/{uuid}', [JobController::class, 'update'])->name('jobs.update');
+
+        Route::post('jobs/{uuid}/pause', [JobStatusController::class, 'pause'])->name('jobs.pause');
+        Route::post('jobs/{uuid}/resume', [JobStatusController::class, 'resume'])->name('jobs.resume');
+        Route::post('jobs/{uuid}/close', [JobStatusController::class, 'close'])->name('jobs.close');
     });

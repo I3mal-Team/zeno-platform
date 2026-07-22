@@ -27,6 +27,13 @@ abstract final class EndPoints {
   static const jobsNearby = '/jobs/nearby';
   static String job(String id) => '/jobs/$id';
 
+  static const jobForm = '/catalog/job-form';
+  static const employerJobs = '/employer/jobs';
+  static String employerJob(String uuid) => '/employer/jobs/$uuid';
+  static String employerJobPause(String uuid) => '/employer/jobs/$uuid/pause';
+  static String employerJobResume(String uuid) => '/employer/jobs/$uuid/resume';
+  static String employerJobClose(String uuid) => '/employer/jobs/$uuid/close';
+
   static const applications = '/applications';
   static String application(String id) => '/applications/$id';
 

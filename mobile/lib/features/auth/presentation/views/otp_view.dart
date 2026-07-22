@@ -26,11 +26,13 @@ class OtpView extends StatelessWidget {
           switch (state) {
             case OtpVerified(:final session):
               context.read<UserCubit>().onSignedIn(session.user);
-              context.go(
-                session.isNewUser
-                    ? RoutesKeys.registerCandidate
-                    : RoutesKeys.browse,
-              );
+              final isEmployer = context.read<OtpCubit>().role == 'employer';
+              context.go(switch ((session.isNewUser, isEmployer)) {
+                (true, true) => RoutesKeys.registerEmployer,
+                (true, false) => RoutesKeys.registerCandidate,
+                (false, true) => RoutesKeys.employerJobs,
+                (false, false) => RoutesKeys.browse,
+              });
             case OtpResent():
               AppToast.success(context, 'تم إرسال رمز جديد.');
             case OtpError(:final failure):

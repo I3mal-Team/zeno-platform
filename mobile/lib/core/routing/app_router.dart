@@ -7,6 +7,12 @@ import '../../features/auth/presentation/manager/otp_cubit/otp_cubit.dart';
 import '../../features/auth/presentation/manager/phone_cubit/phone_cubit.dart';
 import '../../features/auth/presentation/views/otp_view.dart';
 import '../../features/auth/presentation/views/phone_view.dart';
+import '../../features/employer/presentation/manager/employer_jobs_cubit/employer_jobs_cubit.dart';
+import '../../features/employer/presentation/manager/employer_profile_cubit/employer_profile_cubit.dart';
+import '../../features/employer/presentation/manager/publish_job_cubit/publish_job_cubit.dart';
+import '../../features/employer/presentation/views/employer_jobs_view.dart';
+import '../../features/employer/presentation/views/post_job_view.dart';
+import '../../features/employer/presentation/views/register_employer_view.dart';
 import '../../features/jobs/presentation/manager/browse_cubit/browse_cubit.dart';
 import '../../features/jobs/presentation/manager/job_detail_cubit/job_detail_cubit.dart';
 import '../../features/jobs/presentation/views/browse_view.dart';
@@ -72,7 +78,24 @@ abstract final class AppRouter {
       ),
       GoRoute(
         path: RoutesKeys.registerEmployer,
-        builder: (_, _) => const PlaceholderView(title: 'بيانات صاحب العمل'),
+        builder: (_, _) => BlocProvider(
+          create: (_) => EmployerProfileCubit(getIt()),
+          child: const RegisterEmployerView(),
+        ),
+      ),
+      GoRoute(
+        path: RoutesKeys.employerJobs,
+        builder: (_, _) => BlocProvider(
+          create: (_) => EmployerJobsCubit(getIt())..load(),
+          child: const EmployerJobsView(),
+        ),
+      ),
+      GoRoute(
+        path: RoutesKeys.employerPostJob,
+        builder: (_, _) => BlocProvider(
+          create: (_) => PublishJobCubit(getIt())..loadForm(),
+          child: const PostJobView(),
+        ),
       ),
 
       StatefulShellRoute.indexedStack(

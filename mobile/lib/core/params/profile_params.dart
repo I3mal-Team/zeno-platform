@@ -1,3 +1,33 @@
+class SaveOrganizationParam {
+  const SaveOrganizationParam({
+    required this.type,
+    required this.name,
+    this.responsiblePersonName,
+    this.commercialRegistration,
+    this.cityId,
+    this.about,
+  });
+
+  /// 'individual' or 'company'.
+  final String type;
+  final String name;
+  final String? responsiblePersonName;
+  final String? commercialRegistration;
+  final int? cityId;
+  final String? about;
+
+  Map<String, dynamic> toJson() => {
+    'type': type,
+    'name': name,
+    if (responsiblePersonName != null)
+      'responsible_person_name': responsiblePersonName,
+    if (commercialRegistration != null)
+      'commercial_registration': commercialRegistration,
+    if (cityId != null) 'city_id': cityId,
+    if (about != null) 'about': about,
+  };
+}
+
 class SaveCandidateProfileParam {
   const SaveCandidateProfileParam({
     required this.fullName,

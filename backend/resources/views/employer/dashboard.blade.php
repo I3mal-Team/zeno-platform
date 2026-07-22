@@ -1,4 +1,4 @@
-@extends('employer.layouts.app', ['active' => 'overview', 'pageTitle' => 'نظرة عامة', 'pageSubtitle' => 'مرحبًا بعودتك، إليك ملخّص نشاطك'])
+@extends('employer.layouts.app', ['active' => 'overview', 'pageTitle' => $organization->name, 'pageSubtitle' => 'مرحبًا بعودتك، إليك ملخّص نشاطك'])
 
 @section('title', 'نظرة عامة')
 

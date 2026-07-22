@@ -31,13 +31,17 @@ final class AuthService
     }
 
     /**
-     * @return array{user: User, token: string, isNewUser: bool}
+     * Verifies the code and resolves the user, creating one on first sign-in.
+     * The token vs. session decision belongs to the surface, so this returns
+     * neither — the API layers a Sanctum token on top, the web a session.
+     *
+     * @return array{user: User, isNewUser: bool}
      */
-    public function verifyOtp(VerifyOtpData $data, string $deviceName): array
+    public function authenticate(VerifyOtpData $data): array
     {
         $this->otp->verify($data->phoneE164, $data->code, $data->purpose);
 
-        return DB::transaction(function () use ($data, $deviceName) {
+        return DB::transaction(function () use ($data) {
             $user = $this->users->findByPhone($data->phoneE164);
             $isNewUser = $user === null;
 
@@ -50,12 +54,22 @@ final class AuthService
             $this->users->markPhoneVerified($user);
             $this->users->touchLastActive($user);
 
-            return [
-                'user' => $user,
-                'token' => $user->createToken($deviceName)->plainTextToken,
-                'isNewUser' => $isNewUser,
-            ];
+            return ['user' => $user, 'isNewUser' => $isNewUser];
         });
+    }
+
+    /**
+     * @return array{user: User, token: string, isNewUser: bool}
+     */
+    public function verifyOtp(VerifyOtpData $data, string $deviceName): array
+    {
+        ['user' => $user, 'isNewUser' => $isNewUser] = $this->authenticate($data);
+
+        return [
+            'user' => $user,
+            'token' => $user->createToken($deviceName)->plainTextToken,
+            'isNewUser' => $isNewUser,
+        ];
     }
 
     public function logout(User $user, int $tokenId): void

@@ -11,8 +11,18 @@
     </nav>
 
     <div style="display:flex;align-items:center;gap:11px">
-      <a href="{{ route('employer.dashboard') }}" class="lnk hide-sm" style="font-size:14.5px;font-weight:800;color:#2B2724;display:flex;align-items:center;gap:6px"><i class="iconsax" style="font-size:18px" icon-name="task-list"></i>لوحة التحكم</a>
-      <a href="{{ route('site.home') }}#download" class="btn" style="background:#2B2724;color:#fff;font-size:14.5px;font-weight:800;padding:11px 20px;border-radius:13px;box-shadow:0 12px 24px -14px rgba(40,35,25,.5)">حمّل التطبيق</a>
+      @auth
+        @if (auth()->user()->role === 'employer')
+          <a href="{{ route('employer.dashboard') }}" class="lnk hide-sm" style="font-size:14.5px;font-weight:800;color:#2B2724;display:flex;align-items:center;gap:6px"><i class="iconsax" style="font-size:18px" icon-name="task-list"></i>لوحة التحكم</a>
+        @endif
+        <form method="POST" action="{{ route('logout') }}" style="display:inline">
+          @csrf
+          <button type="submit" class="lnk" style="background:none;border:none;font-family:inherit;font-size:14.5px;font-weight:800;color:#8A857A;cursor:pointer">تسجيل الخروج</button>
+        </form>
+      @else
+        <a href="{{ route('login') }}" class="lnk hide-sm" style="font-size:14.5px;font-weight:800;color:#2B2724">تسجيل الدخول</a>
+        <a href="{{ route('site.home') }}#download" class="btn" style="background:#2B2724;color:#fff;font-size:14.5px;font-weight:800;padding:11px 20px;border-radius:13px;box-shadow:0 12px 24px -14px rgba(40,35,25,.5)">حمّل التطبيق</a>
+      @endauth
     </div>
   </div>
 </header>

@@ -22,6 +22,15 @@ class User extends Authenticatable implements FilamentUser
 
     protected $hidden = ['remember_token'];
 
+    /**
+     * Phone-OTP accounts have no password and no remember-me column, so the
+     * "remember me" cookie machinery is disabled by giving it no column.
+     */
+    public function getRememberTokenName(): string
+    {
+        return '';
+    }
+
     /** Mirrors the column defaults so a freshly created model is complete. */
     protected $attributes = [
         'status' => 'active',

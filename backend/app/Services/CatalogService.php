@@ -6,9 +6,11 @@ namespace App\Services;
 
 use App\Models\Category;
 use App\Models\City;
+use App\Models\Country;
 use App\Models\District;
 use App\Repositories\CategoryRepository;
 use App\Repositories\CityRepository;
+use App\Repositories\CountryRepository;
 use App\Repositories\JobReferenceRepository;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -17,8 +19,15 @@ final class CatalogService
     public function __construct(
         private readonly CategoryRepository $categories,
         private readonly CityRepository $cities,
+        private readonly CountryRepository $countries,
         private readonly JobReferenceRepository $jobReferences,
     ) {}
+
+    /** @return Collection<int, Country> */
+    public function activeCountries(): Collection
+    {
+        return $this->countries->allActive();
+    }
 
     /** @return Collection<int, Category> */
     public function activeCategories(): Collection

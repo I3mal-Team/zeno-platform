@@ -6,7 +6,6 @@ namespace App\Http\Controllers\Api\V1\Catalog;
 
 use App\Http\Controllers\Api\V1\ApiController;
 use App\Http\Resources\V1\Catalog\ReferenceOptionResource;
-use App\Http\Resources\V1\CategoryResource;
 use App\Services\CatalogService;
 use Illuminate\Http\JsonResponse;
 
@@ -18,8 +17,10 @@ final class JobFormController extends ApiController
     {
         $options = $this->catalog->jobFormOptions();
 
+        // Categories carry their id here (unlike the public catalog, which is
+        // code-keyed) because the publish form submits foreign keys.
         return $this->successResponse([
-            'categories' => CategoryResource::collection($options->categories)->resolve(),
+            'categories' => ReferenceOptionResource::collection($options->categories)->resolve(),
             'work_types' => ReferenceOptionResource::collection($options->workTypes)->resolve(),
             'salary_units' => ReferenceOptionResource::collection($options->salaryUnits)->resolve(),
             'gender_requirements' => ReferenceOptionResource::collection($options->genderRequirements)->resolve(),

@@ -56,9 +56,26 @@
     </div>
   </div>
 
-  <a href="{{ route('site.home') }}#download" class="btn" style="display:flex;align-items:center;justify-content:center;gap:9px;background:#F7BE17;color:#2B2724;font-size:16px;font-weight:800;padding:16px;border-radius:16px;margin-top:20px;box-shadow:0 16px 30px -14px rgba(247,190,23,.5)">
-    <i class="iconsax" style="font-size:22px" icon-name="mobile"></i>قدّم عبر التطبيق
-  </a>
+  @if (session('status'))
+    <div style="margin-top:20px;background:#E7F4EC;color:#1F8A4D;border-radius:14px;padding:13px 16px;font-size:14px;font-weight:700">{{ session('status') }}</div>
+  @endif
+
+  @auth
+    @if (auth()->user()->role === 'candidate')
+      <form method="POST" action="{{ route('site.jobs.apply', $job->slug) }}" style="margin-top:20px">
+        @csrf
+        <button type="submit" class="btn" style="width:100%;display:flex;align-items:center;justify-content:center;gap:9px;background:#F7BE17;color:#2B2724;border:none;font-family:inherit;font-size:16px;font-weight:800;padding:16px;border-radius:16px;cursor:pointer;box-shadow:0 16px 30px -14px rgba(247,190,23,.5)">
+          <i class="iconsax" style="font-size:22px" icon-name="send-2"></i>قدّم على الوظيفة
+        </button>
+      </form>
+    @else
+      <div style="margin-top:20px;background:#FDF3D6;color:#8A6D12;border-radius:14px;padding:13px 16px;font-size:14px;font-weight:700;text-align:center">سجّل الدخول بحساب باحث عن عمل للتقديم على الوظائف.</div>
+    @endif
+  @else
+    <a href="{{ route('login', ['role' => 'candidate']) }}" class="btn" style="display:flex;align-items:center;justify-content:center;gap:9px;background:#F7BE17;color:#2B2724;font-size:16px;font-weight:800;padding:16px;border-radius:16px;margin-top:20px;box-shadow:0 16px 30px -14px rgba(247,190,23,.5)">
+      <i class="iconsax" style="font-size:22px" icon-name="login"></i>سجّل الدخول للتقديم
+    </a>
+  @endauth
 </div>
 
 <x-site.footer/>

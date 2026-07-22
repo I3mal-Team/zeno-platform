@@ -44,8 +44,10 @@ it('returns not found for an unknown job', function () {
     test()->get('/jobs/nope')->assertNotFound();
 });
 
-it('renders the employer dashboard shell', function () {
-    test()->get('/employer')
+it('renders the employer dashboard shell for a signed-in employer', function () {
+    [$user] = makeEmployerWithOrg(verified: true);
+
+    test()->actingAs($user)->get('/employer')
         ->assertOk()
         ->assertSee('نظرة عامة', false)
         ->assertSee('وظائفي', false)

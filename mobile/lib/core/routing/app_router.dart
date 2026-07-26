@@ -18,6 +18,7 @@ import '../../features/employer/presentation/manager/employer_profile_cubit/empl
 import '../../features/employer/presentation/manager/publish_job_cubit/publish_job_cubit.dart';
 import '../../features/employer/presentation/views/applicant_profile_view.dart';
 import '../../features/employer/presentation/views/applicants_view.dart';
+import '../../features/employer/presentation/views/employer_account_view.dart';
 import '../../features/employer/presentation/views/employer_jobs_view.dart';
 import '../../features/employer/presentation/views/post_job_view.dart';
 import '../../features/employer/presentation/views/register_employer_view.dart';
@@ -34,6 +35,7 @@ import '../../features/onboarding/presentation/views/onboarding_view.dart';
 import '../../features/onboarding/presentation/views/role_picker_view.dart';
 import '../../features/onboarding/presentation/views/splash_view.dart';
 import '../navigation_bar/candidate_shell.dart';
+import '../navigation_bar/employer_shell.dart';
 import '../services/service_locator.dart';
 import '../views/placeholder_view.dart';
 import 'routes_keys.dart';
@@ -94,13 +96,46 @@ abstract final class AppRouter {
           child: const RegisterEmployerView(),
         ),
       ),
-      GoRoute(
-        path: RoutesKeys.employerJobs,
-        builder: (_, _) => BlocProvider(
-          create: (_) => EmployerJobsCubit(getIt())..load(),
-          child: const EmployerJobsView(),
-        ),
+      StatefulShellRoute.indexedStack(
+        builder: (_, _, shell) => EmployerShell(shell: shell),
+        branches: [
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: RoutesKeys.employerJobs,
+                builder: (_, _) => BlocProvider(
+                  create: (_) => EmployerJobsCubit(getIt())..load(),
+                  child: const EmployerJobsView(),
+                ),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: RoutesKeys.employerApplicants,
+                builder: (_, _) => BlocProvider(
+                  create: (_) => ApplicantsCubit(getIt())..load(),
+                  child: const ApplicantsView(),
+                ),
+              ),
+            ],
+          ),
+          _branch(RoutesKeys.employerMessages, 'الرسائل'),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: RoutesKeys.employerAccount,
+                builder: (_, _) => BlocProvider(
+                  create: (_) => EmployerProfileCubit(getIt())..load(),
+                  child: const EmployerAccountView(),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
+
       GoRoute(
         path: RoutesKeys.employerPostJob,
         builder: (_, _) => BlocProvider(

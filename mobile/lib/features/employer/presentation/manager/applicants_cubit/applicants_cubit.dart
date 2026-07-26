@@ -9,15 +9,18 @@ import '../../../data/repos/employer_repo.dart';
 part 'applicants_state.dart';
 
 class ApplicantsCubit extends Cubit<ApplicantsState> {
-  ApplicantsCubit(this._repo, this.jobUuid) : super(const ApplicantsLoading());
+  /// A null [jobUuid] lists every applicant across the employer's listings.
+  ApplicantsCubit(this._repo, [this.jobUuid]) : super(const ApplicantsLoading());
 
   final EmployerRepo _repo;
-  final String jobUuid;
+  final String? jobUuid;
 
   Future<void> load() async {
     safeEmit(const ApplicantsLoading());
 
-    final result = await _repo.listApplicants(jobUuid);
+    final result = jobUuid == null
+        ? await _repo.listOrganizationApplicants()
+        : await _repo.listApplicants(jobUuid!);
 
     safeEmit(
       result.fold(ApplicantsFailed.new, (list) {

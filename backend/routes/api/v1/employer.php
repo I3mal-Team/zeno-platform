@@ -18,6 +18,7 @@ Route::middleware('auth:sanctum')->prefix('employer')->name('employer.')->group(
     Route::post('jobs/{uuid}/fill', [JobStatusController::class, 'fill'])->name('jobs.fill');
     Route::post('jobs/{uuid}/close', [JobStatusController::class, 'close'])->name('jobs.close');
 
+    Route::get('applications', [ApplicantController::class, 'organizationIndex'])->name('applicants.organization');
     Route::get('jobs/{uuid}/applications', [ApplicantController::class, 'index'])->name('applicants.index');
     Route::get('applications/{id}', [ApplicantController::class, 'show'])->name('applicants.show');
     Route::post('applications/{id}/accept', [ApplicantController::class, 'accept'])->name('applicants.accept');

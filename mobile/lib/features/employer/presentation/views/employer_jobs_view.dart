@@ -54,7 +54,7 @@ class EmployerJobsView extends StatelessWidget {
                     color: AppColors.amber,
                     onRefresh: () => context.read<EmployerJobsCubit>().load(),
                     child: ListView(
-                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 104),
                       children: [
                         _SectionRow(onPost: () => _post(context)),
                         for (final (index, job) in jobs.indexed)

@@ -33,6 +33,7 @@ abstract final class EndPoints {
   static String employerJobPause(String uuid) => '/employer/jobs/$uuid/pause';
   static String employerJobResume(String uuid) => '/employer/jobs/$uuid/resume';
   static String employerJobClose(String uuid) => '/employer/jobs/$uuid/close';
+  static const employerApplications = '/employer/applications';
   static String employerJobApplicants(String uuid) =>
       '/employer/jobs/$uuid/applications';
   static String employerApplicant(int id) => '/employer/applications/$id';

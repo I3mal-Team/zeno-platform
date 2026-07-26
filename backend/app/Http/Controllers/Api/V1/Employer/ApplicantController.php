@@ -25,6 +25,17 @@ final class ApplicantController extends ApiController
         return $this->successResponse(ApplicantResource::collection($applicants));
     }
 
+    /** Every applicant across the employer's listings — the "المتقدمون" tab. */
+    public function organizationIndex(Request $request): JsonResponse
+    {
+        $status = $request->string('status')->toString();
+        $statuses = $status !== '' ? [$status] : [];
+
+        $applicants = $this->review->listForOrganization($request->user(), $statuses, 15);
+
+        return $this->successResponse(ApplicantResource::collection($applicants));
+    }
+
     public function show(Request $request, int $id): JsonResponse
     {
         $application = $this->review->view($request->user(), $id);

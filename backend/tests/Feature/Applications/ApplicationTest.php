@@ -89,6 +89,19 @@ it('lists the candidate own applications and allows withdrawal', function () {
     expect(DB::table('applications')->where('reference_number', $ref)->value('status'))->toBe('withdrawn');
 });
 
+it('lists every applicant across the employer listings', function () {
+    [$employer, $org] = makeEmployerWithOrg(verified: true);
+    $jobA = activeJobFor($org, $employer);
+    $jobB = activeJobFor($org, $employer);
+    test()->actingAs(makeUser('candidate'), 'sanctum')->postJson("/api/v1/jobs/{$jobA->slug}/apply");
+    test()->actingAs(makeUser('candidate'), 'sanctum')->postJson("/api/v1/jobs/{$jobB->slug}/apply");
+
+    test()->actingAs($employer, 'sanctum')
+        ->getJson('/api/v1/employer/applications')
+        ->assertOk()
+        ->assertJsonCount(2, 'data');
+});
+
 it('moves an application to review when the employer opens it', function () {
     [$employer, $org] = makeEmployerWithOrg(verified: true);
     $job = activeJobFor($org, $employer);

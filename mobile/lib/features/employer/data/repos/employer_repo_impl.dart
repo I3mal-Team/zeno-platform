@@ -86,6 +86,16 @@ class EmployerRepoImpl implements EmployerRepo {
   }
 
   @override
+  Future<Either<Failure, List<ApplicantModel>>> listOrganizationApplicants() {
+    return _handle(
+      () => _api.get(EndPoints.employerApplications),
+      (data) => (data as List<dynamic>)
+          .map((e) => ApplicantModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+  }
+
+  @override
   Future<Either<Failure, ApplicantProfileModel>> viewApplicant(int id) {
     return _handle(
       () => _api.get(EndPoints.employerApplicant(id)),

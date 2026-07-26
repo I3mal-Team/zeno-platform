@@ -42,7 +42,7 @@ class ApplicantsView extends StatelessWidget {
                     color: AppColors.amber,
                     onRefresh: () => context.read<ApplicantsCubit>().load(),
                     child: ListView.separated(
-                      padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
+                      padding: const EdgeInsets.fromLTRB(20, 18, 20, 104),
                       itemCount: applicants.length,
                       separatorBuilder: (_, _) => const SizedBox(height: 13),
                       itemBuilder: (_, index) => Entrance(
@@ -98,8 +98,10 @@ class _Header extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const _DarkBackBox(),
-          const SizedBox(width: 13),
+          if (Navigator.of(context).canPop()) ...[
+            const _DarkBackBox(),
+            const SizedBox(width: 13),
+          ],
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

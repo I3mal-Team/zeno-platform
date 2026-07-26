@@ -28,6 +28,9 @@ abstract interface class EmployerRepo {
 
   Future<Either<Failure, List<ApplicantModel>>> listApplicants(String jobUuid);
 
+  /// Every applicant across the employer's listings (the "المتقدمون" tab).
+  Future<Either<Failure, List<ApplicantModel>>> listOrganizationApplicants();
+
   Future<Either<Failure, ApplicantProfileModel>> viewApplicant(int id);
 
   Future<Either<Failure, Unit>> acceptApplicant(int id);

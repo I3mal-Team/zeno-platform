@@ -16,5 +16,23 @@ abstract final class CategoryVisuals {
     'other': Icons.more_horiz_rounded,
   };
 
+  static const _labels = <String, String>{
+    'restaurants': 'مطاعم',
+    'cleaning': 'نظافة',
+    'logistics': 'نقل',
+    'events': 'فعاليات',
+    'retail': 'مبيعات',
+    'security': 'أمن',
+    'operations': 'تشغيل',
+    'crafts': 'حِرف',
+    'seasonal_work': 'موسمي',
+    'other': 'أخرى',
+  };
+
   static IconData icon(String code) => _icons[code] ?? Icons.work_rounded;
+
+  static String label(String code) => _labels[code] ?? code;
+
+  /// The fixed taxonomy, in display order, for the browse filter chips.
+  static List<String> get codes => _labels.keys.toList();
 }

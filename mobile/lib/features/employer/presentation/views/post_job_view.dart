@@ -3,15 +3,17 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/components/app_button.dart';
-import '../../../../core/components/app_text_field.dart';
+import '../../../../core/components/app_field.dart';
+import '../../../../core/components/app_select_field.dart';
 import '../../../../core/components/app_toast.dart';
+import '../../../../core/motion/motion.dart';
 import '../../../../core/params/job_params.dart';
 import '../../../../core/styles/app_colors.dart';
-import '../../../../core/styles/app_dimensions.dart';
+import '../../../../core/styles/app_shadows.dart';
 import '../../../../core/styles/app_text_styles.dart';
-import '../../data/models/job_form_options.dart';
+import '../../../../core/styles/category_visuals.dart';
 import '../../../profile/data/models/city_model.dart';
+import '../../data/models/job_form_options.dart';
 import '../manager/publish_job_cubit/publish_job_cubit.dart';
 
 class PostJobView extends StatelessWidget {
@@ -21,10 +23,6 @@ class PostJobView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.paper,
-      appBar: AppBar(
-        backgroundColor: AppColors.paper,
-        title: Text('نشر وظيفة', style: AppTextStyles.titleLg),
-      ),
       body: BlocConsumer<PublishJobCubit, PublishJobState>(
         listener: (context, state) {
           if (state is PublishJobDone) {
@@ -35,19 +33,69 @@ class PostJobView extends StatelessWidget {
             AppToast.error(context, failure.message);
           }
         },
-        builder: (context, state) => switch (state) {
-          PublishJobLoading() => const Center(
-            child: CircularProgressIndicator(color: AppColors.amber),
+        builder: (context, state) => Column(
+          children: [
+            const _DarkHeader(),
+            Expanded(
+              child: switch (state) {
+                PublishJobLoading() => const Center(
+                  child: CircularProgressIndicator(color: AppColors.amber),
+                ),
+                PublishJobLoadFailed(:final failure) => Center(
+                  child: Text(failure.message, style: AppTextStyles.bodyMd),
+                ),
+                _ => _PostJobForm(
+                  options: context.read<PublishJobCubit>().options!,
+                  cities: context.read<PublishJobCubit>().cities,
+                  submitting: state is PublishJobSubmitting,
+                ),
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _DarkHeader extends StatelessWidget {
+  const _DarkHeader();
+
+  @override
+  Widget build(BuildContext context) {
+    final topInset = MediaQuery.paddingOf(context).top;
+
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.fromLTRB(18, topInset + 12, 18, 16),
+      decoration: const BoxDecoration(
+        color: AppColors.charcoalSoft,
+        borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
+      ),
+      child: Row(
+        children: [
+          Pressable(
+            onTap: () => context.pop(),
+            child: Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: .1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(
+                Icons.chevron_right_rounded,
+                size: 23,
+                color: Colors.white,
+              ),
+            ),
           ),
-          PublishJobLoadFailed(:final failure) => Center(
-            child: Text(failure.message, style: AppTextStyles.bodyMd),
+          const SizedBox(width: 12),
+          Text(
+            'نشر إعلان وظيفة',
+            style: AppTextStyles.titleMd.copyWith(color: Colors.white),
           ),
-          _ => _PostJobForm(
-            options: context.read<PublishJobCubit>().options!,
-            cities: context.read<PublishJobCubit>().cities,
-            submitting: state is PublishJobSubmitting,
-          ),
-        },
+        ],
       ),
     );
   }
@@ -91,7 +139,7 @@ class _PostJobFormState extends State<_PostJobForm> {
     super.dispose();
   }
 
-  bool get _dropdownsReady =>
+  bool get _selectorsReady =>
       _categoryId != null &&
       _workTypeId != null &&
       _salaryUnitId != null &&
@@ -100,7 +148,7 @@ class _PostJobFormState extends State<_PostJobForm> {
       _cityId != null;
 
   void _submit() {
-    if (!(_formKey.currentState?.validate() ?? false) || !_dropdownsReady) {
+    if (!(_formKey.currentState?.validate() ?? false) || !_selectorsReady) {
       AppToast.error(context, 'أكمل جميع الحقول المطلوبة.');
       return;
     }
@@ -128,181 +176,243 @@ class _PostJobFormState extends State<_PostJobForm> {
   Widget build(BuildContext context) {
     final o = widget.options;
 
-    return Form(
-      key: _formKey,
-      child: ListView(
-        padding: const EdgeInsets.all(AppDimensions.screenPadding),
-        children: [
-          AppTextField(
-            controller: _title,
-            label: 'المسمى الوظيفي',
-            validator: (v) =>
-                (v ?? '').trim().length < 3 ? 'أدخل المسمى الوظيفي' : null,
-          ),
-          const SizedBox(height: AppDimensions.space16),
-          _Dropdown(
-            label: 'التصنيف',
-            value: _categoryId,
-            options: o.categories,
-            onChanged: (v) => setState(() => _categoryId = v),
-          ),
-          const SizedBox(height: AppDimensions.space16),
-          _Dropdown(
-            label: 'نوع الدوام',
-            value: _workTypeId,
-            options: o.workTypes,
-            onChanged: (v) => setState(() => _workTypeId = v),
-          ),
-          const SizedBox(height: AppDimensions.space16),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: AppTextField(
+    return Column(
+      children: [
+        Expanded(
+          child: Form(
+            key: _formKey,
+            child: ListView(
+              padding: const EdgeInsets.fromLTRB(20, 18, 20, 20),
+              children: [
+                const _Label('التصنيف'),
+                _ChipSelect(
+                  options: o.categories,
+                  value: _categoryId,
+                  withIcons: true,
+                  onSelect: (id) => setState(() => _categoryId = id),
+                ),
+                const _Label('المسمى الوظيفي'),
+                AppField(
+                  controller: _title,
+                  hint: 'مثال: باريستا، عامل نظافة، سائق...',
+                  validator: (v) =>
+                      (v ?? '').trim().length < 3 ? 'أدخل المسمى الوظيفي' : null,
+                ),
+                const _Label('المدينة'),
+                AppSelectField<int>(
+                  hint: 'اختر المدينة',
+                  value: _cityId,
+                  options: [
+                    for (final c in widget.cities) (value: c.id, label: c.name),
+                  ],
+                  onChanged: (id) => setState(() => _cityId = id),
+                ),
+                const _Label('نوع العمل'),
+                _ChipSelect(
+                  options: o.workTypes,
+                  value: _workTypeId,
+                  onSelect: (id) => setState(() => _workTypeId = id),
+                ),
+                const _Label('الراتب / الأجر'),
+                AppField(
                   controller: _salary,
-                  label: 'الراتب / الأجر',
+                  hint: 'مثال: 4500',
                   keyboardType: TextInputType.number,
+                  textDirection: TextDirection.rtl,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   validator: (v) =>
                       (v ?? '').trim().isEmpty ? 'أدخل الراتب' : null,
                 ),
-              ),
-              const SizedBox(width: AppDimensions.space12),
-              Expanded(
-                child: _Dropdown(
-                  label: 'الوحدة',
-                  value: _salaryUnitId,
+                const SizedBox(height: 10),
+                _ChipSelect(
                   options: o.salaryUnits,
-                  onChanged: (v) => setState(() => _salaryUnitId = v),
+                  value: _salaryUnitId,
+                  onSelect: (id) => setState(() => _salaryUnitId = id),
                 ),
-              ),
-            ],
+                const _Label('الجنس المطلوب'),
+                _SegmentSelect(
+                  options: o.genderRequirements,
+                  value: _genderId,
+                  onSelect: (id) => setState(() => _genderId = id),
+                ),
+                const _Label('الجنسية المطلوبة'),
+                _SegmentSelect(
+                  options: o.nationalityRequirements,
+                  value: _nationalityId,
+                  onSelect: (id) => setState(() => _nationalityId = id),
+                ),
+                const _Label('العدد المطلوب'),
+                AppField(
+                  controller: _vacancies,
+                  hint: 'العدد المطلوب',
+                  keyboardType: TextInputType.number,
+                  textDirection: TextDirection.rtl,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  validator: (v) =>
+                      (int.tryParse(v ?? '') ?? 0) < 1 ? 'أدخل عدداً صحيحاً' : null,
+                ),
+                const _Label('وصف الوظيفة'),
+                AppField(
+                  controller: _description,
+                  hint: 'اكتب تفاصيل المهام والمتطلبات...',
+                  maxLines: 4,
+                ),
+                const _Label('طريقة التواصل'),
+                _ContactSelect(
+                  value: _contact,
+                  onSelect: (v) => setState(() => _contact = v),
+                ),
+              ],
+            ),
           ),
-          const SizedBox(height: AppDimensions.space16),
-          AppTextField(
-            controller: _vacancies,
-            label: 'عدد الشواغر',
-            keyboardType: TextInputType.number,
-            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-            validator: (v) =>
-                (int.tryParse(v ?? '') ?? 0) < 1 ? 'أدخل عدداً صحيحاً' : null,
-          ),
-          const SizedBox(height: AppDimensions.space16),
-          _Dropdown(
-            label: 'الجنس المطلوب',
-            value: _genderId,
-            options: o.genderRequirements,
-            onChanged: (v) => setState(() => _genderId = v),
-          ),
-          const SizedBox(height: AppDimensions.space16),
-          _Dropdown(
-            label: 'الجنسية',
-            value: _nationalityId,
-            options: o.nationalityRequirements,
-            onChanged: (v) => setState(() => _nationalityId = v),
-          ),
-          const SizedBox(height: AppDimensions.space16),
-          _CityDropdown(
-            cities: widget.cities,
-            value: _cityId,
-            onChanged: (v) => setState(() => _cityId = v),
-          ),
-          const SizedBox(height: AppDimensions.space16),
-          _ContactToggle(
-            value: _contact,
-            onChanged: (v) => setState(() => _contact = v),
-          ),
-          const SizedBox(height: AppDimensions.space16),
-          AppTextField(
-            controller: _description,
-            label: 'وصف الوظيفة',
-            maxLines: 5,
-          ),
-          const SizedBox(height: AppDimensions.space32),
-          AppButton(
-            label: 'نشر الإعلان',
-            isLoading: widget.submitting,
-            onPressed: _submit,
-          ),
-        ],
+        ),
+        _SubmitBar(submitting: widget.submitting, onSubmit: _submit),
+      ],
+    );
+  }
+}
+
+class _Label extends StatelessWidget {
+  const _Label(this.text);
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(0, 22, 0, 8),
+      child: Text(
+        text,
+        style: AppTextStyles.titleSm.copyWith(
+          fontSize: 13.5,
+          fontWeight: FontWeight.w800,
+        ),
       ),
     );
   }
 }
 
-class _Dropdown extends StatelessWidget {
-  const _Dropdown({
-    required this.label,
-    required this.value,
+/// A wrap of single-select chips, optionally with a category icon.
+class _ChipSelect extends StatelessWidget {
+  const _ChipSelect({
     required this.options,
-    required this.onChanged,
+    required this.value,
+    required this.onSelect,
+    this.withIcons = false,
+  });
+
+  final List<RefOption> options;
+  final int? value;
+  final ValueChanged<int> onSelect;
+  final bool withIcons;
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: [
+        for (final option in options)
+          _Chip(
+            label: option.name,
+            icon: withIcons ? CategoryVisuals.icon(option.code) : null,
+            active: value == option.id,
+            onTap: () => onSelect(option.id),
+          ),
+      ],
+    );
+  }
+}
+
+class _Chip extends StatelessWidget {
+  const _Chip({
+    required this.label,
+    required this.active,
+    required this.onTap,
+    this.icon,
   });
 
   final String label;
-  final int? value;
-  final List<RefOption> options;
-  final ValueChanged<int?> onChanged;
+  final bool active;
+  final VoidCallback onTap;
+  final IconData? icon;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: AppTextStyles.titleSm),
-        const SizedBox(height: AppDimensions.space8),
-        DropdownButtonFormField<int>(
-          value: value,
-          isExpanded: true,
-          items: [
-            for (final option in options)
-              DropdownMenuItem(value: option.id, child: Text(option.name)),
-          ],
-          onChanged: onChanged,
-          decoration: const InputDecoration(border: OutlineInputBorder()),
+    return Pressable(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: AppMotion.press,
+        padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 9),
+        decoration: BoxDecoration(
+          color: active ? AppColors.warningBg : AppColors.surface,
+          border: Border.all(
+            color: active ? AppColors.amber : const Color(0xFFECEAE3),
+            width: 1.5,
+          ),
+          borderRadius: BorderRadius.circular(12),
         ),
-      ],
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (icon != null) ...[
+              Icon(
+                icon,
+                size: 17,
+                color: active ? AppColors.warningFg : AppColors.textBody,
+              ),
+              const SizedBox(width: 6),
+            ],
+            Text(
+              label,
+              style: AppTextStyles.bodySm.copyWith(
+                fontWeight: FontWeight.w700,
+                color: active ? AppColors.warningFg : AppColors.textBody,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
 
-class _CityDropdown extends StatelessWidget {
-  const _CityDropdown({
-    required this.cities,
+/// A row of equal-width segments (gender, nationality).
+class _SegmentSelect extends StatelessWidget {
+  const _SegmentSelect({
+    required this.options,
     required this.value,
-    required this.onChanged,
+    required this.onSelect,
   });
 
-  final List<CityModel> cities;
+  final List<RefOption> options;
   final int? value;
-  final ValueChanged<int?> onChanged;
+  final ValueChanged<int> onSelect;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Row(
       children: [
-        Text('المدينة', style: AppTextStyles.titleSm),
-        const SizedBox(height: AppDimensions.space8),
-        DropdownButtonFormField<int>(
-          value: value,
-          isExpanded: true,
-          items: [
-            for (final city in cities)
-              DropdownMenuItem(value: city.id, child: Text(city.name)),
-          ],
-          onChanged: onChanged,
-          decoration: const InputDecoration(border: OutlineInputBorder()),
-        ),
+        for (final (index, option) in options.indexed) ...[
+          if (index > 0) const SizedBox(width: 8),
+          Expanded(
+            child: _Segment(
+              label: option.name,
+              active: value == option.id,
+              onTap: () => onSelect(option.id),
+            ),
+          ),
+        ],
       ],
     );
   }
 }
 
-class _ContactToggle extends StatelessWidget {
-  const _ContactToggle({required this.value, required this.onChanged});
+class _ContactSelect extends StatelessWidget {
+  const _ContactSelect({required this.value, required this.onSelect});
 
   final String value;
-  final ValueChanged<String> onChanged;
+  final ValueChanged<String> onSelect;
 
   static const _options = [
     ('app', 'داخل التطبيق'),
@@ -312,54 +422,114 @@ class _ContactToggle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Row(
       children: [
-        Text('طريقة التواصل', style: AppTextStyles.titleSm),
-        const SizedBox(height: AppDimensions.space8),
-        Row(
-          children: [
-            for (final (index, (code, label)) in _options.indexed) ...[
-              if (index > 0) const SizedBox(width: AppDimensions.space8),
-              Expanded(
-                child: InkWell(
-                  onTap: () => onChanged(code),
-                  borderRadius: BorderRadius.circular(
-                    AppDimensions.radiusControl,
-                  ),
-                  child: Container(
-                    height: 46,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: value == code
-                          ? AppColors.warningBg
-                          : AppColors.surface,
-                      border: Border.all(
-                        color: value == code
-                            ? AppColors.amber
-                            : AppColors.borderStrong,
-                        width: value == code ? 1.5 : 1,
-                      ),
-                      borderRadius: BorderRadius.circular(
-                        AppDimensions.radiusControl,
-                      ),
-                    ),
-                    child: Text(
-                      label,
-                      style: AppTextStyles.caption.copyWith(
-                        fontWeight: FontWeight.w800,
-                        color: value == code
-                            ? AppColors.warningFg
-                            : AppColors.textBody,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ],
-        ),
+        for (final (index, (code, label)) in _options.indexed) ...[
+          if (index > 0) const SizedBox(width: 8),
+          Expanded(
+            child: _Segment(
+              label: label,
+              active: value == code,
+              onTap: () => onSelect(code),
+            ),
+          ),
+        ],
       ],
+    );
+  }
+}
+
+class _Segment extends StatelessWidget {
+  const _Segment({
+    required this.label,
+    required this.active,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool active;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Pressable(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: AppMotion.press,
+        height: 46,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: active ? AppColors.warningBg : AppColors.surface,
+          border: Border.all(
+            color: active ? AppColors.amber : const Color(0xFFECEAE3),
+            width: 1.5,
+          ),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Text(
+          label,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: AppTextStyles.bodySm.copyWith(
+            fontWeight: FontWeight.w700,
+            color: active ? AppColors.warningFg : AppColors.textBody,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SubmitBar extends StatelessWidget {
+  const _SubmitBar({required this.submitting, required this.onSubmit});
+
+  final bool submitting;
+  final VoidCallback onSubmit;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
+      decoration: const BoxDecoration(
+        color: AppColors.surface,
+        border: Border(top: BorderSide(color: Color(0xFFEFEDE6))),
+      ),
+      child: SafeArea(
+        top: false,
+        child: Pressable(
+          onTap: submitting ? null : onSubmit,
+          child: Container(
+            height: 50,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: AppColors.amber,
+              borderRadius: BorderRadius.circular(17),
+              boxShadow: AppShadows.amberGlow,
+            ),
+            child: submitting
+                ? const SizedBox(
+                    width: 22,
+                    height: 22,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.4,
+                      color: AppColors.textStrong,
+                    ),
+                  )
+                : Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text('نشر الإعلان', style: AppTextStyles.button),
+                      const SizedBox(width: 8),
+                      const Icon(
+                        Icons.send_rounded,
+                        size: 20,
+                        color: AppColors.textStrong,
+                      ),
+                    ],
+                  ),
+          ),
+        ),
+      ),
     );
   }
 }

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/components/app_toast.dart';
+import '../../../../core/motion/motion.dart';
+import '../../../../core/routing/routes_keys.dart';
 import '../../../../core/styles/app_colors.dart';
 import '../../../../core/styles/app_text_styles.dart';
 import '../../../../core/styles/category_visuals.dart';
@@ -97,7 +100,7 @@ class _DetailHeader extends StatelessWidget {
             Align(
               alignment: AlignmentDirectional.centerStart,
               child: _RoundIconButton(
-                icon: Icons.arrow_forward_rounded,
+                icon: Icons.chevron_right_rounded,
                 onTap: () => Navigator.of(context).maybePop(),
               ),
             ),
@@ -259,8 +262,11 @@ class _InfoGrid extends StatelessWidget {
         mainAxisSpacing: 11,
         childAspectRatio: 2.4,
         children: [
-          for (final (icon, label, value) in tiles)
-            _InfoTile(icon: icon, label: label, value: value),
+          for (final (index, (icon, label, value)) in tiles.indexed)
+            Entrance(
+              index: index,
+              child: _InfoTile(icon: icon, label: label, value: value),
+            ),
         ],
       ),
     );
@@ -433,9 +439,8 @@ class _ApplyBar extends StatelessWidget {
                 child: BlocConsumer<ApplyCubit, ApplyState>(
                   listener: (context, state) {
                     if (state case ApplyDone(:final application)) {
-                      AppToast.success(
-                        context,
-                        'تم إرسال طلبك — رقم الطلب ${application.reference}',
+                      context.push(
+                        '${RoutesKeys.applicationSubmitted}?ref=${application.reference}',
                       );
                     }
                     if (state case ApplyFailed(:final failure)) {
@@ -472,9 +477,18 @@ class _ApplyBar extends StatelessWidget {
                                 color: AppColors.charcoalSoft,
                               ),
                             )
-                          : Text(
-                              _label(job.isOpenForApplications, applied),
-                              style: AppTextStyles.button,
+                          : Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  _label(job.isOpenForApplications, applied),
+                                  style: AppTextStyles.button,
+                                ),
+                                if (canApply) ...[
+                                  const SizedBox(width: 8),
+                                  const Icon(Icons.send_rounded, size: 20),
+                                ],
+                              ],
                             ),
                     );
                   },
@@ -502,9 +516,8 @@ class _RoundIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
+    return Pressable(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(13),
       child: Container(
         width: 42,
         height: 42,
@@ -535,7 +548,7 @@ class _DetailError extends StatelessWidget {
               padding: const EdgeInsets.all(12),
               child: IconButton(
                 onPressed: () => Navigator.of(context).maybePop(),
-                icon: const Icon(Icons.arrow_forward_rounded),
+                icon: const Icon(Icons.chevron_right_rounded),
               ),
             ),
           ),

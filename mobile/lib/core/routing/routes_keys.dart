@@ -12,6 +12,7 @@ abstract final class RoutesKeys {
   static const search = '/search';
   static const nearby = '/nearby';
   static const applications = '/applications';
+  static const applicationSubmitted = '/applications/submitted';
   static const messages = '/messages';
   static const profile = '/profile';
   static const notifications = '/notifications';

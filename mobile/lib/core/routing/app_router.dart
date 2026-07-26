@@ -10,6 +10,7 @@ import '../../features/auth/presentation/views/phone_view.dart';
 import '../../features/applications/presentation/manager/apply_cubit/apply_cubit.dart';
 import '../../features/applications/presentation/manager/applications_cubit/applications_cubit.dart';
 import '../../features/applications/presentation/views/my_applications_view.dart';
+import '../../features/applications/presentation/views/submitted_view.dart';
 import '../../features/employer/presentation/manager/applicant_profile_cubit/applicant_profile_cubit.dart';
 import '../../features/employer/presentation/manager/applicants_cubit/applicants_cubit.dart';
 import '../../features/employer/presentation/manager/employer_jobs_cubit/employer_jobs_cubit.dart';
@@ -124,6 +125,14 @@ abstract final class AppRouter {
             int.parse(state.pathParameters['id'] ?? '0'),
           )..load(),
           child: const ApplicantProfileView(),
+        ),
+      ),
+
+      GoRoute(
+        path: RoutesKeys.applicationSubmitted,
+        parentNavigatorKey: parentKey,
+        builder: (_, state) => SubmittedView(
+          reference: state.uri.queryParameters['ref'] ?? '',
         ),
       ),
 

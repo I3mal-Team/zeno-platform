@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../core/motion/motion.dart';
 import '../../../../../core/styles/app_colors.dart';
+import '../../../../../core/styles/app_shadows.dart';
 import '../../../../../core/styles/app_text_styles.dart';
 import '../../../../../core/styles/category_visuals.dart';
 import '../../../data/models/job_model.dart';
@@ -19,25 +21,15 @@ class JobCard extends StatelessWidget {
       job.city,
     ].where((e) => e != null && e.isNotEmpty).join(' · ');
 
-    return Material(
-      color: AppColors.surface,
-      borderRadius: BorderRadius.circular(22),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(22),
-        child: Container(
-          padding: const EdgeInsets.all(15),
+    return Pressable(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(15),
           decoration: BoxDecoration(
+            color: AppColors.surface,
             border: Border.all(color: const Color(0xFFF0EDE6)),
             borderRadius: BorderRadius.circular(22),
-            boxShadow: [
-              BoxShadow(
-                color: const Color(0xFF282319).withValues(alpha: .12),
-                blurRadius: 26,
-                offset: const Offset(0, 10),
-                spreadRadius: -20,
-              ),
-            ],
+            boxShadow: AppShadows.card,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -152,7 +144,6 @@ class JobCard extends StatelessWidget {
             ],
           ),
         ),
-      ),
     );
   }
 }

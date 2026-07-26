@@ -4,13 +4,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/components/app_button.dart';
-import '../../../../core/components/app_text_field.dart';
+import '../../../../core/components/app_field.dart';
+import '../../../../core/components/app_select_field.dart';
 import '../../../../core/components/app_toast.dart';
+import '../../../../core/components/app_top_bar.dart';
+import '../../../../core/motion/motion.dart';
 import '../../../../core/params/profile_params.dart';
 import '../../../../core/routing/routes_keys.dart';
+import '../../../../core/styles/app_colors.dart';
 import '../../../../core/styles/app_dimensions.dart';
 import '../../../../core/styles/app_text_styles.dart';
-import '../../data/models/city_model.dart';
 import '../manager/profile_cubit/profile_cubit.dart';
 
 class RegisterCandidateView extends StatefulWidget {
@@ -66,117 +69,120 @@ class _RegisterCandidateViewState extends State<RegisterCandidateView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('أكمل بياناتك', style: AppTextStyles.titleMd)),
-      body: BlocConsumer<ProfileCubit, ProfileState>(
-        listener: (context, state) {
-          if (state is ProfileSaved) {
-            context.go(RoutesKeys.browse);
-          }
-
-          if (state case ProfileFailed(:final failure)) {
-            AppToast.error(context, failure.message);
-          }
-        },
-        builder: (context, state) {
-          final cubit = context.read<ProfileCubit>();
-
-          return Form(
-            key: _formKey,
-            child: ListView(
-              padding: const EdgeInsets.all(AppDimensions.screenPadding),
-              children: [
-                Text(
-                  'عرّفنا بنفسك ليصل ملفك لأصحاب العمل بسهولة.',
-                  style: AppTextStyles.bodyLg,
-                ),
-                const SizedBox(height: AppDimensions.space26),
-
-                AppTextField(
-                  controller: _fullName,
-                  label: 'الاسم الكامل',
-                  validator: (value) => (value ?? '').trim().length < 3
-                      ? 'أدخل الاسم الكامل'
-                      : null,
-                ),
-                const SizedBox(height: AppDimensions.space16),
-
-                _CityPicker(
-                  cities: cubit.cities,
-                  value: _cityId,
-                  onChanged: (id) => setState(() => _cityId = id),
-                ),
-                const SizedBox(height: AppDimensions.space16),
-
-                AppTextField(
-                  controller: _jobTitle,
-                  label: 'المهنة الحالية أو المستهدفة',
-                ),
-                const SizedBox(height: AppDimensions.space16),
-
-                AppTextField(
-                  controller: _years,
-                  label: 'سنوات الخبرة',
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                ),
-                const SizedBox(height: AppDimensions.space16),
-
-                AppTextField(
-                  controller: _skills,
-                  label: 'المهارات',
-                  hint: 'افصل بين المهارات بفاصلة،',
-                ),
-                const SizedBox(height: AppDimensions.space16),
-
-                AppTextField(
-                  controller: _bio,
-                  label: 'نبذة مختصرة عنك',
-                  maxLines: 4,
-                ),
-                const SizedBox(height: AppDimensions.space32),
-
-                AppButton(
-                  label: 'إنشاء الحساب',
-                  isLoading: state is ProfileSaving,
-                  onPressed: _submit,
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-    );
-  }
-}
-
-class _CityPicker extends StatelessWidget {
-  const _CityPicker({
-    required this.cities,
-    required this.value,
-    required this.onChanged,
-  });
-
-  final List<CityModel> cities;
-  final int? value;
-  final ValueChanged<int?> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text('المدينة', style: AppTextStyles.titleSm),
-        const SizedBox(height: AppDimensions.space8),
-        DropdownButtonFormField<int>(
-          value: value,
-          items: [
-            for (final city in cities)
-              DropdownMenuItem(value: city.id, child: Text(city.name)),
-          ],
-          onChanged: onChanged,
-          decoration: const InputDecoration(border: OutlineInputBorder()),
+      body: DecoratedBox(
+        decoration: const BoxDecoration(
+          gradient: RadialGradient(
+            center: Alignment(0, -1.1),
+            radius: 1.1,
+            colors: [Color(0xFFFFFFFF), Color(0xFFF4F2EC)],
+            stops: [0, .7],
+          ),
         ),
-      ],
+        child: SafeArea(
+          child: BlocConsumer<ProfileCubit, ProfileState>(
+            listener: (context, state) {
+              if (state is ProfileSaved) {
+                context.go(RoutesKeys.browse);
+              }
+              if (state case ProfileFailed(:final failure)) {
+                AppToast.error(context, failure.message);
+              }
+            },
+            builder: (context, state) {
+              final cubit = context.read<ProfileCubit>();
+
+              return Form(
+                key: _formKey,
+                child: ListView(
+                  padding: const EdgeInsets.fromLTRB(24, 12, 24, 34),
+                  children: [
+                    const AppTopBar(showLogo: true),
+                    const SizedBox(height: AppDimensions.space22),
+                    Text(
+                      'أكمل بياناتك',
+                      style: AppTextStyles.displayLg.copyWith(fontSize: 24),
+                    ),
+                    const SizedBox(height: AppDimensions.space6),
+                    Text(
+                      'عرّفنا بنفسك ليصل ملفك لأصحاب العمل بسهولة.',
+                      style: AppTextStyles.bodyLg.copyWith(
+                        color: AppColors.textMuted,
+                      ),
+                    ),
+                    const SizedBox(height: AppDimensions.space22),
+                    Entrance(
+                      index: 0,
+                      child: AppField(
+                        controller: _fullName,
+                        hint: 'الاسم الكامل',
+                        validator: (value) => (value ?? '').trim().length < 3
+                            ? 'أدخل الاسم الكامل'
+                            : null,
+                      ),
+                    ),
+                    const SizedBox(height: 13),
+                    Entrance(
+                      index: 1,
+                      child: AppSelectField<int>(
+                        hint: 'المدينة',
+                        value: _cityId,
+                        options: [
+                          for (final city in cubit.cities)
+                            (value: city.id, label: city.name),
+                        ],
+                        onChanged: (id) => setState(() => _cityId = id),
+                      ),
+                    ),
+                    const SizedBox(height: 13),
+                    Entrance(
+                      index: 2,
+                      child: AppField(
+                        controller: _jobTitle,
+                        hint: 'المهنة الحالية أو المستهدفة',
+                      ),
+                    ),
+                    const SizedBox(height: 13),
+                    Entrance(
+                      index: 3,
+                      child: AppField(
+                        controller: _years,
+                        hint: 'سنوات الخبرة',
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 13),
+                    Entrance(
+                      index: 4,
+                      child: AppField(
+                        controller: _skills,
+                        hint: 'المهارات (افصل بينها بفاصلة،)',
+                      ),
+                    ),
+                    const SizedBox(height: 13),
+                    Entrance(
+                      index: 5,
+                      child: AppField(
+                        controller: _bio,
+                        hint: 'نبذة مختصرة عنك (اختياري)',
+                        maxLines: 4,
+                      ),
+                    ),
+                    const SizedBox(height: AppDimensions.space22),
+                    AppButton(
+                      label: 'إنشاء الحساب',
+                      isLoading: state is ProfileSaving,
+                      onPressed: _submit,
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
+      ),
     );
   }
 }

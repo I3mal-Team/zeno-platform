@@ -71,6 +71,12 @@ class Organization extends Model implements HasMedia
             ->withPivot('role', 'joined_at');
     }
 
+    /** The single owning member (guaranteed unique by a partial index). */
+    public function owner(): ?User
+    {
+        return $this->members()->wherePivot('role', 'owner')->first();
+    }
+
     public function isVerified(): bool
     {
         return $this->verification_status === VerificationStatus::Verified;

@@ -26,6 +26,7 @@ final class ApplicationReviewService
         private readonly ApplicationRepository $applications,
         private readonly JobRepository $jobs,
         private readonly OrganizationRepository $organizations,
+        private readonly ConversationService $conversations,
     ) {}
 
     /**
@@ -87,6 +88,9 @@ final class ApplicationReviewService
             }
 
             $decided = $this->decide($application, ApplicationStatus::Accepted, $employer);
+
+            // Acceptance opens the conversation immediately (D-19).
+            $this->conversations->createForApplication($decided);
 
             return ['application' => $decided, 'jobFilled' => $accepted + 1 >= $job->vacancies_count];
         });

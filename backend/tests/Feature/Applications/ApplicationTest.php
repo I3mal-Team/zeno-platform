@@ -4,41 +4,14 @@ declare(strict_types=1);
 
 use App\Enums\JobStatus;
 use App\Models\Application;
-use App\Models\City;
-use App\Models\Job;
-use App\Models\Organization;
-use App\Models\User;
 use App\Notifications\ApplicationDecisionNotification;
 use App\Notifications\ApplicationSubmittedNotification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
-use Illuminate\Support\Str;
 
 uses(RefreshDatabase::class);
 
 beforeEach(fn () => $this->seed());
-
-function activeJobFor(Organization $org, User $creator, array $overrides = []): Job
-{
-    return Job::query()->create(array_merge([
-        'uuid' => (string) Str::uuid(),
-        'organization_id' => $org->id,
-        'created_by_user_id' => $creator->id,
-        'title' => 'باريستا',
-        'slug' => 'job-'.Str::lower(Str::random(8)),
-        'category_id' => DB::table('categories')->value('id'),
-        'work_type_id' => refId('work_types', 'full_time'),
-        'salary_unit_id' => refId('salary_units', 'monthly'),
-        'gender_requirement_id' => refId('gender_requirements', 'all'),
-        'nationality_requirement_id' => refId('nationality_requirements', 'all'),
-        'salary_amount' => 4500,
-        'vacancies_count' => 2,
-        'city_id' => City::query()->value('id'),
-        'contact_channel' => 'app',
-        'status' => JobStatus::Active->value,
-        'published_at' => now(),
-    ], $overrides));
-}
 
 it('lets a candidate apply and notifies the employer', function () {
     Notification::fake();

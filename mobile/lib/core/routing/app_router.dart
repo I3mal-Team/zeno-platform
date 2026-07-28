@@ -11,6 +11,10 @@ import '../../features/applications/presentation/manager/apply_cubit/apply_cubit
 import '../../features/applications/presentation/manager/applications_cubit/applications_cubit.dart';
 import '../../features/applications/presentation/views/my_applications_view.dart';
 import '../../features/applications/presentation/views/submitted_view.dart';
+import '../../features/chat/presentation/manager/chat_cubit/chat_cubit.dart';
+import '../../features/chat/presentation/manager/conversations_cubit/conversations_cubit.dart';
+import '../../features/chat/presentation/views/chat_view.dart';
+import '../../features/chat/presentation/views/conversations_view.dart';
 import '../../features/employer/presentation/manager/applicant_profile_cubit/applicant_profile_cubit.dart';
 import '../../features/employer/presentation/manager/applicants_cubit/applicants_cubit.dart';
 import '../../features/employer/presentation/manager/employer_jobs_cubit/employer_jobs_cubit.dart';
@@ -121,7 +125,17 @@ abstract final class AppRouter {
               ),
             ],
           ),
-          _branch(RoutesKeys.employerMessages, 'الرسائل'),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: RoutesKeys.employerMessages,
+                builder: (_, _) => BlocProvider(
+                  create: (_) => ConversationsCubit(getIt())..load(),
+                  child: const ConversationsView(),
+                ),
+              ),
+            ],
+          ),
           StatefulShellBranch(
             routes: [
               GoRoute(
@@ -170,6 +184,17 @@ abstract final class AppRouter {
           reference: state.uri.queryParameters['ref'] ?? '',
         ),
       ),
+      GoRoute(
+        path: RoutesKeys.chatPath,
+        parentNavigatorKey: parentKey,
+        builder: (_, state) => BlocProvider(
+          create: (_) =>
+              ChatCubit(getIt(), state.pathParameters['uuid'] ?? '')..load(),
+          child: ChatView(
+            title: state.uri.queryParameters['title'] ?? 'المحادثة',
+          ),
+        ),
+      ),
 
       StatefulShellRoute.indexedStack(
         builder: (_, _, shell) => CandidateShell(shell: shell),
@@ -197,7 +222,17 @@ abstract final class AppRouter {
               ),
             ],
           ),
-          _branch(RoutesKeys.messages, 'الرسائل'),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: RoutesKeys.messages,
+                builder: (_, _) => BlocProvider(
+                  create: (_) => ConversationsCubit(getIt())..load(),
+                  child: const ConversationsView(),
+                ),
+              ),
+            ],
+          ),
           StatefulShellBranch(
             routes: [
               GoRoute(

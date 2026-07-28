@@ -14,6 +14,7 @@ abstract final class RoutesKeys {
   static const applications = '/applications';
   static const applicationSubmitted = '/applications/submitted';
   static const messages = '/messages';
+  static const chatPath = '/chat/:uuid';
   static const profile = '/profile';
   static const notifications = '/notifications';
   static const jobDetail = '/jobs/:id';
@@ -27,6 +28,8 @@ abstract final class RoutesKeys {
   static const employerApplicantPath = '/employer/applicants/:id';
 
   static String job(String id) => '/jobs/$id';
+
+  static String chat(String uuid) => '/chat/$uuid';
 
   static String employerJobApplicants(String uuid) =>
       '/employer/jobs/$uuid/applicants';

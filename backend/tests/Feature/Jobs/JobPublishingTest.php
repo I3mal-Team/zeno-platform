@@ -34,6 +34,17 @@ it('sends an unverified organisation first listing to review', function () {
     expect(Job::query()->value('published_at'))->toBeNull();
 });
 
+it('publishes every listing live while the temporary override is on', function () {
+    config(['integrations.jobs.auto_publish_all' => true]);
+    [$user] = makeEmployerWithOrg(verified: false);
+
+    test()->actingAs($user, 'sanctum')
+        ->postJson('/api/v1/employer/jobs', jobPayload())
+        ->assertCreated()
+        ->assertJsonPath('data.status', 'active')
+        ->assertJsonPath('data.is_open_for_applications', true);
+});
+
 it('records the initial status in the job history', function () {
     [$user] = makeEmployerWithOrg(verified: true);
 

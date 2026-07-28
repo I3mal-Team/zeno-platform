@@ -73,7 +73,7 @@
     @endif
   @else
     <a href="{{ route('login', ['role' => 'candidate']) }}" class="btn" style="display:flex;align-items:center;justify-content:center;gap:9px;background:#F7BE17;color:#2B2724;font-size:16px;font-weight:800;padding:16px;border-radius:16px;margin-top:20px;box-shadow:0 16px 30px -14px rgba(247,190,23,.5)">
-      <i class="iconsax" style="font-size:22px" icon-name="login"></i>سجّل الدخول للتقديم
+      <i class="iconsax" style="font-size:22px" icon-name="user-1"></i>سجّل الدخول للتقديم
     </a>
   @endauth
 </div>

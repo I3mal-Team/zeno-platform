@@ -20,6 +20,13 @@ return [
     // paid candidate plan is introduced; SubscriptionService already gates on it.
     'candidate_subscription_required' => env('CANDIDATE_SUBSCRIPTION_REQUIRED', false),
 
+    'jobs' => [
+        // TEMPORARY: publish every new listing straight to active, skipping the
+        // first-listing moderation gate (D-15). Set JOBS_AUTO_PUBLISH_ALL=false
+        // (or remove this) to restore the review queue for unverified employers.
+        'auto_publish_all' => (bool) env('JOBS_AUTO_PUBLISH_ALL', true),
+    ],
+
     'otp' => [
         'generator' => env('OTP_GENERATOR', 'random'),
 

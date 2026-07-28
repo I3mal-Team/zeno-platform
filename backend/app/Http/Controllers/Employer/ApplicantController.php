@@ -18,10 +18,12 @@ final class ApplicantController extends Controller
     {
         $status = $request->string('status')->toString();
         $statuses = $status !== '' ? [$status] : [];
+        $search = $request->string('q')->trim()->toString();
 
         return view('employer.applicants.index', [
-            'applicants' => $this->review->listForOrganization($request->user(), $statuses, 15),
+            'applicants' => $this->review->listForOrganization($request->user(), $statuses, 15, $search),
             'status' => $status,
+            'search' => $search,
         ]);
     }
 

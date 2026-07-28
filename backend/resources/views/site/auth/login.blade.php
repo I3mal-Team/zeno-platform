@@ -46,7 +46,7 @@
       </div>
 
       <button type="submit" class="btn" style="display:flex;align-items:center;justify-content:center;gap:9px;background:#2B2724;color:#fff;border:none;font-family:inherit;font-size:15.5px;font-weight:800;padding:15px;border-radius:15px;cursor:pointer">
-        <i class="iconsax" style="font-size:20px;color:#F7BE17" icon-name="sms"></i>إرسال رمز التحقق
+        <i class="iconsax" style="font-size:20px;color:#F7BE17" icon-name="send-2"></i>إرسال رمز التحقق
       </button>
     </form>
   </div>

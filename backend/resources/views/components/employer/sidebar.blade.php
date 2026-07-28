@@ -23,11 +23,19 @@
 
   <div style="flex:1"></div>
 
-  <div style="padding:14px 18px;border-top:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:11px">
-    <div style="width:40px;height:40px;border-radius:12px;background:radial-gradient(circle at 30% 26%,#3A352F,#241F1C);border:1px solid rgba(247,190,23,.3);display:flex;align-items:center;justify-content:center;color:#F7BE17;font-size:16px;font-weight:900">{{ $initial }}</div>
-    <div style="flex:1;line-height:1.35">
-      <div style="font-size:14px;font-weight:800;color:#fff">{{ $organizationName }}</div>
+  <div style="margin:14px;padding:16px;border-radius:16px;background:rgba(247,190,23,.1);border:1px solid rgba(247,190,23,.2)">
+    <div style="font-size:14px;font-weight:800;color:#F7BE17">باقة الأعمال</div>
+    <div style="font-size:12.5px;color:#B7B1A6;font-weight:600;margin-top:5px;line-height:1.6">إعلانات غير محدودة وأولوية في الظهور.</div>
+    <a href="{{ route('site.pricing') }}" class="btn" style="display:block;text-align:center;width:100%;margin-top:12px;background:#F7BE17;color:#2B2724;border-radius:11px;padding:9px;font-size:13.5px;font-weight:800">ترقية الحساب</a>
+  </div>
+
+  <form method="POST" action="{{ route('logout') }}" style="padding:14px 18px;border-top:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:11px">
+    @csrf
+    <div style="width:40px;height:40px;border-radius:12px;background:radial-gradient(circle at 30% 26%,#3A352F,#241F1C);border:1px solid rgba(247,190,23,.3);display:flex;align-items:center;justify-content:center;color:#F7BE17;font-size:16px;font-weight:900;flex:0 0 auto">{{ $initial }}</div>
+    <div style="flex:1;min-width:0;line-height:1.35">
+      <div style="font-size:14px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ $organizationName }}</div>
       <div style="font-size:12px;color:#8A857A;font-weight:600">{{ $verificationLabel }}</div>
     </div>
-  </div>
+    <button type="submit" title="تسجيل الخروج" style="background:none;border:none;cursor:pointer;color:#8A857A;display:flex;align-items:center;padding:0;flex:0 0 auto"><i class="iconsax" style="font-size:18px" icon-name="logout-1"></i></button>
+  </form>
 </aside>

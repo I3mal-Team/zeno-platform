@@ -16,5 +16,5 @@ Route::get('terms', TermsController::class)->name('terms');
 
 Route::get('contact', [ContactController::class, 'show'])->name('contact');
 Route::post('contact', [ContactController::class, 'send'])
-    ->middleware('throttle:6,1')
+    ->middleware('throttle:contact')
     ->name('contact.send');

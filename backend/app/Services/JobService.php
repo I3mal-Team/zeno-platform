@@ -60,7 +60,9 @@ final class JobService
     {
         $organization = $this->organizationFor($user);
 
-        $status = $organization->mayPublishWithoutReview()
+        // TEMPORARY (integrations.jobs.auto_publish_all): force every listing
+        // live, bypassing the first-listing review gate (D-15).
+        $status = $organization->mayPublishWithoutReview() || config('integrations.jobs.auto_publish_all')
             ? JobStatus::Active
             : JobStatus::PendingReview;
 

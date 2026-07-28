@@ -6,6 +6,7 @@ use App\Http\Controllers\Employer\ApplicantController;
 use App\Http\Controllers\Employer\DashboardController;
 use App\Http\Controllers\Employer\JobController;
 use App\Http\Controllers\Employer\JobStatusController;
+use App\Http\Controllers\Employer\MessageController;
 use App\Http\Controllers\Employer\RegisterController;
 use Illuminate\Support\Facades\Route;
 
@@ -26,6 +27,10 @@ Route::prefix('employer')
         Route::post('jobs/{uuid}/pause', [JobStatusController::class, 'pause'])->name('jobs.pause');
         Route::post('jobs/{uuid}/resume', [JobStatusController::class, 'resume'])->name('jobs.resume');
         Route::post('jobs/{uuid}/close', [JobStatusController::class, 'close'])->name('jobs.close');
+
+        Route::get('messages', [MessageController::class, 'index'])->name('messages.index');
+        Route::get('messages/{uuid}', [MessageController::class, 'show'])->name('messages.show');
+        Route::post('messages/{uuid}', [MessageController::class, 'send'])->name('messages.send');
 
         Route::get('applicants', [ApplicantController::class, 'index'])->name('applicants.index');
         Route::get('applications/{id}', [ApplicantController::class, 'show'])->name('applicants.show');

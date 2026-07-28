@@ -17,6 +17,9 @@
         </a>
         @if (auth()->user()->role === 'employer')
           <a href="{{ route('employer.dashboard') }}" class="lnk hide-sm" style="font-size:14.5px;font-weight:800;color:#2B2724;display:flex;align-items:center;gap:6px"><i class="iconsax" style="font-size:18px" icon-name="task-list"></i>لوحة التحكم</a>
+        @else
+          <a href="{{ route('applications.index') }}" class="lnk hide-sm" style="font-size:14.5px;font-weight:800;color:#2B2724;display:flex;align-items:center;gap:6px"><i class="iconsax" style="font-size:18px" icon-name="document-text-1"></i>طلباتي</a>
+          <a href="{{ route('messages.index') }}" class="lnk hide-sm" style="font-size:14.5px;font-weight:800;color:#2B2724;display:flex;align-items:center;gap:6px"><i class="iconsax" style="font-size:18px" icon-name="messages-2"></i>الرسائل</a>
         @endif
         <form method="POST" action="{{ route('logout') }}" style="display:inline">
           @csrf

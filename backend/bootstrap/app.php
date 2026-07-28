@@ -8,6 +8,7 @@ use App\Http\Middleware\EnsureUserRole;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Exceptions\ThrottleRequestsException;
 use Illuminate\Http\Request;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -33,6 +34,13 @@ return Application::configure(basePath: dirname(__DIR__))
             // message, mirroring how validation errors are surfaced.
             if ($e instanceof DomainException) {
                 return back()->withInput()->withErrors(['form' => $e->getMessage()]);
+            }
+
+            // Being throttled is a business-rule failure too. Left alone it
+            // renders the framework's bare 429 page, which drops the user out
+            // of the flow with no way back into it.
+            if ($e instanceof ThrottleRequestsException) {
+                return back()->withInput()->withErrors(['form' => __('errors.rate_limited')]);
             }
 
             return null;

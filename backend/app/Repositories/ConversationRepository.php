@@ -38,10 +38,22 @@ final class ConversationRepository
             ->get();
     }
 
+    /**
+     * Threads whose last word came from the candidate — the closest thing to
+     * "unread" the schema supports, since messages carry no read state.
+     */
+    public function countAwaitingReplyForOrganization(int $organizationId): int
+    {
+        return Conversation::query()
+            ->where('organization_id', $organizationId)
+            ->whereHas('latestMessage', fn ($q) => $q->whereColumn('messages.sender_id', 'conversations.candidate_id'))
+            ->count();
+    }
+
     public function findByUuid(string $uuid): ?Conversation
     {
         return Conversation::query()
-            ->with(['candidate', 'organization', 'application.job'])
+            ->with(['candidate.candidateProfile', 'organization', 'application.job'])
             ->where('uuid', $uuid)
             ->first();
     }

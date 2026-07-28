@@ -8,6 +8,7 @@ use App\Data\Jobs\JobData;
 use App\Enums\JobStatus;
 use App\Models\Job;
 use App\Models\JobRevision;
+use Carbon\CarbonInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
@@ -113,6 +114,20 @@ final class JobRepository
             ->with(self::DETAIL_RELATIONS)
             ->where('uuid', $uuid)
             ->first();
+    }
+
+    public function countForOrganization(int $organizationId, ?JobStatus $status = null, ?CarbonInterface $since = null): int
+    {
+        return Job::query()
+            ->forOrganization($organizationId)
+            ->when($status !== null, fn ($q) => $q->where('status', $status->value))
+            ->when($since !== null, fn ($q) => $q->where('published_at', '>=', $since))
+            ->count();
+    }
+
+    public function sumViewsForOrganization(int $organizationId): int
+    {
+        return (int) Job::query()->forOrganization($organizationId)->sum('views_count');
     }
 
     public function create(JobData $data, JobStatus $status, int $organizationId, int $userId): Job

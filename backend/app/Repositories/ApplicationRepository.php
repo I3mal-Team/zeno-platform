@@ -7,6 +7,7 @@ namespace App\Repositories;
 use App\Enums\ApplicationStatus;
 use App\Models\Application;
 use App\Models\Job;
+use Carbon\CarbonInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
@@ -74,15 +75,22 @@ final class ApplicationRepository
      * @param  array<int, string>  $statuses
      * @return LengthAwarePaginator<int, Application>
      */
-    public function paginateForOrganization(int $organizationId, array $statuses, int $perPage): LengthAwarePaginator
+    public function paginateForOrganization(int $organizationId, array $statuses, int $perPage, ?string $search = null): LengthAwarePaginator
     {
         return Application::query()
-            ->with(['candidate.candidateProfile', 'job'])
+            ->with(['candidate.candidateProfile.city', 'job', 'conversation'])
             ->forOrganization($organizationId)
             ->when($statuses !== [], fn ($q) => $q->whereIn('status', $statuses))
+            ->when(
+                $search !== null && $search !== '',
+                fn ($q) => $q->where(fn ($inner) => $inner
+                    ->whereHas('candidate.candidateProfile', fn ($p) => $p->where('full_name', 'ILIKE', '%'.$search.'%'))
+                    ->orWhere('reference_number', 'ILIKE', '%'.$search.'%')),
+            )
             ->orderByRaw("CASE status WHEN 'submitted' THEN 0 WHEN 'review' THEN 1 ELSE 2 END")
             ->latest('created_at')
-            ->paginate($perPage);
+            ->paginate($perPage)
+            ->withQueryString();
     }
 
     public function findForOrganization(int $organizationId, int $id): ?Application
@@ -99,6 +107,68 @@ final class ApplicationRepository
         $application->save();
 
         return $application;
+    }
+
+    /** @param  array<int, string>  $statuses */
+    public function countForOrganization(int $organizationId, array $statuses = [], ?CarbonInterface $since = null): int
+    {
+        return Application::query()
+            ->forOrganization($organizationId)
+            ->when($statuses !== [], fn ($q) => $q->whereIn('status', $statuses))
+            ->when($since !== null, fn ($q) => $q->where('created_at', '>=', $since))
+            ->count();
+    }
+
+    /**
+     * Applications per calendar day, in the viewer's timezone so a submission
+     * late at night lands on the day the employer saw it.
+     *
+     * @return array<string, int> Y-m-d => count, only for days that had any
+     */
+    public function dailyCountsForOrganization(int $organizationId, CarbonInterface $since, string $timezone): array
+    {
+        return Application::query()
+            ->forOrganization($organizationId)
+            ->where('created_at', '>=', $since)
+            ->selectRaw('DATE(created_at AT TIME ZONE ?) AS day, COUNT(*) AS total', [$timezone])
+            ->groupBy('day')
+            ->pluck('total', 'day')
+            ->all();
+    }
+
+    /**
+     * Decisions taken in a window, keyed on decided_at rather than created_at
+     * so a decision counts to the week it was made, not the week the
+     * application arrived.
+     *
+     * @return array{accepted: int, rejected: int}
+     */
+    public function decisionCountsForOrganization(int $organizationId, ?CarbonInterface $from = null, ?CarbonInterface $until = null): array
+    {
+        $counts = Application::query()
+            ->forOrganization($organizationId)
+            ->whereIn('status', [ApplicationStatus::Accepted->value, ApplicationStatus::Rejected->value])
+            ->when($from !== null, fn ($q) => $q->where('decided_at', '>=', $from))
+            ->when($until !== null, fn ($q) => $q->where('decided_at', '<', $until))
+            ->selectRaw('status, COUNT(*) AS total')
+            ->groupBy('status')
+            ->pluck('total', 'status');
+
+        return [
+            'accepted' => (int) $counts->get(ApplicationStatus::Accepted->value, 0),
+            'rejected' => (int) $counts->get(ApplicationStatus::Rejected->value, 0),
+        ];
+    }
+
+    /** @return Collection<int, Application> */
+    public function recentForOrganization(int $organizationId, int $limit): Collection
+    {
+        return Application::query()
+            ->with(['candidate.candidateProfile.city', 'job'])
+            ->forOrganization($organizationId)
+            ->latest('created_at')
+            ->limit($limit)
+            ->get();
     }
 
     /**

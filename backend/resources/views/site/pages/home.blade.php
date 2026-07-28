@@ -27,7 +27,7 @@
           <span style="text-align:right;line-height:1.2"><span style="display:block;font-size:11px;font-weight:600;color:#B7B1A6">حمّله على</span><span style="display:block;font-size:16px;font-weight:800">App Store</span></span>
         </a>
         <a href="#download" class="btn" style="display:flex;align-items:center;gap:11px;background:#fff;color:#2B2724;padding:13px 22px;border-radius:16px;border:1px solid #ECEAE3;box-shadow:0 16px 30px -22px rgba(40,35,25,.4)">
-          <i class="iconsax" style="font-size:26px;color:#2B2724" icon-name="play"></i>
+          <i class="iconsax" style="font-size:26px;color:#2B2724" icon-name="shop"></i>
           <span style="text-align:right;line-height:1.2"><span style="display:block;font-size:11px;font-weight:600;color:#9A958A">حمّله على</span><span style="display:block;font-size:16px;font-weight:800">Google Play</span></span>
         </a>
       </div>

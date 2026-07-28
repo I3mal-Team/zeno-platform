@@ -44,9 +44,9 @@ final class ApplicationReviewService
      * @param  array<int, string>  $statuses
      * @return LengthAwarePaginator<int, Application>
      */
-    public function listForOrganization(User $employer, array $statuses, int $perPage): LengthAwarePaginator
+    public function listForOrganization(User $employer, array $statuses, int $perPage, ?string $search = null): LengthAwarePaginator
     {
-        return $this->applications->paginateForOrganization($this->organizationFor($employer)->id, $statuses, $perPage);
+        return $this->applications->paginateForOrganization($this->organizationFor($employer)->id, $statuses, $perPage, $search);
     }
 
     /** Opening an applicant for the first time moves the application into review. */

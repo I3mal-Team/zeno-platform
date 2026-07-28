@@ -49,7 +49,19 @@ it('signs a new employer in and sends them to registration', function () {
     expect(User::query()->where('phone_e164', '+966512345678')->value('role'))->toBe('employer');
 });
 
-it('signs a new candidate in and sends them home', function () {
+it('sends a new candidate to complete their profile', function () {
+    webLogin('0512345000', 'candidate')->assertRedirect(route('profile.complete'));
+
+    test()->assertAuthenticated();
+});
+
+it('sends a returning candidate who already has a profile straight home', function () {
+    $user = userWithPhone('+966512345000', 'candidate');
+    $user->candidateProfile()->create([
+        'full_name' => 'سالم العتيبي',
+        'completion_percentage' => 60,
+    ]);
+
     webLogin('0512345000', 'candidate')->assertRedirect(route('site.home'));
 
     test()->assertAuthenticated();
@@ -109,4 +121,38 @@ it('lets a registered employer reach the dashboard', function () {
 it('requires a sign-in to apply for a job', function () {
     test()->post('/jobs/some-slug/apply')->assertRedirect('/login');
     test()->assertGuest();
+});
+
+/**
+ * Drains the send-code limiter and returns the response that tripped it. The
+ * count only has to clear the `otp-request` per-minute cap; the callers assert
+ * the throttle actually fired, so a raised cap fails loudly rather than
+ * quietly turning these into no-ops.
+ */
+function exhaustLoginRequests(): TestResponse
+{
+    for ($i = 0; $i < 15; $i++) {
+        $response = test()->post('/login', ['phone' => '0512345678', 'role' => 'candidate', 'country' => 'SA']);
+    }
+
+    return $response;
+}
+
+it('does not spend the verify budget on requesting a code', function () {
+    // An inline `throttle:6,1` keys on IP alone, so both steps drew on one
+    // allowance and a single sign-in cost two of it. Draining the request
+    // limit must leave the visitor able to finish verifying.
+    exhaustLoginRequests()->assertSessionHasErrors(['form' => __('errors.rate_limited')]);
+
+    // Where a fresh sign-in lands is the profile flow's business; all this
+    // test needs is that verifying still went through.
+    test()->post('/login/verify', ['code' => '4829'])->assertRedirect();
+    test()->assertAuthenticated();
+});
+
+it('returns a throttled visitor to the form instead of a bare 429 page', function () {
+    $response = exhaustLoginRequests();
+
+    $response->assertRedirect()->assertSessionHasErrors(['form' => __('errors.rate_limited')]);
+    expect($response->getStatusCode())->not->toBe(429);
 });

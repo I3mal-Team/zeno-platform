@@ -58,6 +58,31 @@ it('saves a profile and returns it', function () {
         ->assertJsonCount(2, 'data.skills');
 });
 
+it('accepts the mobile intake payload with id type and nationality', function () {
+    // Mirrors exactly what the reworked "أكمل بياناتك" mobile form PUTs:
+    // a client-derived birth_date and national_id_type plus a nationality code.
+    test()->actingAs(candidate(), 'sanctum')
+        ->putJson('/api/v1/profile/candidate', [
+            'full_name' => 'سالم العتيبي',
+            'national_id' => '1012345678',
+            'national_id_type' => 'national',
+            'birth_date' => '1998-07-28',
+            'nationality_code' => 'SA',
+            'city_id' => City::query()->value('id'),
+            'job_title' => 'باريستا',
+            'years_of_experience' => 4,
+            'skills' => [],
+        ])
+        ->assertOk()
+        ->assertJsonPath('data.full_name', 'سالم العتيبي');
+
+    $profile = CandidateProfile::query()->first();
+
+    expect($profile->national_id_type)->toBe('national');
+    expect($profile->nationality_code)->toBe('SA');
+    expect($profile->national_id)->toBe('1012345678');
+});
+
 it('derives age from the birth date rather than storing it', function () {
     test()->actingAs(candidate(), 'sanctum')
         ->putJson('/api/v1/profile/candidate', profilePayload(['birth_date' => '2000-01-15']))

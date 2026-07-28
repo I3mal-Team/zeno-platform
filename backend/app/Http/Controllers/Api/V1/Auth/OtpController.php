@@ -36,6 +36,7 @@ final class OtpController extends ApiController
         return $this->successResponse([
             'token' => $result['token'],
             'is_new_user' => $result['isNewUser'],
+            'profile_completed' => ! $result['user']->needsCandidateProfile(),
             'user' => new UserResource($result['user']),
         ], __('messages.signed_in'));
     }

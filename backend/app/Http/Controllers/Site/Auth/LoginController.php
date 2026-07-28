@@ -8,6 +8,7 @@ use App\Enums\UserRole;
 use App\Http\Controllers\Site\SiteController;
 use App\Http\Requests\Site\Auth\SendCodeRequest;
 use App\Http\Requests\Site\Auth\VerifyCodeRequest;
+use App\Models\User;
 use App\Services\AuthService;
 use App\Services\CatalogService;
 use Illuminate\Contracts\View\View;
@@ -70,7 +71,7 @@ final class LoginController extends SiteController
         $request->session()->regenerate();
         $request->session()->forget([self::SESSION_PHONE, self::SESSION_ROLE]);
 
-        return redirect()->intended($this->home($role, $isNewUser));
+        return redirect()->intended($this->home($user, $role, $isNewUser));
     }
 
     public function logout(Request $request): RedirectResponse
@@ -82,12 +83,14 @@ final class LoginController extends SiteController
         return redirect()->route('site.home');
     }
 
-    private function home(UserRole $role, bool $isNewUser): string
+    private function home(User $user, UserRole $role, bool $isNewUser): string
     {
         if ($role === UserRole::Employer) {
             return $isNewUser ? route('employer.register') : route('employer.dashboard');
         }
 
-        return route('site.home');
+        return $user->needsCandidateProfile()
+            ? route('profile.complete')
+            : route('site.home');
     }
 }

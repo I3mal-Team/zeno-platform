@@ -45,7 +45,12 @@ void main() {
     build: () {
       when(() => repo.verifyOtp(any())).thenAnswer(
         (_) async => const Right(
-          AuthSessionModel(token: 't', user: _user, isNewUser: true),
+          AuthSessionModel(
+            token: 't',
+            user: _user,
+            isNewUser: true,
+            profileCompleted: false,
+          ),
         ),
       );
       return build();

@@ -8,6 +8,7 @@ import '../../../../core/databases/api/end_points.dart';
 import '../../../../core/databases/api/handle_request.dart';
 import '../../../../core/errors/failure.dart';
 import '../../../../core/params/profile_params.dart';
+import '../../../auth/data/models/country_model.dart';
 import '../models/candidate_profile_model.dart';
 import '../models/city_model.dart';
 import 'profile_repo.dart';
@@ -55,6 +56,16 @@ class ProfileRepoImpl implements ProfileRepo {
       () => _api.get(EndPoints.cities),
       (data) => (data as List<dynamic>)
           .map((e) => CityModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+  }
+
+  @override
+  Future<Either<Failure, List<CountryModel>>> fetchCountries() {
+    return _handle(
+      () => _api.get(EndPoints.countries),
+      (data) => (data as List<dynamic>)
+          .map((e) => CountryModel.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
   }

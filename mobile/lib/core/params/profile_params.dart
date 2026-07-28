@@ -31,6 +31,8 @@ class SaveOrganizationParam {
 class SaveCandidateProfileParam {
   const SaveCandidateProfileParam({
     required this.fullName,
+    this.nationalId,
+    this.nationalIdType,
     this.birthDate,
     this.nationalityCode,
     this.cityId,
@@ -41,6 +43,10 @@ class SaveCandidateProfileParam {
   });
 
   final String fullName;
+  final String? nationalId;
+
+  /// 'national' or 'iqama' — inferred from the ID's leading digit.
+  final String? nationalIdType;
   final String? birthDate;
   final String? nationalityCode;
   final int? cityId;
@@ -51,6 +57,8 @@ class SaveCandidateProfileParam {
 
   Map<String, dynamic> toJson() => {
     'full_name': fullName,
+    if (nationalId != null) 'national_id': nationalId,
+    if (nationalIdType != null) 'national_id_type': nationalIdType,
     if (birthDate != null) 'birth_date': birthDate,
     if (nationalityCode != null) 'nationality_code': nationalityCode,
     if (cityId != null) 'city_id': cityId,

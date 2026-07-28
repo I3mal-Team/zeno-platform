@@ -26,22 +26,39 @@ class RegisterCandidateView extends StatefulWidget {
 class _RegisterCandidateViewState extends State<RegisterCandidateView> {
   final _formKey = GlobalKey<FormState>();
   final _fullName = TextEditingController();
+  final _nationalId = TextEditingController();
+  final _age = TextEditingController();
   final _jobTitle = TextEditingController();
   final _years = TextEditingController();
   final _bio = TextEditingController();
-  final _skills = TextEditingController();
 
   int? _cityId;
+  String? _nationalityCode;
 
   @override
   void initState() {
     super.initState();
-    context.read<ProfileCubit>().loadCities();
+    _loadCatalogs();
+  }
+
+  /// Cities and nationalities feed two dropdowns; both are set on the cubit
+  /// without emitting, so a setState here makes the first build see them.
+  Future<void> _loadCatalogs() async {
+    final cubit = context.read<ProfileCubit>();
+    await Future.wait([cubit.loadCities(), cubit.loadCountries()]);
+    if (mounted) setState(() {});
   }
 
   @override
   void dispose() {
-    for (final controller in [_fullName, _jobTitle, _years, _bio, _skills]) {
+    for (final controller in [
+      _fullName,
+      _nationalId,
+      _age,
+      _jobTitle,
+      _years,
+      _bio,
+    ]) {
       controller.dispose();
     }
     super.dispose();
@@ -50,20 +67,39 @@ class _RegisterCandidateViewState extends State<RegisterCandidateView> {
   void _submit() {
     if (!(_formKey.currentState?.validate() ?? false)) return;
 
+    final nationalId = _nationalId.text.trim();
+
     context.read<ProfileCubit>().save(
       SaveCandidateProfileParam(
         fullName: _fullName.text.trim(),
+        nationalId: nationalId.isEmpty ? null : nationalId,
+        nationalIdType: _nationalIdType(nationalId),
+        birthDate: _birthDateFromAge(),
+        nationalityCode: _nationalityCode,
         cityId: _cityId,
         jobTitle: _jobTitle.text.trim().isEmpty ? null : _jobTitle.text.trim(),
         yearsOfExperience: int.tryParse(_years.text),
-        skills: _skills.text
-            .split('،')
-            .map((skill) => skill.trim())
-            .where((skill) => skill.isNotEmpty)
-            .toList(),
         bio: _bio.text.trim().isEmpty ? null : _bio.text.trim(),
       ),
     );
+  }
+
+  /// Saudi national IDs start with 1, iqamas with 2.
+  String? _nationalIdType(String id) {
+    if (id.isEmpty) return null;
+    return id.startsWith('2') ? 'iqama' : 'national';
+  }
+
+  /// The form collects age; the API stores a birth date, so derive one.
+  String? _birthDateFromAge() {
+    final age = int.tryParse(_age.text.trim());
+    if (age == null) return null;
+
+    final now = DateTime.now();
+    final date = DateTime(now.year - age, now.month, now.day);
+    final month = date.month.toString().padLeft(2, '0');
+    final day = date.day.toString().padLeft(2, '0');
+    return '${date.year}-$month-$day';
   }
 
   @override
@@ -123,19 +159,85 @@ class _RegisterCandidateViewState extends State<RegisterCandidateView> {
                     const SizedBox(height: 13),
                     Entrance(
                       index: 1,
-                      child: AppSelectField<int>(
-                        hint: 'المدينة',
-                        value: _cityId,
-                        options: [
-                          for (final city in cubit.cities)
-                            (value: city.id, label: city.name),
+                      child: AppField(
+                        controller: _nationalId,
+                        hint: 'رقم الهوية أو الإقامة',
+                        keyboardType: TextInputType.number,
+                        textDirection: TextDirection.ltr,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                          LengthLimitingTextInputFormatter(10),
                         ],
-                        onChanged: (id) => setState(() => _cityId = id),
+                        validator: (value) {
+                          final id = (value ?? '').trim();
+                          if (id.isNotEmpty && id.length != 10) {
+                            return 'رقم الهوية يتكوّن من 10 أرقام';
+                          }
+                          return null;
+                        },
                       ),
                     ),
                     const SizedBox(height: 13),
                     Entrance(
                       index: 2,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            flex: 17,
+                            child: AppSelectField<int>(
+                              hint: 'المدينة',
+                              value: _cityId,
+                              options: [
+                                for (final city in cubit.cities)
+                                  (value: city.id, label: city.name),
+                              ],
+                              onChanged: (id) => setState(() => _cityId = id),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            flex: 10,
+                            child: AppField(
+                              controller: _age,
+                              hint: 'العمر',
+                              keyboardType: TextInputType.number,
+                              textDirection: TextDirection.ltr,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly,
+                                LengthLimitingTextInputFormatter(2),
+                              ],
+                              validator: (value) {
+                                final text = (value ?? '').trim();
+                                if (text.isEmpty) return null;
+                                final age = int.tryParse(text);
+                                if (age == null || age < 16 || age > 80) {
+                                  return 'عمر غير صحيح';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 13),
+                    Entrance(
+                      index: 3,
+                      child: AppSelectField<String>(
+                        hint: 'الجنسية',
+                        value: _nationalityCode,
+                        options: [
+                          for (final country in cubit.countries)
+                            (value: country.iso2, label: country.name),
+                        ],
+                        onChanged: (code) =>
+                            setState(() => _nationalityCode = code),
+                      ),
+                    ),
+                    const SizedBox(height: 13),
+                    Entrance(
+                      index: 4,
                       child: AppField(
                         controller: _jobTitle,
                         hint: 'المهنة الحالية أو المستهدفة',
@@ -143,27 +245,21 @@ class _RegisterCandidateViewState extends State<RegisterCandidateView> {
                     ),
                     const SizedBox(height: 13),
                     Entrance(
-                      index: 3,
+                      index: 5,
                       child: AppField(
                         controller: _years,
                         hint: 'سنوات الخبرة',
                         keyboardType: TextInputType.number,
+                        textDirection: TextDirection.ltr,
                         inputFormatters: [
                           FilteringTextInputFormatter.digitsOnly,
+                          LengthLimitingTextInputFormatter(2),
                         ],
                       ),
                     ),
                     const SizedBox(height: 13),
                     Entrance(
-                      index: 4,
-                      child: AppField(
-                        controller: _skills,
-                        hint: 'المهارات (افصل بينها بفاصلة،)',
-                      ),
-                    ),
-                    const SizedBox(height: 13),
-                    Entrance(
-                      index: 5,
+                      index: 6,
                       child: AppField(
                         controller: _bio,
                         hint: 'نبذة مختصرة عنك (اختياري)',

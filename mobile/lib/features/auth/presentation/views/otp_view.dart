@@ -35,11 +35,14 @@ class OtpView extends StatelessWidget {
                   context.read<UserCubit>().onSignedIn(session.user);
                   final isEmployer =
                       context.read<OtpCubit>().role == 'employer';
-                  context.go(switch ((session.isNewUser, isEmployer)) {
-                    (true, true) => RoutesKeys.registerEmployer,
-                    (true, false) => RoutesKeys.registerCandidate,
-                    (false, true) => RoutesKeys.employerJobs,
-                    (false, false) => RoutesKeys.browse,
+                  // Employers branch on whether the account is new; job seekers
+                  // branch on whether they've saved their profile yet, so a
+                  // returning-but-incomplete candidate still lands on the form.
+                  context.go(switch ((isEmployer, session.isNewUser, session.profileCompleted)) {
+                    (true, true, _) => RoutesKeys.registerEmployer,
+                    (true, false, _) => RoutesKeys.employerJobs,
+                    (false, _, false) => RoutesKeys.registerCandidate,
+                    (false, _, true) => RoutesKeys.browse,
                   });
                 case OtpResent():
                   AppToast.success(context, 'تم إرسال رمز جديد.');

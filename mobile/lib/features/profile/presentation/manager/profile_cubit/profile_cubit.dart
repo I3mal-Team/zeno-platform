@@ -7,6 +7,7 @@ import '../../../../../core/cubit_extension/safe_cubit.dart';
 import '../../../../../core/errors/error_codes.dart';
 import '../../../../../core/errors/failure.dart';
 import '../../../../../core/params/profile_params.dart';
+import '../../../../auth/data/models/country_model.dart';
 import '../../../data/models/candidate_profile_model.dart';
 import '../../../data/models/city_model.dart';
 import '../../../data/repos/profile_repo.dart';
@@ -19,6 +20,7 @@ class ProfileCubit extends Cubit<ProfileState> {
   final ProfileRepo _repo;
 
   List<CityModel> cities = const [];
+  List<CountryModel> countries = const [];
 
   Future<void> load() async {
     safeEmit(const ProfileLoading());
@@ -43,6 +45,12 @@ class ProfileCubit extends Cubit<ProfileState> {
     final result = await _repo.fetchCities();
 
     result.fold((_) {}, (list) => cities = list);
+  }
+
+  Future<void> loadCountries() async {
+    final result = await _repo.fetchCountries();
+
+    result.fold((_) {}, (list) => countries = list);
   }
 
   Future<void> save(SaveCandidateProfileParam param) async {

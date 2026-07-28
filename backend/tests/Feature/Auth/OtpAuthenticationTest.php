@@ -6,6 +6,7 @@ use App\Models\OtpChallenge;
 use App\Models\User;
 use App\Support\Otp\FixedOtpCodeGenerator;
 use App\Support\Otp\OtpCodeGenerator;
+use Database\Seeders\CountrySeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Testing\TestResponse;
 
@@ -29,6 +30,25 @@ function verifyOtp(array $overrides = []): TestResponse
         'device_name' => 'test',
     ], $overrides));
 }
+
+it('gives requesting and verifying separate throttle budgets', function () {
+    // Both routes shared one named limiter whose two limits also shared a
+    // cache key, so the counter moved twice per call and the app locked users
+    // out at half the advertised rate.
+    requestOtp();
+
+    // The resend cooldown answers 429 too, so only the error code tells the
+    // limiter apart from it.
+    $throttled = false;
+
+    for ($i = 0; $i < 30 && ! $throttled; $i++) {
+        $throttled = requestOtp()->json('error.code') === 'RATE_LIMITED';
+    }
+
+    expect($throttled)->toBeTrue();
+
+    verifyOtp()->assertOk()->assertJsonPath('success', true);
+});
 
 it('issues a code and reports when it expires', function () {
     requestOtp()
@@ -59,7 +79,7 @@ it('normalises every accepted phone format to one stored value', function (strin
 ]);
 
 it('normalises a number typed for another supported country', function () {
-    $this->seed(Database\Seeders\CountrySeeder::class);
+    $this->seed(CountrySeeder::class);
 
     test()->postJson('/api/v1/auth/otp/request', [
         'phone' => '01001234567',
@@ -95,6 +115,28 @@ it('creates the account on first successful verification', function () {
         ->assertJsonStructure(['data' => ['token']]);
 
     expect(User::query()->where('phone_e164', '+966512345678')->exists())->toBeTrue();
+});
+
+it('flags a brand-new job seeker as needing to complete their profile', function () {
+    requestOtp();
+
+    verifyOtp()
+        ->assertOk()
+        ->assertJsonPath('data.is_new_user', true)
+        ->assertJsonPath('data.profile_completed', false);
+});
+
+it('reports a completed profile once the job seeker has saved one', function () {
+    requestOtp();
+    verifyOtp();
+
+    User::query()->where('phone_e164', '+966512345678')->firstOrFail()
+        ->candidateProfile()->create(['full_name' => 'سالم العتيبي', 'completion_percentage' => 50]);
+
+    requestOtp();
+    verifyOtp()
+        ->assertOk()
+        ->assertJsonPath('data.profile_completed', true);
 });
 
 it('reuses the account on a later sign in', function () {

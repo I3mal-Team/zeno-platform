@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\UserRole;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -36,6 +37,16 @@ class User extends Authenticatable implements FilamentUser
     public function candidateProfile(): HasOne
     {
         return $this->hasOne(CandidateProfile::class);
+    }
+
+    /**
+     * A job seeker who has never saved their profile still needs the intake
+     * form ("أكمل بياناتك") before they land on the site or the app home.
+     */
+    public function needsCandidateProfile(): bool
+    {
+        return $this->role === UserRole::Candidate->value
+            && $this->candidateProfile()->doesntExist();
     }
 
     /** Mirrors the column defaults so a freshly created model is complete. */

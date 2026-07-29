@@ -65,7 +65,20 @@ class _RegisterCandidateViewState extends State<RegisterCandidateView> {
   }
 
   void _submit() {
-    if (!(_formKey.currentState?.validate() ?? false)) return;
+    final formValid = _formKey.currentState?.validate() ?? false;
+
+    // City and nationality are dropdowns, not form fields, so they are checked
+    // here rather than through the form validator.
+    final missing = <String>[
+      if (_cityId == null) 'المدينة',
+      if (_nationalityCode == null) 'الجنسية',
+    ];
+
+    if (missing.isNotEmpty) {
+      AppToast.error(context, 'من فضلك اختر ${missing.join(' و')}');
+    }
+
+    if (!formValid || missing.isNotEmpty) return;
 
     final nationalId = _nationalId.text.trim();
 
@@ -170,7 +183,8 @@ class _RegisterCandidateViewState extends State<RegisterCandidateView> {
                         ],
                         validator: (value) {
                           final id = (value ?? '').trim();
-                          if (id.isNotEmpty && id.length != 10) {
+                          if (id.isEmpty) return 'أدخل رقم الهوية أو الإقامة';
+                          if (id.length != 10) {
                             return 'رقم الهوية يتكوّن من 10 أرقام';
                           }
                           return null;

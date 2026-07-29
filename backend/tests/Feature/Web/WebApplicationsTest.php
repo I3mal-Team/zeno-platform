@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 use App\Models\Application;
+use App\Models\Job;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 
@@ -10,7 +12,7 @@ uses(RefreshDatabase::class);
 
 beforeEach(fn () => $this->seed());
 
-/** @return array{0: App\Models\User, 1: App\Models\Job} */
+/** @return array{0: User, 1: Job} */
 function candidateWithApplication(): array
 {
     [$employer, $org] = makeEmployerWithOrg(verified: true);

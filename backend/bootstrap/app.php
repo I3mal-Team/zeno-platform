@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Exceptions\ApiExceptionRenderer;
 use App\Exceptions\Domain\DomainException;
+use App\Http\Middleware\EnsureCandidateProfile;
 use App\Http\Middleware\EnsureUserRole;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -20,7 +21,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->alias(['role' => EnsureUserRole::class]);
+        $middleware->alias([
+            'role' => EnsureUserRole::class,
+            'candidate.profile' => EnsureCandidateProfile::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         // Controllers never catch; this is the only place a throwable becomes

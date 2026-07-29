@@ -68,6 +68,18 @@ it('saves the profile, derives birth date and id type, then sends the candidate 
     expect($profile->completion_percentage)->toBeGreaterThan(0);
 });
 
+it('requires national id, city and nationality', function () {
+    test()->actingAs(candidateUser())
+        ->post(route('profile.complete.store'), ['full_name' => 'سالم العتيبي'])
+        ->assertSessionHasErrors(['national_id', 'city_id', 'nationality_code']);
+});
+
+it('sends an incomplete candidate from a gated page back to the profile form', function () {
+    test()->actingAs(candidateUser())
+        ->get('/applications')
+        ->assertRedirect(route('profile.complete'));
+});
+
 it('rejects an out-of-range age and keeps the candidate on the form', function () {
     test()->actingAs(candidateUser())
         ->post(route('profile.complete.store'), ['full_name' => 'سالم العتيبي', 'age' => 5])

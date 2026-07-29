@@ -23,12 +23,23 @@ function refId(string $table, string $code): int
 
 function makeUser(string $role = 'employer', ?string $phone = null): User
 {
-    return User::query()->create([
+    $user = User::query()->create([
         'uuid' => (string) Str::uuid(),
         'phone_e164' => $phone ?? '+9665'.fake()->numerify('########'),
         'role' => $role,
         'status' => 'active',
     ]);
+
+    // A candidate can only apply or message once their profile exists (the
+    // `candidate.profile` gate), so the shared helper gives them one.
+    if ($role === 'candidate') {
+        $user->candidateProfile()->create([
+            'full_name' => 'مرشّح اختبار',
+            'completion_percentage' => 60,
+        ]);
+    }
+
+    return $user;
 }
 
 /**

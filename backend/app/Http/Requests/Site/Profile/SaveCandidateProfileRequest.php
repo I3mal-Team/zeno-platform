@@ -19,10 +19,10 @@ final class SaveCandidateProfileRequest extends FormRequest
     {
         return [
             'full_name' => ['required', 'string', 'min:3', 'max:120'],
-            'national_id' => ['nullable', 'string', 'digits:10'],
-            'city_id' => ['nullable', 'integer', 'exists:cities,id'],
+            'national_id' => ['required', 'string', 'digits:10'],
+            'city_id' => ['required', 'integer', 'exists:cities,id'],
+            'nationality_code' => ['required', 'string', 'size:2', 'exists:countries,iso2'],
             'age' => ['nullable', 'integer', 'between:16,80'],
-            'nationality_code' => ['nullable', 'string', 'size:2', 'exists:countries,iso2'],
             'job_title' => ['nullable', 'string', 'max:120'],
             'years_of_experience' => ['nullable', 'integer', 'between:0,60'],
             'bio' => ['nullable', 'string', 'max:1000'],

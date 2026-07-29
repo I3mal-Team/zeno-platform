@@ -36,14 +36,18 @@ Route::middleware(['auth', 'role:candidate'])->group(function () {
     Route::get('profile/complete', [CandidateProfileController::class, 'show'])->name('profile.complete');
     Route::post('profile/complete', [CandidateProfileController::class, 'store'])->name('profile.complete.store');
 
-    Route::prefix('messages')->name('messages.')->group(function () {
-        Route::get('/', [MessageController::class, 'index'])->name('index');
-        Route::get('{uuid}', [MessageController::class, 'show'])->name('show');
-        Route::post('{uuid}', [MessageController::class, 'send'])->name('send');
-    });
+    // Everything below needs a completed profile first; the intake above must
+    // stay reachable, so the gate wraps only these routes.
+    Route::middleware('candidate.profile')->group(function () {
+        Route::prefix('messages')->name('messages.')->group(function () {
+            Route::get('/', [MessageController::class, 'index'])->name('index');
+            Route::get('{uuid}', [MessageController::class, 'show'])->name('show');
+            Route::post('{uuid}', [MessageController::class, 'send'])->name('send');
+        });
 
-    Route::prefix('applications')->name('applications.')->group(function () {
-        Route::get('/', [ApplicationController::class, 'index'])->name('index');
-        Route::post('{reference}/withdraw', [ApplicationController::class, 'withdraw'])->name('withdraw');
+        Route::prefix('applications')->name('applications.')->group(function () {
+            Route::get('/', [ApplicationController::class, 'index'])->name('index');
+            Route::post('{reference}/withdraw', [ApplicationController::class, 'withdraw'])->name('withdraw');
+        });
     });
 });

@@ -39,11 +39,11 @@
           </div>
         </div>
 
-        <div style="flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:10px;background:#F6F5F1">
+        <div data-thread data-conversation="{{ $activeConversation->uuid }}" data-me="{{ auth()->user()->uuid }}" style="flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:10px;background:#F6F5F1">
           <div style="align-self:center;background:rgba(33,31,32,.06);color:#8A857A;font-size:11.5px;font-weight:700;padding:6px 13px;border-radius:10px">تم فتح التواصل بعد القبول</div>
           @foreach ($messages as $message)
             @php($mine = $message->sender_id === auth()->id())
-            <div style="display:flex;justify-content:{{ $mine ? 'flex-start' : 'flex-end' }}">
+            <div data-uuid="{{ $message->uuid }}" style="display:flex;justify-content:{{ $mine ? 'flex-start' : 'flex-end' }}">
               <div style="max-width:72%;background:{{ $mine ? '#F7BE17' : '#fff' }};border:1px solid {{ $mine ? '#F7BE17' : '#ECEAE3' }};border-radius:16px;padding:11px 14px">
                 <div style="font-size:14.5px;font-weight:500;line-height:1.6;color:#211F20">{{ $message->body }}</div>
                 <div style="font-size:10px;font-weight:600;color:rgba(33,31,32,.5);margin-top:4px;text-align:left">{{ $message->created_at?->timezone('Asia/Riyadh')->format('H:i') }}</div>
@@ -52,7 +52,11 @@
           @endforeach
         </div>
 
-        <form method="POST" action="{{ route('messages.send', $activeConversation->uuid) }}" style="border-top:1px solid #F0EEE8;padding:12px 16px;display:flex;gap:10px;align-items:center">
+        {{-- Cloned by resources/js/chat.js to render a live message with the same styling. --}}
+        <template data-msg="mine"><div style="display:flex;justify-content:flex-start"><div style="max-width:72%;background:#F7BE17;border:1px solid #F7BE17;border-radius:16px;padding:11px 14px"><div data-slot="body" style="font-size:14.5px;font-weight:500;line-height:1.6;color:#211F20"></div><div data-slot="time" style="font-size:10px;font-weight:600;color:rgba(33,31,32,.5);margin-top:4px;text-align:left"></div></div></div></template>
+        <template data-msg="them"><div style="display:flex;justify-content:flex-end"><div style="max-width:72%;background:#fff;border:1px solid #ECEAE3;border-radius:16px;padding:11px 14px"><div data-slot="body" style="font-size:14.5px;font-weight:500;line-height:1.6;color:#211F20"></div><div data-slot="time" style="font-size:10px;font-weight:600;color:rgba(33,31,32,.5);margin-top:4px;text-align:left"></div></div></div></template>
+
+        <form method="POST" action="{{ route('messages.send', $activeConversation->uuid) }}" data-composer style="border-top:1px solid #F0EEE8;padding:12px 16px;display:flex;gap:10px;align-items:center">
           @csrf
           <input name="body" required maxlength="2000" autocomplete="off" placeholder="اكتب رسالة..." style="flex:1;height:46px;border:1.5px solid #EFEDE6;border-radius:14px;background:#F6F5F1;padding:0 15px;font-family:inherit;font-size:15px;font-weight:600;color:#211F20;outline:none">
           <button type="submit" style="width:46px;height:46px;border-radius:14px;border:none;background:#F7BE17;color:#2B2724;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:0 0 auto"><i class="iconsax" style="font-size:22px" icon-name="send-2"></i></button>
@@ -67,4 +71,10 @@
 
   </div>
 </div>
+
+@if ($activeConversation)
+  @push('scripts')
+    @vite('resources/js/chat.js')
+  @endpush
+@endif
 @endsection

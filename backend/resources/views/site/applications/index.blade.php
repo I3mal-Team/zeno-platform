@@ -3,9 +3,11 @@
 @section('title', 'طلباتي')
 
 @section('content')
-<div style="max-width:760px;margin:0 auto;padding:28px 26px 56px">
-  <h1 style="font-size:24px;font-weight:900;color:#211F20;margin-bottom:6px">طلباتي</h1>
-  <p style="font-size:14.5px;color:#8A857A;font-weight:600;margin-bottom:22px">تابع حالة كل طلب لحظة بلحظة</p>
+<div style="max-width:760px;margin:0 auto;padding:24px 26px 56px">
+  <div style="background:#26221F;border-radius:24px;padding:24px 26px;margin-bottom:20px">
+    <h1 style="font-size:24px;font-weight:900;color:#fff">طلباتي</h1>
+    <p style="font-size:14px;color:#C7C2B8;font-weight:600;margin-top:5px">{{ $applications->count() }} طلبات — تابع حالة كل طلب لحظة بلحظة</p>
+  </div>
 
   @if (session('status'))
     <div style="background:#E7F4EC;color:#1F8A4D;border-radius:14px;padding:13px 16px;font-size:14px;font-weight:700;margin-bottom:16px">{{ session('status') }}</div>

@@ -36,7 +36,7 @@ it('lists the newest applicants on the overview', function () {
     [$employer, $org] = makeEmployerWithOrg(verified: true);
     $job = activeJobFor($org, $employer);
     $application = applicationFor($job->slug);
-    $application->candidate->candidateProfile()->create(['full_name' => 'سعود الحربي', 'completion_percentage' => 40]);
+    $application->candidate->candidateProfile()->updateOrCreate([], ['full_name' => 'سعود الحربي', 'completion_percentage' => 40]);
 
     test()->actingAs($employer)->get('/employer')
         ->assertOk()
@@ -56,7 +56,7 @@ it('shows an accepted applicant a link to their thread', function () {
     [$employer, $org] = makeEmployerWithOrg(verified: true);
     $job = activeJobFor($org, $employer);
     $application = applicationFor($job->slug);
-    $application->candidate->candidateProfile()->create(['full_name' => 'أحمد الشمري', 'completion_percentage' => 40]);
+    $application->candidate->candidateProfile()->updateOrCreate([], ['full_name' => 'أحمد الشمري', 'completion_percentage' => 40]);
 
     test()->actingAs($employer)->get('/employer/applicants')->assertOk()->assertDontSee('مراسلة', false);
 
@@ -75,8 +75,8 @@ it('finds an applicant by name from the topbar search', function () {
     [$employer, $org] = makeEmployerWithOrg(verified: true);
     $job = activeJobFor($org, $employer);
 
-    applicationFor($job->slug)->candidate->candidateProfile()->create(['full_name' => 'سعود الحربي', 'completion_percentage' => 40]);
-    applicationFor($job->slug)->candidate->candidateProfile()->create(['full_name' => 'خالد الدوسري', 'completion_percentage' => 40]);
+    applicationFor($job->slug)->candidate->candidateProfile()->updateOrCreate([], ['full_name' => 'سعود الحربي', 'completion_percentage' => 40]);
+    applicationFor($job->slug)->candidate->candidateProfile()->updateOrCreate([], ['full_name' => 'خالد الدوسري', 'completion_percentage' => 40]);
 
     test()->actingAs($employer)->get('/employer/applicants?q=خالد')
         ->assertOk()

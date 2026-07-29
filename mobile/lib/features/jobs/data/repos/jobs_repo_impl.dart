@@ -6,6 +6,7 @@ import '../../../../core/databases/api/handle_request.dart';
 import '../../../../core/errors/failure.dart';
 import '../../../../core/params/job_params.dart';
 import '../models/job_detail_model.dart';
+import '../../../employer/data/models/job_form_options.dart';
 import '../models/job_model.dart';
 import 'jobs_repo.dart';
 
@@ -30,6 +31,14 @@ class JobsRepoImpl implements JobsRepo {
     return _handle(
       () => _api.get(EndPoints.job(slug)),
       (data) => JobDetailModel.fromJson(data as Map<String, dynamic>),
+    );
+  }
+
+  @override
+  Future<Either<Failure, JobFormOptions>> fetchFilterOptions() {
+    return _handle(
+      () => _api.get(EndPoints.jobForm),
+      (data) => JobFormOptions.fromJson(data as Map<String, dynamic>),
     );
   }
 }

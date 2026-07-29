@@ -17,6 +17,11 @@ final class BrowseJobsRequest extends FormRequest
             'work_type' => ['nullable', 'string', 'exists:work_types,code'],
             'city' => ['nullable', 'integer', 'exists:cities,id'],
             'salary_min' => ['nullable', 'numeric', 'min:0'],
+            // The advanced-filter sheet narrows on the listing's own
+            // requirements, so a candidate does not open a job they are
+            // already excluded from.
+            'gender' => ['nullable', 'string', 'exists:gender_requirements,code'],
+            'nationality' => ['nullable', 'string', 'exists:nationality_requirements,code'],
             'per_page' => ['nullable', 'integer', 'min:1', 'max:50'],
         ];
     }
@@ -30,6 +35,8 @@ final class BrowseJobsRequest extends FormRequest
             'work_type' => $this->input('work_type'),
             'city' => $this->input('city'),
             'salary_min' => $this->input('salary_min'),
+            'gender' => $this->input('gender'),
+            'nationality' => $this->input('nationality'),
         ];
     }
 

@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../managers/user_cubit/user_cubit.dart';
 import '../../features/auth/presentation/manager/otp_cubit/otp_cubit.dart';
 import '../../features/auth/presentation/manager/phone_cubit/phone_cubit.dart';
 import '../../features/auth/presentation/views/otp_view.dart';
@@ -28,7 +29,9 @@ import '../../features/employer/presentation/views/post_job_view.dart';
 import '../../features/employer/presentation/views/register_employer_view.dart';
 import '../../features/jobs/presentation/manager/browse_cubit/browse_cubit.dart';
 import '../../features/jobs/presentation/manager/job_detail_cubit/job_detail_cubit.dart';
+import '../../features/jobs/presentation/manager/search_cubit/search_cubit.dart';
 import '../../features/jobs/presentation/views/browse_view.dart';
+import '../../features/jobs/presentation/views/search_view.dart';
 import '../../features/jobs/presentation/views/job_detail_view.dart';
 import '../../features/notifications/presentation/manager/notifications_cubit/notifications_cubit.dart';
 import '../../features/notifications/presentation/views/notifications_view.dart';
@@ -188,8 +191,12 @@ abstract final class AppRouter {
         path: RoutesKeys.chatPath,
         parentNavigatorKey: parentKey,
         builder: (_, state) => BlocProvider(
-          create: (_) =>
-              ChatCubit(getIt(), state.pathParameters['uuid'] ?? '')..load(),
+          create: (_) => ChatCubit(
+            getIt(),
+            getIt(),
+            state.pathParameters['uuid'] ?? '',
+            currentUserId: getIt<UserCubit>().user?.id ?? '',
+          )..load(),
           child: ChatView(
             title: state.uri.queryParameters['title'] ?? 'المحادثة',
           ),
@@ -247,6 +254,14 @@ abstract final class AppRouter {
         ],
       ),
 
+      GoRoute(
+        path: RoutesKeys.search,
+        parentNavigatorKey: parentKey,
+        builder: (_, _) => BlocProvider(
+          create: (_) => SearchCubit(getIt()),
+          child: const SearchView(),
+        ),
+      ),
       GoRoute(
         path: RoutesKeys.jobDetail,
         parentNavigatorKey: parentKey,

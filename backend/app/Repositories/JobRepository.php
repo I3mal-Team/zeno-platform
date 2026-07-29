@@ -72,6 +72,16 @@ final class JobRepository
             ->when($filters['work_type'] ?? null, fn ($q, $code) => $q->whereHas('workType', fn ($w) => $w->where('code', $code)))
             ->when($filters['city'] ?? null, fn ($q, $id) => $q->where('city_id', $id))
             ->when($filters['salary_min'] ?? null, fn ($q, $min) => $q->where('salary_amount', '>=', $min))
+            // "all" listings stay in the results for any choice — narrowing to
+            // "women" must still surface a job open to everyone.
+            ->when($filters['gender'] ?? null, fn ($q, $code) => $q->whereHas(
+                'genderRequirement',
+                fn ($g) => $g->whereIn('code', array_unique([$code, 'all'])),
+            ))
+            ->when($filters['nationality'] ?? null, fn ($q, $code) => $q->whereHas(
+                'nationalityRequirement',
+                fn ($n) => $n->whereIn('code', array_unique([$code, 'all'])),
+            ))
             ->latest('published_at')
             ->paginate($perPage)
             ->withQueryString();

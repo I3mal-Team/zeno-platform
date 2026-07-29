@@ -266,7 +266,9 @@ class _SearchBoxState extends State<_SearchBox> {
             ),
           ),
           Pressable(
-            onTap: _submit,
+            // The tune icon means filters, so it opens the search screen that
+            // owns them. Typing here still filters the feed on submit.
+            onTap: () => context.push(RoutesKeys.search),
             child: Container(
               width: 32,
               height: 32,

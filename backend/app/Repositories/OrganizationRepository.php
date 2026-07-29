@@ -20,6 +20,16 @@ final class OrganizationRepository
             ->first();
     }
 
+    /** Only an active organization has a public page; a suspended one 404s. */
+    public function findPublicBySlug(string $slug): ?Organization
+    {
+        return Organization::query()
+            ->with('city')
+            ->where('slug', $slug)
+            ->where('status', 'active')
+            ->first();
+    }
+
     public function create(OrganizationData $data, int $ownerId): Organization
     {
         $organization = Organization::query()->create([

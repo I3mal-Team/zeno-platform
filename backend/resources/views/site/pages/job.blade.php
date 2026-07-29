@@ -15,7 +15,7 @@
       <div style="flex:1">
         <h1 style="font-size:28px;font-weight:900">{{ $job->title }}</h1>
         <div style="display:flex;align-items:center;gap:7px;margin-top:6px;font-size:15px;color:#C7C2B8;font-weight:600">
-          {{ $job->organization->name }}
+          <a href="{{ route('site.companies.show', $job->organization->slug) }}" class="lnk" style="color:inherit;text-decoration:underline;text-underline-offset:3px">{{ $job->organization->name }}</a>
           @if ($job->organization->isVerified())<i class="iconsax" style="font-size:17px;color:#5FB0E8" icon-name="verify"></i>@endif
         </div>
       </div>
@@ -76,6 +76,10 @@
       <i class="iconsax" style="font-size:22px" icon-name="user-1"></i>سجّل الدخول للتقديم
     </a>
   @endauth
+
+  <div style="margin-top:22px;padding-top:18px;border-top:1px solid #F0EEE7;text-align:center">
+    <x-site.report-button target="job" :id="$job->id"/>
+  </div>
 </div>
 
 <x-site.footer/>

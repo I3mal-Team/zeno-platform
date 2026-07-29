@@ -14,6 +14,7 @@ use App\Models\Job;
 use App\Models\Organization;
 use App\Models\User;
 use App\Repositories\JobRepository;
+use App\Repositories\JobViewRepository;
 use App\Repositories\OrganizationRepository;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -23,7 +24,22 @@ final class JobService
     public function __construct(
         private readonly JobRepository $jobs,
         private readonly OrganizationRepository $organizations,
+        private readonly JobViewRepository $views,
     ) {}
+
+    /**
+     * Counts a listing as seen. Deliberately not counted: the employer's own
+     * organization, so a listing's view number reflects candidate interest and
+     * not the employer checking their own post.
+     */
+    public function recordView(Job $job, ?User $viewer, string $fingerprint): void
+    {
+        if ($viewer !== null && $this->organizations->findForUser($viewer->id)?->id === $job->organization_id) {
+            return;
+        }
+
+        $this->views->record($job->id, $viewer?->id, $fingerprint);
+    }
 
     /**
      * @param  array<string, mixed>  $filters

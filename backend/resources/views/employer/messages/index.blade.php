@@ -18,6 +18,9 @@
           <div style="font-size:14.5px;font-weight:800;color:#2B2724;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ $name }}</div>
           <div style="font-size:12.5px;color:#8A857A;font-weight:600;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ $conversation->latestMessage?->body ?? 'لم تبدأ المحادثة بعد' }}</div>
         </div>
+        @if ($conversation->unread_count > 0)
+          <span style="min-width:21px;height:21px;padding:0 6px;border-radius:8px;background:#F7BE17;color:#2B2724;font-size:11.5px;font-weight:800;display:flex;align-items:center;justify-content:center;flex:0 0 auto">{{ $conversation->unread_count }}</span>
+        @endif
       </a>
     @empty
       <div style="padding:40px 20px;text-align:center;color:#8A857A;font-size:13.5px;font-weight:600;line-height:1.8">لا توجد محادثات بعد.<br>تُفتح المحادثة تلقائياً بمجرد قبول متقدّم.</div>
@@ -42,17 +45,21 @@
         @endif
       </div>
 
-      <div style="flex:1;overflow-y:auto;padding:22px;background:#F7F5F0;display:flex;flex-direction:column;gap:12px">
+      <div data-thread data-conversation="{{ $activeConversation->uuid }}" data-me="{{ auth()->user()->uuid }}" style="flex:1;overflow-y:auto;padding:22px;background:#F7F5F0;display:flex;flex-direction:column;gap:12px">
         @foreach ($messages as $message)
           @php($mine = $message->sender_id === auth()->id())
-          <div style="align-self:{{ $mine ? 'flex-start' : 'flex-end' }};max-width:70%;background:{{ $mine ? '#2B2724' : '#fff' }};color:{{ $mine ? '#fff' : '#2B2724' }};padding:12px 16px;border-radius:{{ $mine ? '16px 16px 16px 5px' : '16px 16px 5px 16px' }};font-size:14.5px;font-weight:600;line-height:1.6;box-shadow:0 6px 14px -10px rgba(40,35,25,.3)">
+          <div data-uuid="{{ $message->uuid }}" style="align-self:{{ $mine ? 'flex-start' : 'flex-end' }};max-width:70%;background:{{ $mine ? '#2B2724' : '#fff' }};color:{{ $mine ? '#fff' : '#2B2724' }};padding:12px 16px;border-radius:{{ $mine ? '16px 16px 16px 5px' : '16px 16px 5px 16px' }};font-size:14.5px;font-weight:600;line-height:1.6;box-shadow:0 6px 14px -10px rgba(40,35,25,.3)">
             {{ $message->body }}
             <div style="font-size:11px;opacity:.6;font-weight:700;margin-top:5px;text-align:left">{{ $message->created_at?->timezone('Asia/Riyadh')->format('H:i') }}</div>
           </div>
         @endforeach
       </div>
 
-      <form method="POST" action="{{ route('employer.messages.send', $activeConversation->uuid) }}" style="padding:14px 18px;border-top:1px solid #F2F0E9;display:flex;align-items:center;gap:11px">
+      {{-- Cloned by resources/js/chat.js to render a live message with the same styling. --}}
+      <template data-msg="mine"><div style="align-self:flex-start;max-width:70%;background:#2B2724;color:#fff;padding:12px 16px;border-radius:16px 16px 16px 5px;font-size:14.5px;font-weight:600;line-height:1.6;box-shadow:0 6px 14px -10px rgba(40,35,25,.3)"><span data-slot="body"></span><div data-slot="time" style="font-size:11px;opacity:.6;font-weight:700;margin-top:5px;text-align:left"></div></div></template>
+      <template data-msg="them"><div style="align-self:flex-end;max-width:70%;background:#fff;color:#2B2724;padding:12px 16px;border-radius:16px 16px 5px 16px;font-size:14.5px;font-weight:600;line-height:1.6;box-shadow:0 6px 14px -10px rgba(40,35,25,.3)"><span data-slot="body"></span><div data-slot="time" style="font-size:11px;opacity:.6;font-weight:700;margin-top:5px;text-align:left"></div></div></template>
+
+      <form method="POST" action="{{ route('employer.messages.send', $activeConversation->uuid) }}" data-composer style="padding:14px 18px;border-top:1px solid #F2F0E9;display:flex;align-items:center;gap:11px">
         @csrf
         <div style="flex:1;display:flex;align-items:center;gap:9px;background:#F5F3EC;border-radius:14px;padding:12px 16px">
           <input name="body" required maxlength="2000" autocomplete="off" placeholder="اكتب رسالة…" style="flex:1;border:none;outline:none;background:none;font-size:14.5px;font-weight:600;color:#2B2724">
@@ -68,4 +75,10 @@
   </div>
 
 </div>
+
+@if ($activeConversation)
+  @push('scripts')
+    @vite('resources/js/chat.js')
+  @endpush
+@endif
 @endsection

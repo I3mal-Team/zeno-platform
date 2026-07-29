@@ -27,14 +27,14 @@ final class Sidebar extends Component
         $pending = $organizationId === null ? 0 : app(ApplicationRepository::class)
             ->countForOrganization($organizationId, [ApplicationStatus::Submitted->value]);
 
-        $awaiting = $organizationId === null ? 0 : app(ConversationRepository::class)
-            ->countAwaitingReplyForOrganization($organizationId);
+        $unread = $organizationId === null ? 0 : app(ConversationRepository::class)
+            ->countUnreadThreadsForOrganization($organizationId, (int) Auth::id());
 
         return [
             ['key' => 'overview', 'label' => 'نظرة عامة', 'icon' => 'chart-square', 'url' => route('employer.dashboard'), 'badge' => 0],
             ['key' => 'jobs', 'label' => 'وظائفي', 'icon' => 'briefcase', 'url' => route('employer.jobs.index'), 'badge' => 0],
             ['key' => 'applicants', 'label' => 'المتقدّمون', 'icon' => 'user-1', 'url' => route('employer.applicants.index'), 'badge' => $pending],
-            ['key' => 'messages', 'label' => 'الرسائل', 'icon' => 'messages-2', 'url' => route('employer.messages.index'), 'badge' => $awaiting],
+            ['key' => 'messages', 'label' => 'الرسائل', 'icon' => 'messages-2', 'url' => route('employer.messages.index'), 'badge' => $unread],
         ];
     }
 

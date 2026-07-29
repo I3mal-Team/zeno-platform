@@ -33,6 +33,8 @@ final class ConversationResource extends JsonResource
             'status' => $this->status,
             'last_message' => $last?->body,
             'last_message_at' => $this->last_message_at?->toIso8601String(),
+            // Attached by ConversationService in one query for the whole list.
+            'unread_count' => (int) ($this->unread_count ?? 0),
         ];
     }
 }

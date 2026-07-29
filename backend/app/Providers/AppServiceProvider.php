@@ -77,5 +77,12 @@ class AppServiceProvider extends ServiceProvider
         ]);
 
         RateLimiter::for('contact', fn (Request $request) => Limit::perMinute(6)->by('contact:'.$request->ip()));
+
+        // Keyed on the account, not the address: a report is attributable, and
+        // a shared office network should not spend one person's allowance.
+        RateLimiter::for('report', fn (Request $request) => [
+            Limit::perMinute(5)->by('report:m:'.$request->user()?->getAuthIdentifier()),
+            Limit::perDay(20)->by('report:d:'.$request->user()?->getAuthIdentifier()),
+        ]);
     }
 }

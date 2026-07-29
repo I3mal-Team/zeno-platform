@@ -8,6 +8,7 @@ use App\Http\Controllers\Employer\JobController;
 use App\Http\Controllers\Employer\JobStatusController;
 use App\Http\Controllers\Employer\MessageController;
 use App\Http\Controllers\Employer\RegisterController;
+use App\Http\Controllers\Employer\VerificationController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('employer')
@@ -31,6 +32,9 @@ Route::prefix('employer')
         Route::get('messages', [MessageController::class, 'index'])->name('messages.index');
         Route::get('messages/{uuid}', [MessageController::class, 'show'])->name('messages.show');
         Route::post('messages/{uuid}', [MessageController::class, 'send'])->name('messages.send');
+
+        Route::get('verification', [VerificationController::class, 'show'])->name('verification.show');
+        Route::post('verification', [VerificationController::class, 'store'])->name('verification.store');
 
         Route::get('applicants', [ApplicantController::class, 'index'])->name('applicants.index');
         Route::get('applications/{id}', [ApplicantController::class, 'show'])->name('applicants.show');

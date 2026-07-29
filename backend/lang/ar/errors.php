@@ -21,6 +21,8 @@ return [
     'organization_not_verified' => 'يجب توثيق المنشأة قبل نشر الإعلانات.',
     'organization_missing' => 'أكمل بيانات المنشأة أولاً.',
     'conversation_not_allowed' => 'لا يمكن بدء المحادثة في هذه المرحلة.',
+    'verification_already_pending' => 'لديك طلب توثيق قيد المراجعة بالفعل.',
+    'report_already_filed' => 'سبق أن أرسلت بلاغاً عن هذا، وهو قيد المراجعة.',
 
     'phone_invalid' => 'رقم الجوال غير صحيح. أدخل رقماً سعودياً يبدأ بـ 05.',
     'otp_invalid' => 'رمز التحقق غير صحيح.',

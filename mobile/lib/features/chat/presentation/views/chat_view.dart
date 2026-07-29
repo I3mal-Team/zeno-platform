@@ -7,6 +7,7 @@ import '../../../../core/styles/app_colors.dart';
 import '../../../../core/styles/app_text_styles.dart';
 import '../../data/models/message_model.dart';
 import '../manager/chat_cubit/chat_cubit.dart';
+import 'widgets/whatsapp_sheet.dart';
 
 class ChatView extends StatelessWidget {
   const ChatView({required this.title, super.key});
@@ -107,8 +108,64 @@ class _Header extends StatelessWidget {
               style: AppTextStyles.titleMd.copyWith(color: Colors.white),
             ),
           ),
+          const SizedBox(width: 10),
+          const _WhatsAppButton(),
         ],
       ),
+    );
+  }
+}
+
+/// Opens the handoff sheet. Hidden when the listing's contact channel is
+/// app-only — the server refuses those, so offering the button would promise
+/// something it will not do.
+class _WhatsAppButton extends StatefulWidget {
+  const _WhatsAppButton();
+
+  @override
+  State<_WhatsAppButton> createState() => _WhatsAppButtonState();
+}
+
+class _WhatsAppButtonState extends State<_WhatsAppButton> {
+  bool _busy = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Pressable(
+      onTap: _busy ? null : _open,
+      child: Container(
+        width: 40,
+        height: 40,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: const Color(0xFF25803C),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: _busy
+            ? const SizedBox(
+                width: 18,
+                height: 18,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Colors.white,
+                ),
+              )
+            : const Icon(Icons.chat_rounded, size: 21, color: Colors.white),
+      ),
+    );
+  }
+
+  Future<void> _open() async {
+    setState(() => _busy = true);
+
+    final result = await context.read<ChatCubit>().openWhatsApp();
+
+    if (!mounted) return;
+    setState(() => _busy = false);
+
+    result.fold(
+      (failure) => AppToast.error(context, failure.message),
+      (handoff) => showWhatsAppSheet(context, handoff),
     );
   }
 }

@@ -48,6 +48,10 @@ dependencies:
   connectivity_plus: ^7.3.0
   package_info_plus: ^9.0.1
   device_info_plus: ^12.4.0
+  # Pure-Dart Pusher-protocol client, pointed at Reverb for live chat.
+  dart_pusher_channels: ^1.2.3
+  # Opens the WhatsApp deep link when a conversation moves off-platform.
+  url_launcher: ^6.3.1
   flutter_localizations:
     sdk: flutter
 

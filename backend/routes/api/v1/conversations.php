@@ -9,4 +9,5 @@ Route::middleware('auth:sanctum')->prefix('conversations')->name('conversations.
     Route::get('/', [ConversationController::class, 'index'])->name('index');
     Route::get('{uuid}/messages', [ConversationController::class, 'messages'])->name('messages');
     Route::post('{uuid}/messages', [ConversationController::class, 'send'])->name('send');
+    Route::post('{uuid}/whatsapp', [ConversationController::class, 'whatsapp'])->name('whatsapp');
 });

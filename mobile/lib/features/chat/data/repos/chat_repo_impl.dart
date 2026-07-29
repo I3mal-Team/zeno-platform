@@ -6,6 +6,7 @@ import '../../../../core/databases/api/handle_request.dart';
 import '../../../../core/errors/failure.dart';
 import '../models/conversation_model.dart';
 import '../models/message_model.dart';
+import '../models/whatsapp_handoff_model.dart';
 import 'chat_repo.dart';
 
 class ChatRepoImpl implements ChatRepo {
@@ -46,6 +47,14 @@ class ChatRepoImpl implements ChatRepo {
         body: {'body': body, 'client_uuid': clientUuid},
       ),
       (data) => MessageModel.fromJson(data as Map<String, dynamic>),
+    );
+  }
+
+  @override
+  Future<Either<Failure, WhatsAppHandoffModel>> openWhatsApp(String uuid) {
+    return _handle(
+      () => _api.post(EndPoints.whatsapp(uuid)),
+      (data) => WhatsAppHandoffModel.fromJson(data as Map<String, dynamic>),
     );
   }
 }

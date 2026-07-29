@@ -51,6 +51,35 @@ abstract final class EndPoints {
   static const conversations = '/conversations';
   static String messages(String conversationId) =>
       '/conversations/$conversationId/messages';
+  static String whatsapp(String conversationId) =>
+      '/conversations/$conversationId/whatsapp';
+
+  /// Token-authenticated private-channel handshake. It rides the normal API
+  /// host (not the websocket one), so it is derived from [baseUrl].
+  static String get broadcastingAuth => '$baseUrl/broadcasting/auth';
+
+  // ── Reverb websocket (Pusher protocol) ─────────────────────────────────
+  // Separate from [baseUrl] because the browser/app reach Reverb on its own
+  // host-published port, which differs from the API's.
+  static String get reverbHost => switch (AppEnvironment.current) {
+    AppEnvironment.dev => '10.0.2.2',
+    AppEnvironment.staging => 'staging.zeno.sa',
+    AppEnvironment.production => 'api.zeno.sa',
+  };
+
+  static int get reverbPort => switch (AppEnvironment.current) {
+    AppEnvironment.dev => 58080,
+    AppEnvironment.staging => 443,
+    AppEnvironment.production => 443,
+  };
+
+  static bool get reverbUseTls => AppEnvironment.current != AppEnvironment.dev;
+
+  static String get reverbKey => switch (AppEnvironment.current) {
+    AppEnvironment.dev => 'local',
+    AppEnvironment.staging => 'zeno-staging',
+    AppEnvironment.production => 'zeno',
+  };
 
   static const notifications = '/notifications';
   static const notificationsUnread = '/notifications/unread-count';

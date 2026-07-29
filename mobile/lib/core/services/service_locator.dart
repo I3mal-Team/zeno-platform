@@ -13,6 +13,8 @@ import '../databases/api/interceptors/auth_interceptor.dart';
 import '../databases/api/interceptors/device_interceptor.dart';
 import '../databases/api/interceptors/locale_interceptor.dart';
 import '../managers/user_cubit/user_cubit.dart';
+import '../realtime/realtime_service.dart';
+import '../realtime/reverb_realtime_service.dart';
 import '../utils/secure_storage_manager.dart';
 import '../../features/auth/data/repos/auth_repo.dart';
 import '../../features/auth/data/repos/auth_repo_impl.dart';
@@ -78,6 +80,10 @@ void _registerNetworking() {
         }
       },
     ),
+  );
+
+  getIt.registerLazySingleton<RealtimeService>(
+    () => ReverbRealtimeService(getIt<SecureStorageManager>()),
   );
 }
 

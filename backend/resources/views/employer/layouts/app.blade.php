@@ -3,12 +3,14 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'لوحة التحكم') — زينو</title>
     <link rel="icon" href="{{ asset('assets/zeno-mark.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
     <link href="https://iconsax.gitlab.io/i/icons.css" rel="stylesheet">
     @vite('resources/css/employer.css')
+    @stack('head')
 </head>
 <body>
 <div style="direction:rtl;display:flex;min-height:100vh;background:#F1EFE9">
@@ -19,5 +21,6 @@
         <div style="padding:26px 30px 46px">@yield('content')</div>
     </main>
 </div>
+@stack('scripts')
 </body>
 </html>

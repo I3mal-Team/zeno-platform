@@ -4,11 +4,18 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:zeno/core/errors/error_codes.dart';
 import 'package:zeno/core/errors/failure.dart';
+import 'package:zeno/core/realtime/realtime_service.dart';
 import 'package:zeno/features/chat/data/models/message_model.dart';
 import 'package:zeno/features/chat/data/repos/chat_repo.dart';
 import 'package:zeno/features/chat/presentation/manager/chat_cubit/chat_cubit.dart';
 
 class MockChatRepo extends Mock implements ChatRepo {}
+
+class MockRealtimeService extends Mock implements RealtimeService {}
+
+class MockRealtimeChannel extends Mock implements RealtimeChannel {}
+
+void _noopEvent(Map<String, dynamic> _) {}
 
 const _saved = MessageModel(
   uuid: 'srv-1',
@@ -20,15 +27,30 @@ const _saved = MessageModel(
 
 void main() {
   late MockChatRepo repo;
+  late MockRealtimeService realtime;
+  late MockRealtimeChannel channel;
+
+  setUpAll(() => registerFallbackValue(_noopEvent));
 
   setUp(() {
     repo = MockChatRepo();
+    realtime = MockRealtimeService();
+    channel = MockRealtimeChannel();
     when(
       () => repo.fetchMessages(any()),
     ).thenAnswer((_) async => const Right([]));
+    when(
+      () => realtime.subscribePrivate(
+        any(),
+        event: any(named: 'event'),
+        onEvent: any(named: 'onEvent'),
+      ),
+    ).thenAnswer((_) async => channel);
+    when(() => channel.unsubscribe()).thenAnswer((_) async {});
   });
 
-  ChatCubit build() => ChatCubit(repo, 'conv-uuid');
+  ChatCubit build() =>
+      ChatCubit(repo, realtime, 'conv-uuid', currentUserId: 'me');
 
   blocTest<ChatCubit, ChatState>(
     'shows the message immediately then reconciles with the server copy',

@@ -12,8 +12,22 @@
               ? ['تم قبول طلبك', "تم قبولك في «{$job}» — ستصلك طريقة التواصل."]
               : ['تحديث على طلبك', "تم تحديث حالة طلبك على «{$job}»."],
           'job_changed' => ['تغيير في وظيفة قدّمت عليها', "تغيّرت بيانات وظيفة «{$job}»."],
+          'message_received' => ['رسالة جديدة', $data['preview'] ?? ''],
           default => ['إشعار', ''],
       };
+  }
+  }
+
+  // The thread a message notification points to — resolved by the viewer's role,
+  // since employers and candidates reach the same conversation by different routes.
+  if (! function_exists('zenoNotificationUrl')) {
+  function zenoNotificationUrl(array $data): ?string {
+      if (($data['type'] ?? '') === 'message_received' && ! empty($data['conversation_uuid'])) {
+          return auth()->user()?->role === 'employer'
+              ? route('employer.messages.show', $data['conversation_uuid'])
+              : route('messages.show', $data['conversation_uuid']);
+      }
+      return null;
   }
   }
 @endphp
@@ -35,12 +49,14 @@
   @forelse ($notifications as $notification)
     @php([$title, $body] = zenoNotificationText($notification->data))
     @php($unread = $notification->read_at === null)
+    @php($href = zenoNotificationUrl($notification->data))
+    @php($icon = ($notification->data['type'] ?? '') === 'message_received' ? 'messages-2' : 'bell-2')
     <div style="display:flex;gap:13px;align-items:flex-start;background:{{ $unread ? '#FFFDF6' : '#fff' }};border:1px solid {{ $unread ? '#F7BE17' : '#EFEDE6' }};border-radius:16px;padding:16px;margin-bottom:11px">
-      <div style="width:40px;height:40px;border-radius:12px;background:#FDF3D6;color:#8A6D12;display:flex;align-items:center;justify-content:center;flex:0 0 auto"><i class="iconsax" style="font-size:20px" icon-name="bell-2"></i></div>
-      <div style="flex:1;min-width:0">
+      <div style="width:40px;height:40px;border-radius:12px;background:#FDF3D6;color:#8A6D12;display:flex;align-items:center;justify-content:center;flex:0 0 auto"><i class="iconsax" style="font-size:20px" icon-name="{{ $icon }}"></i></div>
+      <{{ $href ? 'a' : 'div' }} {!! $href ? 'href="'.e($href).'"' : '' !!} style="flex:1;min-width:0;text-decoration:none;color:inherit">
         <div style="font-size:15.5px;font-weight:800;color:#211F20">{{ $title }}</div>
         @if ($body)<div style="font-size:13.5px;color:#6C665C;font-weight:500;margin-top:3px;line-height:1.6">{{ $body }}</div>@endif
-      </div>
+      </{{ $href ? 'a' : 'div' }}>
       @if ($unread)
         <form method="POST" action="{{ route('notifications.read', $notification->id) }}">
           @csrf

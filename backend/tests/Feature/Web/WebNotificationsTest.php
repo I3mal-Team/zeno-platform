@@ -37,6 +37,32 @@ it('shows the notifications page to a signed-in user', function () {
         ->assertSee('تم قبول طلبك', false);
 });
 
+it('renders a chat notification with its preview and a link to the thread', function () {
+    $user = makeUser('candidate');
+    $conversationUuid = (string) Str::uuid();
+
+    DB::table('notifications')->insert([
+        'id' => (string) Str::uuid(),
+        'type' => 'App\\Notifications\\MessageReceivedNotification',
+        'notifiable_type' => 'App\\Models\\User',
+        'notifiable_id' => $user->id,
+        'data' => json_encode([
+            'type' => 'message_received',
+            'conversation_uuid' => $conversationUuid,
+            'preview' => 'مرحباً، متى يمكنك البدء؟',
+        ]),
+        'read_at' => null,
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
+    test()->actingAs($user)->get('/notifications')
+        ->assertOk()
+        ->assertSee('رسالة جديدة', false)
+        ->assertSee('مرحباً، متى يمكنك البدء؟', false)
+        ->assertSee(route('messages.show', $conversationUuid), false);
+});
+
 it('marks all notifications as read from the web', function () {
     $user = makeUser('candidate');
     webNotification($user);

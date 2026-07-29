@@ -46,13 +46,20 @@ final class JobRepository
     }
 
     /**
-     * A paused listing stays openable by its slug so an applicant can still
-     * reach it from "my applications" (D-12); search never surfaces it.
+     * A paused or filled listing stays openable by its slug so an applicant
+     * can still reach it from "my applications" (D-12); search never surfaces
+     * it. The status list is derived from the enum so the rule lives in one
+     * place rather than drifting between here and JobStatus.
      */
     public function findReachableBySlug(string $slug): ?Job
     {
+        $reachable = array_map(
+            fn (JobStatus $status) => $status->value,
+            array_filter(JobStatus::cases(), fn (JobStatus $status) => $status->isReachableByDirectLink()),
+        );
+
         return Job::query()
-            ->whereIn('status', [JobStatus::Active->value, JobStatus::Paused->value])
+            ->whereIn('status', $reachable)
             ->with(self::DETAIL_RELATIONS)
             ->where('slug', $slug)
             ->first();

@@ -39,7 +39,7 @@ final class ApplicantController extends Controller
         $result = $this->review->accept($request->user(), $id);
 
         $message = $result['jobFilled']
-            ? 'تم قبول المتقدم — اكتمل عدد الشواغر، يمكنك إغلاق الإعلان.'
+            ? 'تم قبول المتقدم — اكتمل عدد الشواغر، وأُوقف الإعلان عن استقبال الطلبات. يمكنك إعادة تفعيله من «وظائفي» إن احتجت.'
             : 'تم قبول المتقدم.';
 
         return back()->with('status', $message);

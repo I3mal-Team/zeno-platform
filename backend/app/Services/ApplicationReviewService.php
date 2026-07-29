@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Enums\ApplicationStatus;
+use App\Enums\JobStatus;
 use App\Events\ApplicationDecided;
 use App\Exceptions\Domain\ApplicationAlreadyDecidedException;
 use App\Exceptions\Domain\OrganizationMissingException;
@@ -70,10 +71,13 @@ final class ApplicationReviewService
     }
 
     /**
-     * @return array{application: Application, jobFilled: bool} jobFilled tells
-     *                                                          the caller to
-     *                                                          suggest closing
-     *                                                          the listing (D-13)
+     * @return array{application: Application, jobFilled: bool} jobFilled says
+     *                                                          this acceptance
+     *                                                          took the last
+     *                                                          vacancy, so the
+     *                                                          listing has been
+     *                                                          marked filled
+     *                                                          (D-13)
      */
     public function accept(User $employer, int $applicationId): array
     {
@@ -92,7 +96,13 @@ final class ApplicationReviewService
             // Acceptance opens the conversation immediately (D-19).
             $this->conversations->createForApplication($decided);
 
-            return ['application' => $decided, 'jobFilled' => $accepted + 1 >= $job->vacancies_count];
+            $filled = $accepted + 1 >= $job->vacancies_count;
+
+            if ($filled) {
+                $this->markJobFilled($job);
+            }
+
+            return ['application' => $decided, 'jobFilled' => $filled];
         });
     }
 
@@ -102,6 +112,23 @@ final class ApplicationReviewService
         $this->assertDecidable($application);
 
         return DB::transaction(fn () => $this->decide($application, ApplicationStatus::Rejected, $employer, $reason));
+    }
+
+    /**
+     * Stops a listing taking applicants the moment its last vacancy is filled
+     * (D-13). Deliberately `filled` and not `closed`: closing is terminal, and
+     * an accepted candidate can still fall through — the employer flips a
+     * filled listing back to active in one click. The caller already holds a
+     * lock on the row, so two simultaneous acceptances cannot both do this.
+     */
+    private function markJobFilled(Job $job): void
+    {
+        if ($job->status !== JobStatus::Active) {
+            return;
+        }
+
+        $this->jobs->applyStatus($job, JobStatus::Filled, ['closed_at' => now(), 'closed_reason' => 'filled']);
+        $this->jobs->recordStatusChange($job, JobStatus::Active, JobStatus::Filled, 'system', null, 'vacancies_filled');
     }
 
     private function decide(Application $application, ApplicationStatus $to, User $employer, ?string $reason = null): Application

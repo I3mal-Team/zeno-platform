@@ -38,12 +38,14 @@ enum JobStatus: string
     }
 
     /**
-     * A paused listing is unreachable through search yet still openable by a
-     * candidate who already applied — the direct-link exception of D-12.
+     * A paused or filled listing is unreachable through search yet still
+     * openable by a candidate who already applied — the direct-link exception
+     * of D-12. Filled belongs here for the same reason: someone whose
+     * application is still open must be able to read what they applied to.
      */
     public function isReachableByDirectLink(): bool
     {
-        return $this === self::Active || $this === self::Paused;
+        return $this === self::Active || $this === self::Paused || $this === self::Filled;
     }
 
     /** A candidate may only apply while the listing is actively taking applicants. */

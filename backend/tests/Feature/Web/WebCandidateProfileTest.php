@@ -55,7 +55,7 @@ it('saves the profile, derives birth date and id type, then sends the candidate 
             'years_of_experience' => 4,
             'bio' => 'خبرة في إعداد القهوة المختصة.',
         ])
-        ->assertRedirect(route('site.home'));
+        ->assertRedirect(route('dashboard'));
 
     $profile = CandidateProfile::query()->where('user_id', $user->id)->first();
 
@@ -66,6 +66,57 @@ it('saves the profile, derives birth date and id type, then sends the candidate 
     expect($profile->city_id)->toBe($cityId);
     expect($profile->age)->toBe(27);
     expect($profile->completion_percentage)->toBeGreaterThan(0);
+});
+
+it('shows the edit form prefilled for a candidate with a profile', function () {
+    $user = candidateUser();
+    $user->candidateProfile()->create([
+        'full_name' => 'سالم العتيبي',
+        'city_id' => City::query()->value('id'),
+        'nationality_code' => 'SA',
+        'national_id' => '1012345678',
+        'job_title' => 'باريستا',
+        'completion_percentage' => 70,
+    ]);
+
+    test()->actingAs($user)
+        ->get(route('profile.edit'))
+        ->assertOk()
+        ->assertSee('تعديل بياناتي')
+        ->assertSee('سالم العتيبي', false)
+        ->assertSee('باريستا', false);
+});
+
+it('updates the profile and returns with a status message', function () {
+    $user = candidateUser();
+    $cityId = City::query()->value('id');
+    $user->candidateProfile()->create([
+        'full_name' => 'سالم',
+        'city_id' => $cityId,
+        'nationality_code' => 'SA',
+        'national_id' => '1012345678',
+        'completion_percentage' => 50,
+    ]);
+
+    test()->actingAs($user)
+        ->put(route('profile.update'), [
+            'full_name' => 'سالم المحدّث',
+            'national_id' => '1012345678',
+            'city_id' => $cityId,
+            'nationality_code' => 'SA',
+            'age' => 30,
+            'job_title' => 'مشرف',
+        ])
+        ->assertRedirect(route('profile.edit'))
+        ->assertSessionHas('status');
+
+    expect(CandidateProfile::query()->where('user_id', $user->id)->value('full_name'))->toBe('سالم المحدّث');
+});
+
+it('sends a profile-less candidate from the edit page to the intake', function () {
+    test()->actingAs(candidateUser())
+        ->get(route('profile.edit'))
+        ->assertRedirect(route('profile.complete'));
 });
 
 it('requires national id, city and nationality', function () {

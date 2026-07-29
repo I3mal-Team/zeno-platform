@@ -3,6 +3,8 @@
 @section('title', 'الرسائل')
 
 @section('content')
+<x-site.header/>
+
 <div style="max-width:1180px;margin:0 auto;padding:28px 26px 48px">
   <h1 style="font-size:24px;font-weight:900;color:#211F20;margin-bottom:6px">الرسائل</h1>
   <p style="font-size:14.5px;color:#8A857A;font-weight:600;margin-bottom:20px">تواصل مع أصحاب العمل بعد قبول تقديمك</p>

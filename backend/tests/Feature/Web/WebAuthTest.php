@@ -55,14 +55,14 @@ it('sends a new candidate to complete their profile', function () {
     test()->assertAuthenticated();
 });
 
-it('sends a returning candidate who already has a profile straight home', function () {
+it('sends a returning candidate who already has a profile to their dashboard', function () {
     $user = userWithPhone('+966512345000', 'candidate');
     $user->candidateProfile()->create([
         'full_name' => 'سالم العتيبي',
         'completion_percentage' => 60,
     ]);
 
-    webLogin('0512345000', 'candidate')->assertRedirect(route('site.home'));
+    webLogin('0512345000', 'candidate')->assertRedirect(route('dashboard'));
 
     test()->assertAuthenticated();
 });

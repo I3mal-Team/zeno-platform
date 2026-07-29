@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Controllers\Site\ApplicationController;
 use App\Http\Controllers\Site\Auth\LoginController;
+use App\Http\Controllers\Site\DashboardController;
 use App\Http\Controllers\Site\MessageController;
 use App\Http\Controllers\Site\NotificationController;
 use App\Http\Controllers\Site\Profile\CandidateProfileController;
@@ -39,6 +40,11 @@ Route::middleware(['auth', 'role:candidate'])->group(function () {
     // Everything below needs a completed profile first; the intake above must
     // stay reachable, so the gate wraps only these routes.
     Route::middleware('candidate.profile')->group(function () {
+        Route::get('dashboard', DashboardController::class)->name('dashboard');
+
+        Route::get('profile', [CandidateProfileController::class, 'edit'])->name('profile.edit');
+        Route::put('profile', [CandidateProfileController::class, 'update'])->name('profile.update');
+
         Route::prefix('messages')->name('messages.')->group(function () {
             Route::get('/', [MessageController::class, 'index'])->name('index');
             Route::get('{uuid}', [MessageController::class, 'show'])->name('show');

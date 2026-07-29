@@ -3,6 +3,8 @@
 @section('title', 'طلباتي')
 
 @section('content')
+<x-site.header/>
+
 <div style="max-width:760px;margin:0 auto;padding:24px 26px 56px">
   <div style="background:#26221F;border-radius:24px;padding:24px 26px;margin-bottom:20px">
     <h1 style="font-size:24px;font-weight:900;color:#fff">طلباتي</h1>

@@ -37,6 +37,28 @@ final class CandidateProfileController extends SiteController
     {
         $this->profiles->save($request->user(), $request->toDto());
 
-        return redirect()->route('site.home')->with('status', 'تم حفظ ملفك بنجاح.');
+        return redirect()->route('dashboard')->with('status', 'تم حفظ ملفك بنجاح.');
+    }
+
+    public function edit(Request $request, CatalogService $catalog): View|RedirectResponse
+    {
+        $profile = $this->profiles->find($request->user());
+
+        if ($profile === null) {
+            return redirect()->route('profile.complete');
+        }
+
+        return view('site.profile.edit', [
+            'profile' => $profile,
+            'cities' => $catalog->activeCities(),
+            'countries' => $catalog->activeCountries(),
+        ]);
+    }
+
+    public function update(SaveCandidateProfileRequest $request): RedirectResponse
+    {
+        $this->profiles->save($request->user(), $request->toDto());
+
+        return redirect()->route('profile.edit')->with('status', 'تم تحديث ملفك بنجاح.');
     }
 }

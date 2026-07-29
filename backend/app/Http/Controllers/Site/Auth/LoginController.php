@@ -91,6 +91,6 @@ final class LoginController extends SiteController
 
         return $user->needsCandidateProfile()
             ? route('profile.complete')
-            : route('site.home');
+            : route('dashboard');
     }
 }

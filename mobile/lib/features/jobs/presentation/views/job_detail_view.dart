@@ -9,6 +9,7 @@ import '../../../../core/styles/app_colors.dart';
 import '../../../../core/styles/app_text_styles.dart';
 import '../../../../core/styles/category_visuals.dart';
 import '../../../applications/presentation/manager/apply_cubit/apply_cubit.dart';
+import '../../../applications/presentation/views/widgets/apply_form_sheet.dart';
 import '../../data/models/job_detail_model.dart';
 import '../manager/job_detail_cubit/job_detail_cubit.dart';
 
@@ -452,9 +453,7 @@ class _ApplyBar extends StatelessWidget {
                     final canApply = job.isOpenForApplications && !applied;
 
                     return FilledButton(
-                      onPressed: canApply
-                          ? () => context.read<ApplyCubit>().apply(job.slug)
-                          : null,
+                      onPressed: canApply ? () => _onApply(context) : null,
                       style: FilledButton.styleFrom(
                         backgroundColor: AppColors.amber,
                         foregroundColor: AppColors.charcoalSoft,
@@ -499,6 +498,26 @@ class _ApplyBar extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  /// A plain job applies in one tap; one with a custom form opens the sheet
+  /// first and only submits once the candidate fills it in.
+  Future<void> _onApply(BuildContext context) async {
+    final cubit = context.read<ApplyCubit>();
+
+    if (job.applicationFields.isEmpty) {
+      cubit.apply(job.slug);
+      return;
+    }
+
+    final result = await ApplyFormSheet.show(
+      context,
+      fields: job.applicationFields,
+    );
+
+    if (result == null) return;
+
+    cubit.apply(job.slug, answers: result.answers, files: result.files);
   }
 
   String _label(bool open, bool applied) {

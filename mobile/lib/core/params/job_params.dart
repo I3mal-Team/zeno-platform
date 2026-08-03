@@ -14,6 +14,7 @@ class PublishJobParam {
     required this.vacanciesCount,
     required this.cityId,
     required this.contactChannel,
+    this.applicationFields = const [],
     this.description,
     this.salaryAmountMax,
     this.hoursPerWeek,
@@ -32,6 +33,10 @@ class PublishJobParam {
   final int vacanciesCount;
   final int cityId;
   final String contactChannel;
+
+  /// Employer-authored application-form fields, each a
+  /// `{label, type, required, options}` map ready for the API.
+  final List<Map<String, dynamic>> applicationFields;
   final String? description;
   final num? salaryAmountMax;
   final int? hoursPerWeek;
@@ -50,6 +55,7 @@ class PublishJobParam {
     'vacancies_count': vacanciesCount,
     'city_id': cityId,
     'contact_channel': contactChannel,
+    if (applicationFields.isNotEmpty) 'application_fields': applicationFields,
     if (description != null) 'description': description,
     if (salaryAmountMax != null) 'salary_amount_max': salaryAmountMax,
     if (hoursPerWeek != null) 'hours_per_week': hoursPerWeek,

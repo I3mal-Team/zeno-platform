@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -13,10 +15,14 @@ class ApplyCubit extends Cubit<ApplyState> {
 
   final ApplicationsRepo _repo;
 
-  Future<void> apply(String slug) async {
+  Future<void> apply(
+    String slug, {
+    Map<String, String> answers = const {},
+    Map<String, File> files = const {},
+  }) async {
     safeEmit(const ApplySubmitting());
 
-    final result = await _repo.apply(slug);
+    final result = await _repo.apply(slug, answers: answers, files: files);
 
     safeEmit(result.fold(ApplyFailed.new, ApplyDone.new));
   }

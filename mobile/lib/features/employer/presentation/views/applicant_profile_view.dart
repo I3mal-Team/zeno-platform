@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/components/app_toast.dart';
 import '../../../../core/motion/motion.dart';
@@ -95,6 +96,18 @@ class _Body extends StatelessWidget {
                   child: Text(
                     profile.bio!,
                     style: AppTextStyles.bodyMd.copyWith(height: 1.8),
+                  ),
+                ),
+              ],
+              if (profile.answers.isNotEmpty) ...[
+                const _SectionTitle('إجابات نموذج التقديم'),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    children: [
+                      for (final answer in profile.answers)
+                        _AnswerCard(answer: answer),
+                    ],
                   ),
                 ),
               ],
@@ -318,6 +331,103 @@ class _SkillChip extends StatelessWidget {
       child: Text(
         label,
         style: AppTextStyles.badge.copyWith(fontWeight: FontWeight.w700),
+      ),
+    );
+  }
+}
+
+class _AnswerCard extends StatelessWidget {
+  const _AnswerCard({required this.answer});
+
+  final ApplicantAnswer answer;
+
+  Future<void> _open() async {
+    final url = answer.fileUrl;
+    if (url == null) return;
+    await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        border: Border.all(color: AppColors.border),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            answer.label,
+            style: AppTextStyles.caption.copyWith(
+              fontWeight: FontWeight.w700,
+              color: AppColors.textMuted,
+            ),
+          ),
+          const SizedBox(height: 8),
+          if (answer.fileUrl == null)
+            Text(
+              answer.value ?? '—',
+              style: AppTextStyles.bodyMd.copyWith(
+                fontWeight: FontWeight.w700,
+                height: 1.7,
+              ),
+            )
+          else if (answer.isImage)
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: InkWell(
+                onTap: _open,
+                child: Image.network(
+                  answer.fileUrl!,
+                  height: 170,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, _, _) => Container(
+                    height: 90,
+                    color: AppColors.paper,
+                    alignment: Alignment.center,
+                    child: const Icon(
+                      Icons.broken_image_outlined,
+                      color: AppColors.textMuted,
+                    ),
+                  ),
+                ),
+              ),
+            )
+          else
+            Pressable(
+              onTap: _open,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+                decoration: BoxDecoration(
+                  color: AppColors.warningBg,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.download_rounded,
+                      size: 19,
+                      color: AppColors.warningFg,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'عرض الملف',
+                      style: AppTextStyles.bodySm.copyWith(
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.warningFg,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

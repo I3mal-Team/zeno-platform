@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 
+import 'application_field_model.dart';
 import 'job_model.dart';
 
 class JobDetailModel extends Equatable {
@@ -13,6 +14,7 @@ class JobDetailModel extends Equatable {
     required this.isOpenForApplications,
     required this.contactChannel,
     required this.vacanciesCount,
+    this.applicationFields = const [],
     this.description,
     this.category,
     this.workType,
@@ -44,6 +46,10 @@ class JobDetailModel extends Equatable {
       isOpenForApplications: json['is_open_for_applications'] as bool? ?? false,
       contactChannel: json['contact_channel'] as String? ?? 'app',
       vacanciesCount: json['vacancies_count'] as int? ?? 1,
+      applicationFields:
+          (json['application_fields'] as List<dynamic>? ?? [])
+              .map((e) => ApplicationFieldModel.fromJson(e as Map<String, dynamic>))
+              .toList(),
       description: json['description'] as String?,
       category: category is Map<String, dynamic>
           ? JobCategoryRef.fromJson(category)
@@ -75,6 +81,7 @@ class JobDetailModel extends Equatable {
   final bool isOpenForApplications;
   final String contactChannel;
   final int vacanciesCount;
+  final List<ApplicationFieldModel> applicationFields;
   final String? description;
   final JobCategoryRef? category;
   final String? workType;

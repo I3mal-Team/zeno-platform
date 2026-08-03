@@ -52,6 +52,8 @@ dependencies:
   dart_pusher_channels: ^1.2.3
   # Opens the WhatsApp deep link when a conversation moves off-platform.
   url_launcher: ^6.3.1
+  # Picks CV / photo files a candidate attaches to a custom application form.
+  file_picker: ^8.1.4
   flutter_localizations:
     sdk: flutter
 

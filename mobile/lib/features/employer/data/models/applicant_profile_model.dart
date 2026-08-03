@@ -14,6 +14,7 @@ class ApplicantProfileModel extends Equatable {
     this.bio,
     this.city,
     this.avatarUrl,
+    this.answers = const [],
   });
 
   factory ApplicantProfileModel.fromJson(Map<String, dynamic> json) {
@@ -32,6 +33,9 @@ class ApplicantProfileModel extends Equatable {
       bio: profile?['bio'] as String?,
       city: profile?['city'] as String?,
       avatarUrl: profile?['avatar_url'] as String?,
+      answers: (json['answers'] as List<dynamic>? ?? [])
+          .map((e) => ApplicantAnswer.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
   }
 
@@ -47,10 +51,42 @@ class ApplicantProfileModel extends Equatable {
   final String? bio;
   final String? city;
   final String? avatarUrl;
+  final List<ApplicantAnswer> answers;
 
   bool get isDecidable => status == 'submitted' || status == 'review';
   bool get isAccepted => status == 'accepted';
 
   @override
   List<Object?> get props => [reference, status];
+}
+
+/// One answer the candidate gave to the job's custom form, as the employer
+/// sees it: a scalar [value], or a [fileUrl] for an uploaded file/image.
+class ApplicantAnswer extends Equatable {
+  const ApplicantAnswer({
+    required this.label,
+    required this.type,
+    this.value,
+    this.fileUrl,
+    this.isImage = false,
+  });
+
+  factory ApplicantAnswer.fromJson(Map<String, dynamic> json) {
+    return ApplicantAnswer(
+      label: json['label'] as String? ?? '',
+      type: json['type'] as String? ?? 'text',
+      value: json['value'] as String?,
+      fileUrl: json['file_url'] as String?,
+      isImage: json['is_image'] as bool? ?? false,
+    );
+  }
+
+  final String label;
+  final String type;
+  final String? value;
+  final String? fileUrl;
+  final bool isImage;
+
+  @override
+  List<Object?> get props => [label, value, fileUrl];
 }

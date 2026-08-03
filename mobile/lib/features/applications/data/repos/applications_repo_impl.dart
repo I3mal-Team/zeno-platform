@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
 
 import '../../../../core/databases/api/api_consumer.dart';
 import '../../../../core/databases/api/end_points.dart';
@@ -14,11 +17,42 @@ class ApplicationsRepoImpl implements ApplicationsRepo {
   final RequestHandler _handle;
 
   @override
-  Future<Either<Failure, ApplicationModel>> apply(String slug) {
+  Future<Either<Failure, ApplicationModel>> apply(
+    String slug, {
+    Map<String, String> answers = const {},
+    Map<String, File> files = const {},
+  }) {
     return _handle(
-      () => _api.post(EndPoints.applyToJob(slug)),
+      () async => _api.post(
+        EndPoints.applyToJob(slug),
+        body: await _applyBody(answers, files),
+      ),
       (data) => ApplicationModel.fromJson(data as Map<String, dynamic>),
     );
+  }
+
+  /// A multipart body when the job has a form, or null for a one-click apply.
+  /// Scalars and uploads are both sent under PHP-style `answers[key]` names.
+  Future<Object?> _applyBody(
+    Map<String, String> answers,
+    Map<String, File> files,
+  ) async {
+    if (answers.isEmpty && files.isEmpty) return null;
+
+    final form = FormData();
+    answers.forEach((key, value) {
+      form.fields.add(MapEntry('answers[$key]', value));
+    });
+    for (final entry in files.entries) {
+      form.files.add(
+        MapEntry(
+          'answers[${entry.key}]',
+          await MultipartFile.fromFile(entry.value.path),
+        ),
+      );
+    }
+
+    return form;
   }
 
   @override

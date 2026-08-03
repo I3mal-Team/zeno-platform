@@ -122,6 +122,7 @@ class _PostJobFormState extends State<_PostJobForm> {
   final _salary = TextEditingController();
   final _vacancies = TextEditingController(text: '1');
   final _description = TextEditingController();
+  final List<_FieldDraft> _fields = [];
 
   int? _categoryId;
   int? _workTypeId;
@@ -136,7 +137,38 @@ class _PostJobFormState extends State<_PostJobForm> {
     for (final c in [_title, _salary, _vacancies, _description]) {
       c.dispose();
     }
+    for (final f in _fields) {
+      f.dispose();
+    }
     super.dispose();
+  }
+
+  /// The employer-authored form fields, ready for the API — blank labels
+  /// dropped, options kept only for pick lists.
+  List<Map<String, dynamic>> _buildApplicationFields() {
+    final result = <Map<String, dynamic>>[];
+
+    for (final field in _fields) {
+      final label = field.label.text.trim();
+      if (label.isEmpty) continue;
+
+      final options = field.type == 'select'
+          ? field.options.text
+                .split(RegExp('[،,]'))
+                .map((e) => e.trim())
+                .where((e) => e.isNotEmpty)
+                .toList()
+          : const <String>[];
+
+      result.add({
+        'label': label,
+        'type': field.type,
+        'required': field.required,
+        if (field.type == 'select') 'options': options,
+      });
+    }
+
+    return result;
   }
 
   bool get _selectorsReady =>
@@ -165,6 +197,7 @@ class _PostJobFormState extends State<_PostJobForm> {
         vacanciesCount: int.tryParse(_vacancies.text.trim()) ?? 1,
         cityId: _cityId!,
         contactChannel: _contact,
+        applicationFields: _buildApplicationFields(),
         description: _description.text.trim().isEmpty
             ? null
             : _description.text.trim(),
@@ -261,6 +294,28 @@ class _PostJobFormState extends State<_PostJobForm> {
                 _ContactSelect(
                   value: _contact,
                   onSelect: (v) => setState(() => _contact = v),
+                ),
+                const _Label('نموذج التقديم (اختياري)'),
+                Text(
+                  'أضف حقولاً يملؤها المتقدّم — سيرة ذاتية، صورة، سؤال، أو قائمة اختيار.',
+                  style: AppTextStyles.caption.copyWith(
+                    color: AppColors.textMuted,
+                    height: 1.6,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                for (final field in _fields)
+                  _FieldEditor(
+                    key: ObjectKey(field),
+                    field: field,
+                    onChanged: () => setState(() {}),
+                    onRemove: () => setState(() {
+                      field.dispose();
+                      _fields.remove(field);
+                    }),
+                  ),
+                _AddFieldButton(
+                  onTap: () => setState(() => _fields.add(_FieldDraft())),
                 ),
               ],
             ),
@@ -528,6 +583,165 @@ class _SubmitBar extends StatelessWidget {
                     ],
                   ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// One in-progress application-form field the employer is authoring. Holds its
+/// own controllers so text survives rebuilds; disposed with the form.
+class _FieldDraft {
+  _FieldDraft()
+    : label = TextEditingController(),
+      options = TextEditingController();
+
+  final TextEditingController label;
+  final TextEditingController options;
+  String type = 'text';
+  bool required = false;
+
+  void dispose() {
+    label.dispose();
+    options.dispose();
+  }
+}
+
+const _fieldTypeOptions = <(String, String)>[
+  ('text', 'نص'),
+  ('number', 'أرقام'),
+  ('select', 'قائمة'),
+  ('file', 'ملف'),
+  ('image', 'صورة'),
+];
+
+/// The editor card for a single custom field: label, type, required, options.
+class _FieldEditor extends StatelessWidget {
+  const _FieldEditor({
+    required this.field,
+    required this.onChanged,
+    required this.onRemove,
+    super.key,
+  });
+
+  final _FieldDraft field;
+  final VoidCallback onChanged;
+  final VoidCallback onRemove;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        border: Border.all(color: AppColors.border),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: AppField(controller: field.label, hint: 'عنوان الحقل'),
+              ),
+              const SizedBox(width: 8),
+              Pressable(
+                onTap: onRemove,
+                child: Container(
+                  width: 44,
+                  height: 44,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: AppColors.errorBg,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(
+                    Icons.delete_outline_rounded,
+                    color: AppColors.errorFg,
+                    size: 20,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              for (final (code, label) in _fieldTypeOptions)
+                _Chip(
+                  label: label,
+                  active: field.type == code,
+                  onTap: () {
+                    field.type = code;
+                    onChanged();
+                  },
+                ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              _Chip(
+                label: 'مطلوب',
+                icon: field.required
+                    ? Icons.check_box_rounded
+                    : Icons.check_box_outline_blank_rounded,
+                active: field.required,
+                onTap: () {
+                  field.required = !field.required;
+                  onChanged();
+                },
+              ),
+            ],
+          ),
+          if (field.type == 'select') ...[
+            const SizedBox(height: 10),
+            AppField(
+              controller: field.options,
+              hint: 'الخيارات مفصولة بفاصلة — مثال: دوام كامل، جزئي',
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _AddFieldButton extends StatelessWidget {
+  const _AddFieldButton({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Pressable(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(top: 2),
+        padding: const EdgeInsets.symmetric(vertical: 13),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: AppColors.warningBg,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: AppColors.amber, width: 1.4),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.add_rounded, size: 20, color: AppColors.warningFg),
+            const SizedBox(width: 7),
+            Text(
+              'إضافة حقل',
+              style: AppTextStyles.bodySm.copyWith(
+                fontWeight: FontWeight.w800,
+                color: AppColors.warningFg,
+              ),
+            ),
+          ],
         ),
       ),
     );

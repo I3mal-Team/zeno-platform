@@ -20,10 +20,10 @@ final class AdminUserSeeder extends Seeder
         Role::findOrCreate('super_admin', 'admin');
 
         $admin = Admin::query()->updateOrCreate(
-            ['email' => env('ADMIN_EMAIL', 'admin@zeno.sa')],
+            ['email' => config('admin.email')],
             [
                 'name' => 'مدير النظام',
-                'password' => env('ADMIN_PASSWORD', 'password'),
+                'password' => config('admin.password'),
                 'status' => 'active',
             ],
         );

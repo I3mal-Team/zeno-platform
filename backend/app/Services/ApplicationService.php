@@ -14,6 +14,7 @@ use App\Models\Job;
 use App\Models\User;
 use App\Repositories\ApplicationRepository;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -29,7 +30,7 @@ final class ApplicationService
 
     /**
      * @param  array<string, mixed>  $answers  scalar answers keyed by field key
-     * @param  array<string, \Illuminate\Http\UploadedFile>  $files  uploads keyed by field key
+     * @param  array<string, UploadedFile>  $files  uploads keyed by field key
      */
     public function apply(User $candidate, Job $job, array $answers = [], array $files = []): Application
     {

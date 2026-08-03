@@ -16,7 +16,11 @@ final class ApplicationForm
 {
     public const MAX_FIELDS = 20;
 
-    /** Validation rules for the field-definition array the employer submits. */
+    /**
+     * Validation rules for the field-definition array the employer submits.
+     *
+     * @return array<string, mixed>
+     */
     public static function definitionRules(): array
     {
         return [

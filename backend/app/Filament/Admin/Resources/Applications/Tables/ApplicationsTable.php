@@ -19,7 +19,7 @@ class ApplicationsTable
                 TextColumn::make('reference_number')->label('رقم الطلب')->searchable()->copyable(),
                 TextColumn::make('job.title')->label('الوظيفة')->searchable()->limit(32),
                 TextColumn::make('candidate.candidateProfile.full_name')->label('المتقدّم')
-                    ->description(fn (Application $record): ?string => $record->candidate?->phone_e164)
+                    ->description(fn (Application $record): string => $record->candidate->phone_e164)
                     ->searchable(),
                 TextColumn::make('organization.name')->label('المنشأة')->searchable()->limit(28),
                 TextColumn::make('status')->label('الحالة')->badge()

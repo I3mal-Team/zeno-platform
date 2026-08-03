@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Models\Admin;
 use App\Models\Application;
+use App\Models\ContactRequest;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 
@@ -59,7 +60,7 @@ it('renders an application row with its related job, candidate and organization'
 });
 
 it('renders a contact request in the list', function () {
-    App\Models\ContactRequest::query()->create([
+    ContactRequest::query()->create([
         'name' => 'خالد العتيبي',
         'email' => 'khaled@example.com',
         'topic' => 'support',

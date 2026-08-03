@@ -19,6 +19,7 @@ use Illuminate\Support\Carbon;
  * @property string $title
  * @property string $slug
  * @property string|null $description
+ * @property array<int, array<string, mixed>>|null $application_fields
  * @property string $salary_amount
  * @property string|null $salary_amount_max
  * @property int $vacancies_count

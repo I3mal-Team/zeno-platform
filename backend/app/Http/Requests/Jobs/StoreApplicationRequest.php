@@ -91,6 +91,6 @@ final class StoreApplicationRequest extends FormRequest
             ->where('slug', (string) $this->route('slug'))
             ->first();
 
-        return $this->resolvedJob?->application_fields ?? [];
+        return $this->resolvedJob->application_fields ?? [];
     }
 }

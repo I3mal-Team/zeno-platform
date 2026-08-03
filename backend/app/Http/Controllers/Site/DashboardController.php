@@ -35,7 +35,7 @@ final class DashboardController extends Controller
 
         return view('site.dashboard', [
             'fullName' => $user->candidateProfile?->full_name,
-            'completion' => (int) ($user->candidateProfile?->completion_percentage ?? 0),
+            'completion' => (int) ($user->candidateProfile->completion_percentage ?? 0),
             'applications' => $applications,
             'conversations' => $conversations,
             'stats' => [

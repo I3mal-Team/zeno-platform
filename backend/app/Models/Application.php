@@ -23,6 +23,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
  * @property int $organization_id
  * @property ApplicationStatus $status
  * @property ContactChannel $contact_channel
+ * @property array<string, mixed>|null $answers
  * @property string $profile_access_token
  * @property Carbon $profile_access_expires_at
  * @property Carbon|null $viewed_at
@@ -58,17 +59,19 @@ class Application extends Model implements HasMedia
         $summary = [];
 
         foreach ($this->job->application_fields ?? [] as $field) {
-            $type = ApplicationFieldType::tryFrom($field['type'] ?? '') ?? ApplicationFieldType::Text;
+            $key = (string) ($field['key'] ?? '');
+            $label = (string) ($field['label'] ?? '');
+            $type = ApplicationFieldType::tryFrom((string) ($field['type'] ?? '')) ?? ApplicationFieldType::Text;
 
             if ($type->isUpload()) {
-                $url = $this->getFirstMediaUrl(self::answerCollection($field['key'])) ?: null;
+                $url = $this->getFirstMediaUrl(self::answerCollection($key)) ?: null;
 
                 if ($url === null) {
                     continue;
                 }
 
                 $summary[] = [
-                    'label' => $field['label'],
+                    'label' => $label,
                     'type' => $type->value,
                     'value' => null,
                     'file_url' => $url,
@@ -78,14 +81,14 @@ class Application extends Model implements HasMedia
                 continue;
             }
 
-            $value = $answers[$field['key']] ?? null;
+            $value = $answers[$key] ?? null;
 
             if ($value === null || $value === '') {
                 continue;
             }
 
             $summary[] = [
-                'label' => $field['label'],
+                'label' => $label,
                 'type' => $type->value,
                 'value' => (string) $value,
                 'file_url' => null,

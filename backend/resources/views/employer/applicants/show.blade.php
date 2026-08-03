@@ -45,6 +45,27 @@
       </div>
     @endif
 
+    @php($answers = $application->answerSummary())
+    @if ($answers)
+      <div style="margin-top:24px;padding-top:22px;border-top:1px solid #EEF1EE">
+        <div style="font-size:14px;font-weight:800;color:#284C3D;margin-bottom:12px">إجابات نموذج التقديم</div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          @foreach ($answers as $answer)
+            <div style="background:#F7F9F7;border:1px solid #E5EAE6;border-radius:14px;padding:14px 16px">
+              <div style="font-size:12.5px;color:#869089;font-weight:700;margin-bottom:6px">{{ $answer['label'] }}</div>
+              @if ($answer['file_url'] === null)
+                <div style="font-size:15px;font-weight:700;color:#284C3D;white-space:pre-line">{{ $answer['value'] }}</div>
+              @elseif ($answer['is_image'])
+                <a href="{{ $answer['file_url'] }}" target="_blank" rel="noopener"><img src="{{ $answer['file_url'] }}" alt="{{ $answer['label'] }}" style="max-width:220px;max-height:220px;border-radius:12px;border:1px solid #E5EAE6"></a>
+              @else
+                <a href="{{ $answer['file_url'] }}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:800;color:#284C3D;background:#F3ECD6;border-radius:11px;padding:9px 14px"><i class="iconsax" style="font-size:19px" icon-name="document-download"></i>عرض الملف</a>
+              @endif
+            </div>
+          @endforeach
+        </div>
+      </div>
+    @endif
+
     @if ($s->value === 'accepted')
       <div style="margin-top:22px;background:#E7F4EC;border-radius:14px;padding:15px;display:flex;align-items:center;gap:12px">
         <i class="iconsax" style="font-size:24px;color:#1F8A4D" icon-name="messages-2"></i>

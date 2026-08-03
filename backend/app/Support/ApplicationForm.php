@@ -25,7 +25,7 @@ final class ApplicationForm
             'application_fields.*.type' => ['required', Rule::enum(ApplicationFieldType::class)],
             'application_fields.*.required' => ['nullable', 'boolean'],
             'application_fields.*.options' => ['nullable', 'array', 'max:20'],
-            'application_fields.*.options.*' => ['string', 'max:80'],
+            'application_fields.*.options.*' => ['nullable', 'string', 'max:80'],
         ];
     }
 

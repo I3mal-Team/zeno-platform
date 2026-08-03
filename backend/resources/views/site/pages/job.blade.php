@@ -62,11 +62,48 @@
 
   @auth
     @if (auth()->user()->role === 'candidate')
-      <form method="POST" action="{{ route('site.jobs.apply', $job->slug) }}" style="margin-top:20px">
+      @php($afFields = $job->application_fields ?? [])
+      @php($hasUploads = collect($afFields)->contains(fn ($f) => in_array($f['type'] ?? '', ['file', 'image'], true)))
+      @php($inp = 'width:100%;border-radius:13px;background:#F7F9F7;padding:13px 15px;font-family:inherit;font-size:15px;font-weight:600;color:#284C3D;outline:none;box-sizing:border-box')
+      @php($applyBtn = 'width:100%;display:flex;align-items:center;justify-content:center;gap:9px;background:#C9A24B;color:#284C3D;border:none;font-family:inherit;font-size:16px;font-weight:800;padding:16px;border-radius:16px;cursor:pointer;box-shadow:0 16px 30px -14px rgba(247,190,23,.5)')
+      <form method="POST" action="{{ route('site.jobs.apply', $job->slug) }}" style="margin-top:20px" @if ($hasUploads) enctype="multipart/form-data" @endif>
         @csrf
-        <button type="submit" class="btn" style="width:100%;display:flex;align-items:center;justify-content:center;gap:9px;background:#C9A24B;color:#284C3D;border:none;font-family:inherit;font-size:16px;font-weight:800;padding:16px;border-radius:16px;cursor:pointer;box-shadow:0 16px 30px -14px rgba(247,190,23,.5)">
-          <i class="iconsax" style="font-size:22px" icon-name="send-2"></i>قدّم على الوظيفة
-        </button>
+        @if ($afFields)
+          <div style="background:#fff;border:1px solid #E5EAE6;border-radius:22px;padding:28px;display:flex;flex-direction:column;gap:18px">
+            <div style="font-size:18px;font-weight:800;color:#284C3D">نموذج التقديم</div>
+            @foreach ($afFields as $field)
+              @php($key = $field['key'])
+              @php($req = (bool) ($field['required'] ?? false))
+              @php($bd = $errors->has('answers.'.$key) ? '#B23232' : '#DCE3DD')
+              <div>
+                <label for="af-{{ $key }}" style="display:block;font-size:14px;font-weight:800;color:#284C3D;margin-bottom:8px">{{ $field['label'] }}@if ($req)<span style="color:#B23232"> *</span>@endif</label>
+                @switch($field['type'])
+                  @case('select')
+                    <select id="af-{{ $key }}" name="answers[{{ $key }}]" @required($req) style="{{ $inp }};border:1.5px solid {{ $bd }}">
+                      <option value="" disabled @selected(old('answers.'.$key) === null)>اختر…</option>
+                      @foreach ($field['options'] ?? [] as $opt)
+                        <option value="{{ $opt }}" @selected(old('answers.'.$key) === $opt)>{{ $opt }}</option>
+                      @endforeach
+                    </select>
+                    @break
+                  @case('number')
+                    <input id="af-{{ $key }}" type="number" step="any" name="answers[{{ $key }}]" value="{{ old('answers.'.$key) }}" @required($req) style="{{ $inp }};border:1.5px solid {{ $bd }}">
+                    @break
+                  @case('file')
+                  @case('image')
+                    <input id="af-{{ $key }}" type="file" name="answers[{{ $key }}]" accept="{{ $field['type'] === 'image' ? 'image/*' : '.pdf,.doc,.docx,image/*' }}" @required($req) style="{{ $inp }};border:1.5px solid {{ $bd }};font-weight:600">
+                    @break
+                  @default
+                    <textarea id="af-{{ $key }}" name="answers[{{ $key }}]" rows="3" @required($req) style="{{ $inp }};border:1.5px solid {{ $bd }};resize:vertical;line-height:1.7">{{ old('answers.'.$key) }}</textarea>
+                @endswitch
+                @error('answers.'.$key)<div style="font-size:13px;color:#B23232;font-weight:700;margin-top:6px">{{ $message }}</div>@enderror
+              </div>
+            @endforeach
+            <button type="submit" class="btn" style="{{ $applyBtn }}"><i class="iconsax" style="font-size:22px" icon-name="send-2"></i>قدّم على الوظيفة</button>
+          </div>
+        @else
+          <button type="submit" class="btn" style="{{ $applyBtn }}"><i class="iconsax" style="font-size:22px" icon-name="send-2"></i>قدّم على الوظيفة</button>
+        @endif
       </form>
     @else
       <div style="margin-top:20px;background:#F3ECD6;color:#8A6D12;border-radius:14px;padding:13px 16px;font-size:14px;font-weight:700;text-align:center">سجّل الدخول بحساب باحث عن عمل للتقديم على الوظائف.</div>

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\ApplicationFieldType;
 use App\Enums\ApplicationStatus;
 use App\Enums\ContactChannel;
 use Illuminate\Database\Eloquent\Builder;
@@ -43,6 +44,56 @@ class Application extends Model implements HasMedia
     public static function answerCollection(string $fieldKey): string
     {
         return 'answer_'.$fieldKey;
+    }
+
+    /**
+     * The candidate's answers paired with their field definitions for display,
+     * skipping fields left blank. Uploads resolve to their stored media URL.
+     *
+     * @return list<array{label: string, type: string, value: string|null, file_url: string|null, is_image: bool}>
+     */
+    public function answerSummary(): array
+    {
+        $answers = $this->answers ?? [];
+        $summary = [];
+
+        foreach ($this->job->application_fields ?? [] as $field) {
+            $type = ApplicationFieldType::tryFrom($field['type'] ?? '') ?? ApplicationFieldType::Text;
+
+            if ($type->isUpload()) {
+                $url = $this->getFirstMediaUrl(self::answerCollection($field['key'])) ?: null;
+
+                if ($url === null) {
+                    continue;
+                }
+
+                $summary[] = [
+                    'label' => $field['label'],
+                    'type' => $type->value,
+                    'value' => null,
+                    'file_url' => $url,
+                    'is_image' => $type === ApplicationFieldType::Image,
+                ];
+
+                continue;
+            }
+
+            $value = $answers[$field['key']] ?? null;
+
+            if ($value === null || $value === '') {
+                continue;
+            }
+
+            $summary[] = [
+                'label' => $field['label'],
+                'type' => $type->value,
+                'value' => (string) $value,
+                'file_url' => null,
+                'is_image' => false,
+            ];
+        }
+
+        return $summary;
     }
 
     protected $fillable = [

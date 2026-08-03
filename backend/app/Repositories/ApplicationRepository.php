@@ -96,7 +96,7 @@ final class ApplicationRepository
     public function findForOrganization(int $organizationId, int $id): ?Application
     {
         return Application::query()
-            ->with(['candidate.candidateProfile.city', 'job'])
+            ->with(['candidate.candidateProfile.city', 'job', 'media'])
             ->forOrganization($organizationId)
             ->whereKey($id)
             ->first();

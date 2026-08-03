@@ -64,8 +64,7 @@ class ReverbRealtimeService implements RealtimeService {
     final privateChannel = client.privateChannel(
       'private-$channel',
       authorizationDelegate:
-          EndpointAuthorizableChannelTokenAuthorizationDelegate
-              .forPrivateChannel(
+          EndpointAuthorizableChannelTokenAuthorizationDelegate.forPrivateChannel(
             authorizationEndpoint: Uri.parse(EndPoints.broadcastingAuth),
             headers: {
               'Authorization': 'Bearer $token',

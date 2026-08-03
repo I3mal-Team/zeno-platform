@@ -42,10 +42,16 @@ class _Body extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final facts = <(IconData, String, String)>[
-      if (profile.age != null) (Icons.person_rounded, 'العمر', '${profile.age} سنة'),
-      if (profile.city != null) (Icons.location_on_rounded, 'المدينة', profile.city!),
+      if (profile.age != null)
+        (Icons.person_rounded, 'العمر', '${profile.age} سنة'),
+      if (profile.city != null)
+        (Icons.location_on_rounded, 'المدينة', profile.city!),
       if (profile.yearsOfExperience != null)
-        (Icons.workspace_premium_rounded, 'سنوات الخبرة', '${profile.yearsOfExperience} سنوات'),
+        (
+          Icons.workspace_premium_rounded,
+          'سنوات الخبرة',
+          '${profile.yearsOfExperience} سنوات',
+        ),
     ];
 
     return Column(
@@ -60,12 +66,17 @@ class _Body extends StatelessWidget {
                   padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
                   child: Row(
                     children: [
-                      for (final (index, (icon, label, value)) in facts.indexed) ...[
+                      for (final (index, (icon, label, value))
+                          in facts.indexed) ...[
                         if (index > 0) const SizedBox(width: 11),
                         Expanded(
                           child: Entrance(
                             index: index,
-                            child: _FactTile(icon: icon, label: label, value: value),
+                            child: _FactTile(
+                              icon: icon,
+                              label: label,
+                              value: value,
+                            ),
                           ),
                         ),
                       ],
@@ -192,7 +203,9 @@ class _Header extends StatelessWidget {
                   children: [
                     Text(
                       profile.name ?? 'مرشح',
-                      style: AppTextStyles.titleLg.copyWith(color: Colors.white),
+                      style: AppTextStyles.titleLg.copyWith(
+                        color: Colors.white,
+                      ),
                     ),
                     if (profile.jobTitle != null) ...[
                       const SizedBox(height: 4),
@@ -250,7 +263,11 @@ class _Header extends StatelessWidget {
 }
 
 class _FactTile extends StatelessWidget {
-  const _FactTile({required this.icon, required this.label, required this.value});
+  const _FactTile({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
 
   final IconData icon;
   final String label;
@@ -402,7 +419,10 @@ class _AnswerCard extends StatelessWidget {
             Pressable(
               onTap: _open,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 11,
+                ),
                 decoration: BoxDecoration(
                   color: AppColors.warningBg,
                   borderRadius: BorderRadius.circular(12),
@@ -503,7 +523,10 @@ class _StatusBadge extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 6),
-      decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(9)),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(9),
+      ),
       child: Text(
         label,
         style: AppTextStyles.caption.copyWith(
@@ -541,10 +564,16 @@ class _DecisionBar extends StatelessWidget {
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                   color: AppColors.surface,
-                  border: Border.all(color: const Color(0xFFF6DADA), width: 1.5),
+                  border: Border.all(
+                    color: const Color(0xFFF6DADA),
+                    width: 1.5,
+                  ),
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: const Icon(Icons.close_rounded, color: AppColors.errorFg),
+                child: const Icon(
+                  Icons.close_rounded,
+                  color: AppColors.errorFg,
+                ),
               ),
             ),
             const SizedBox(width: 11),
@@ -563,7 +592,9 @@ class _DecisionBar extends StatelessWidget {
                     children: [
                       Text(
                         'قبول المرشّح',
-                        style: AppTextStyles.button.copyWith(color: Colors.white),
+                        style: AppTextStyles.button.copyWith(
+                          color: Colors.white,
+                        ),
                       ),
                       const SizedBox(width: 8),
                       const Icon(

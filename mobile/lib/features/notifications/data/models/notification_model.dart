@@ -37,9 +37,10 @@ class NotificationModel extends Equatable {
     final job = data['job_title'] as String?;
     return switch (type) {
       'application_submitted' => 'وظيفة «${job ?? ''}» — راجع المتقدّم.',
-      'application_decision' => (data['accepted'] == true)
-          ? 'تم قبولك في «${job ?? ''}» — ستصلك طريقة التواصل.'
-          : 'تم تحديث حالة طلبك على «${job ?? ''}».',
+      'application_decision' =>
+        (data['accepted'] == true)
+            ? 'تم قبولك في «${job ?? ''}» — ستصلك طريقة التواصل.'
+            : 'تم تحديث حالة طلبك على «${job ?? ''}».',
       'job_changed' => 'تغيّرت بيانات وظيفة «${job ?? ''}».',
       _ => '',
     };

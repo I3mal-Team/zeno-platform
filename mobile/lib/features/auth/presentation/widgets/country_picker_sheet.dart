@@ -18,7 +18,8 @@ Future<CountryModel?> showCountryPickerSheet(
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
     ),
-    builder: (_) => _CountryPickerSheet(countries: countries, selected: selected),
+    builder: (_) =>
+        _CountryPickerSheet(countries: countries, selected: selected),
   );
 }
 

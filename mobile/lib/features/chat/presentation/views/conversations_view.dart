@@ -122,9 +122,7 @@ class _ConversationRow extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.only(bottom: 13),
                 decoration: const BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(color: Color(0xFFF0EEE8)),
-                  ),
+                  border: Border(bottom: BorderSide(color: Color(0xFFF0EEE8))),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

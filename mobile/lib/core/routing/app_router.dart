@@ -186,9 +186,8 @@ abstract final class AppRouter {
       GoRoute(
         path: RoutesKeys.applicationSubmitted,
         parentNavigatorKey: parentKey,
-        builder: (_, state) => SubmittedView(
-          reference: state.uri.queryParameters['ref'] ?? '',
-        ),
+        builder: (_, state) =>
+            SubmittedView(reference: state.uri.queryParameters['ref'] ?? ''),
       ),
       GoRoute(
         path: RoutesKeys.chatPath,

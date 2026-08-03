@@ -41,8 +41,7 @@ class NotificationsView extends StatelessWidget {
                   ),
                   NotificationsLoaded(:final notifications) => RefreshIndicator(
                     color: AppColors.amber,
-                    onRefresh: () =>
-                        context.read<NotificationsCubit>().load(),
+                    onRefresh: () => context.read<NotificationsCubit>().load(),
                     child: ListView.separated(
                       padding: const EdgeInsets.fromLTRB(18, 16, 18, 24),
                       itemCount: notifications.length,

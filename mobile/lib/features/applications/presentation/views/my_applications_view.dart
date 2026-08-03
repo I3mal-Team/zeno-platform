@@ -38,8 +38,7 @@ class MyApplicationsView extends StatelessWidget {
                   ),
                   ApplicationsLoaded(:final applications) => RefreshIndicator(
                     color: AppColors.amber,
-                    onRefresh: () =>
-                        context.read<ApplicationsCubit>().load(),
+                    onRefresh: () => context.read<ApplicationsCubit>().load(),
                     child: ListView.separated(
                       padding: const EdgeInsets.fromLTRB(20, 18, 20, 104),
                       itemCount: applications.length,
@@ -245,9 +244,8 @@ class _ProgressTrack extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const pending = Color(0xFFDCE3DD);
-    final reached = status == 'review' ||
-        status == 'accepted' ||
-        status == 'rejected';
+    final reached =
+        status == 'review' || status == 'accepted' || status == 'rejected';
     final decided = status == 'accepted' || status == 'rejected';
     final decisionColor = switch (status) {
       'accepted' => AppColors.successFg,
@@ -377,7 +375,10 @@ class _StatusBadge extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 6),
-      decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(9)),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(9),
+      ),
       child: Text(
         label,
         style: AppTextStyles.caption.copyWith(

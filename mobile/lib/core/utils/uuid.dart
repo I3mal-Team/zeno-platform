@@ -4,10 +4,8 @@ import 'dart:math';
 /// message so a retried send never duplicates it. Avoids a package dependency.
 String generateUuidV4() {
   final random = Random();
-  String hex(int length) => List.generate(
-    length,
-    (_) => random.nextInt(16).toRadixString(16),
-  ).join();
+  String hex(int length) =>
+      List.generate(length, (_) => random.nextInt(16).toRadixString(16)).join();
 
   final variant = (8 + random.nextInt(4)).toRadixString(16);
 

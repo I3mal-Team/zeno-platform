@@ -78,8 +78,9 @@ class _RegisterEmployerViewState extends State<RegisterEmployerView> {
         type: _type,
         name: _name.text.trim(),
         responsiblePersonName: responsible.isEmpty ? null : responsible,
-        commercialRegistration:
-            _isCompany && registration.isNotEmpty ? registration : null,
+        commercialRegistration: _isCompany && registration.isNotEmpty
+            ? registration
+            : null,
         cityId: _cityId,
         about: about.isEmpty ? null : about,
       ),

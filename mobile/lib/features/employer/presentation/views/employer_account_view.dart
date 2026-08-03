@@ -19,7 +19,9 @@ class EmployerAccountView extends StatelessWidget {
       backgroundColor: AppColors.paper,
       body: BlocBuilder<EmployerProfileCubit, EmployerProfileState>(
         builder: (context, state) => switch (state) {
-          EmployerProfileLoaded(:final organization) => _Body(org: organization),
+          EmployerProfileLoaded(:final organization) => _Body(
+            org: organization,
+          ),
           EmployerProfileSaved(:final organization) => _Body(org: organization),
           EmployerProfileFailed(:final failure) => Center(
             child: Text(failure.message, style: AppTextStyles.bodyMd),
@@ -161,13 +163,17 @@ class _Header extends StatelessWidget {
                   children: [
                     Text(
                       org.name,
-                      style: AppTextStyles.titleLg.copyWith(color: Colors.white),
+                      style: AppTextStyles.titleLg.copyWith(
+                        color: Colors.white,
+                      ),
                     ),
                     const SizedBox(height: 4),
                     Row(
                       children: [
                         Icon(
-                          isCompany ? Icons.storefront_rounded : Icons.person_rounded,
+                          isCompany
+                              ? Icons.storefront_rounded
+                              : Icons.person_rounded,
                           size: 16,
                           color: AppColors.amber,
                         ),
@@ -301,7 +307,11 @@ class _LogoutButton extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.logout_rounded, size: 21, color: AppColors.errorFg),
+            const Icon(
+              Icons.logout_rounded,
+              size: 21,
+              color: AppColors.errorFg,
+            ),
             const SizedBox(width: 8),
             Text(
               'تسجيل الخروج',

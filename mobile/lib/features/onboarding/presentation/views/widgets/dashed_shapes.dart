@@ -75,7 +75,10 @@ class DashedLine extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomPaint(size: const Size(double.infinity, 3), painter: _DashedLinePainter());
+    return CustomPaint(
+      size: const Size(double.infinity, 3),
+      painter: _DashedLinePainter(),
+    );
   }
 }
 
@@ -91,7 +94,11 @@ class _DashedLinePainter extends CustomPainter {
     const gap = 7.0;
     var x = 0.0;
     while (x < size.width) {
-      canvas.drawLine(Offset(x, size.height / 2), Offset(x + dash, size.height / 2), paint);
+      canvas.drawLine(
+        Offset(x, size.height / 2),
+        Offset(x + dash, size.height / 2),
+        paint,
+      );
       x += dash + gap;
     }
   }

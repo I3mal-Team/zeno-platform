@@ -62,7 +62,8 @@ void main() {
 
       return SearchCubit(repo);
     },
-    act: (cubit) => cubit.applyFilters(const JobFilters(workTypeCode: 'hourly')),
+    act: (cubit) =>
+        cubit.applyFilters(const JobFilters(workTypeCode: 'hourly')),
     expect: () => <SearchState>[const SearchLoading(), const SearchEmpty()],
   );
 

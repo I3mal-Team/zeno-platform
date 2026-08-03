@@ -136,7 +136,9 @@ class _Header extends StatelessWidget {
                     const SizedBox(height: 2),
                     Text(
                       'إدارة إعلاناتك',
-                      style: AppTextStyles.titleLg.copyWith(color: Colors.white),
+                      style: AppTextStyles.titleLg.copyWith(
+                        color: Colors.white,
+                      ),
                     ),
                   ],
                 ),
@@ -237,7 +239,11 @@ class _SectionRow extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.add_rounded, size: 17, color: AppColors.warningFg),
+                  const Icon(
+                    Icons.add_rounded,
+                    size: 17,
+                    color: AppColors.warningFg,
+                  ),
                   const SizedBox(width: 5),
                   Text(
                     'إعلان جديد',
@@ -330,7 +336,9 @@ class _EmployerJobTile extends StatelessWidget {
             children: [
               Text(
                 '${job.applicationsCount ?? 0} متقدمين',
-                style: AppTextStyles.titleSm.copyWith(fontWeight: FontWeight.w800),
+                style: AppTextStyles.titleSm.copyWith(
+                  fontWeight: FontWeight.w800,
+                ),
               ),
               const Spacer(),
               _ApplicantsButton(onTap: onApplicants),
@@ -389,7 +397,11 @@ class _StatusBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final (label, fg, bg) = switch (status) {
       'active' => ('نشط', AppColors.successFg, AppColors.successBg),
-      'pending_review' => ('قيد المراجعة', AppColors.warningFg, AppColors.warningBg),
+      'pending_review' => (
+        'قيد المراجعة',
+        AppColors.warningFg,
+        AppColors.warningBg,
+      ),
       'paused' => ('متوقف', AppColors.warningFg, AppColors.warningBg),
       'filled' => ('اكتمل', AppColors.neutralFg, AppColors.neutralBg),
       'rejected' => ('مرفوض', AppColors.errorFg, AppColors.errorBg),
@@ -400,7 +412,10 @@ class _StatusBadge extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(9)),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(9),
+      ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [

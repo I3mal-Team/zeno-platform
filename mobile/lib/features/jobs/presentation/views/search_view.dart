@@ -245,7 +245,10 @@ class _Placeholder extends StatelessWidget {
             ),
             if (onRetry != null) ...[
               const SizedBox(height: 16),
-              TextButton(onPressed: onRetry, child: const Text('إعادة المحاولة')),
+              TextButton(
+                onPressed: onRetry,
+                child: const Text('إعادة المحاولة'),
+              ),
             ],
           ],
         ),

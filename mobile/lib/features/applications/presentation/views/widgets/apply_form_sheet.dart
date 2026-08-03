@@ -13,7 +13,10 @@ import '../../../../jobs/data/models/application_field_model.dart';
 
 /// What the candidate filled in: scalar answers and picked upload files, both
 /// keyed by field key, ready for [ApplicationsRepo.apply].
-typedef ApplyFormResult = ({Map<String, String> answers, Map<String, File> files});
+typedef ApplyFormResult = ({
+  Map<String, String> answers,
+  Map<String, File> files,
+});
 
 /// A bottom sheet that renders a job's employer-authored application form and
 /// returns the collected answers, or null if the candidate backs out.
@@ -135,7 +138,10 @@ class _ApplyFormSheetState extends State<ApplyFormSheet> {
                 padding: const EdgeInsets.fromLTRB(20, 14, 20, 6),
                 child: Row(
                   children: [
-                    const Icon(Icons.assignment_rounded, color: AppColors.charcoalSoft),
+                    const Icon(
+                      Icons.assignment_rounded,
+                      color: AppColors.charcoalSoft,
+                    ),
                     const SizedBox(width: 9),
                     Text('نموذج التقديم', style: AppTextStyles.titleMd),
                   ],
@@ -149,7 +155,10 @@ class _ApplyFormSheetState extends State<ApplyFormSheet> {
                     padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
                     children: [
                       for (final field in widget.fields) ...[
-                        _FieldLabel(label: field.label, required: field.required),
+                        _FieldLabel(
+                          label: field.label,
+                          required: field.required,
+                        ),
                         _buildField(field),
                         const SizedBox(height: 16),
                       ],
@@ -278,7 +287,9 @@ class _UploadField extends StatelessWidget {
                             ? Icons.image_outlined
                             : Icons.attach_file_rounded),
                   size: 20,
-                  color: file != null ? AppColors.successFg : AppColors.textMuted,
+                  color: file != null
+                      ? AppColors.successFg
+                      : AppColors.textMuted,
                 ),
                 const SizedBox(width: 10),
                 Expanded(
@@ -288,7 +299,9 @@ class _UploadField extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: AppTextStyles.bodySm.copyWith(
                       fontWeight: FontWeight.w700,
-                      color: file != null ? AppColors.textStrong : AppColors.textMuted,
+                      color: file != null
+                          ? AppColors.textStrong
+                          : AppColors.textMuted,
                     ),
                   ),
                 ),

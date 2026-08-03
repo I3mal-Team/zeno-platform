@@ -27,9 +27,7 @@ class BrowseView extends StatelessWidget {
             child: ListView(
               padding: const EdgeInsets.only(bottom: 104),
               children: [
-                _Hero(
-                  onSearch: (q) => context.read<BrowseCubit>().search(q),
-                ),
+                _Hero(onSearch: (q) => context.read<BrowseCubit>().search(q)),
                 const SizedBox(height: 18),
                 _CategoryChips(
                   selected: cubit.filters.categoryCode,
@@ -60,7 +58,10 @@ class BrowseView extends StatelessWidget {
           ),
       ],
       BrowseEmpty() => const [
-        _Message(icon: Icons.work_off_rounded, text: 'لا توجد وظائف مطابقة حالياً.'),
+        _Message(
+          icon: Icons.work_off_rounded,
+          text: 'لا توجد وظائف مطابقة حالياً.',
+        ),
       ],
       BrowseFailed(:final failure) => [
         _Message(icon: Icons.wifi_off_rounded, text: failure.message),
@@ -115,15 +116,15 @@ class _Hero extends StatelessWidget {
             children: [
               _LocationPill(onTap: () => context.go(RoutesKeys.nearby)),
               const Spacer(),
-              _BellButton(
-                onTap: () => context.push(RoutesKeys.notifications),
-              ),
+              _BellButton(onTap: () => context.push(RoutesKeys.notifications)),
             ],
           ),
           const SizedBox(height: 16),
           Text(
             'أهلاً بك 👋',
-            style: AppTextStyles.bodySm.copyWith(color: const Color(0xFFB7B1A6)),
+            style: AppTextStyles.bodySm.copyWith(
+              color: const Color(0xFFB7B1A6),
+            ),
           ),
           const SizedBox(height: 3),
           Text(
@@ -157,7 +158,11 @@ class _LocationPill extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.location_on_rounded, size: 17, color: AppColors.amber),
+            const Icon(
+              Icons.location_on_rounded,
+              size: 17,
+              color: AppColors.amber,
+            ),
             const SizedBox(width: 7),
             Text(
               'قريب مني',
@@ -419,7 +424,9 @@ class _NearbyCard extends StatelessWidget {
                   children: [
                     Text(
                       'الوظائف القريبة مني',
-                      style: AppTextStyles.titleMd.copyWith(color: Colors.white),
+                      style: AppTextStyles.titleMd.copyWith(
+                        color: Colors.white,
+                      ),
                     ),
                     const SizedBox(height: 2),
                     Text(

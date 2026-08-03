@@ -48,7 +48,9 @@ class PhoneView extends StatelessWidget {
                   children: [
                     const AuthHeader(),
                     const SizedBox(height: AppDimensions.space20),
-                    const Center(child: AuthHero(icon: Icons.smartphone_rounded)),
+                    const Center(
+                      child: AuthHero(icon: Icons.smartphone_rounded),
+                    ),
                     const SizedBox(height: AppDimensions.space22),
                     Text(
                       'أدخل رقم جوالك',

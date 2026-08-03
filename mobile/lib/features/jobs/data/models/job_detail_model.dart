@@ -46,10 +46,9 @@ class JobDetailModel extends Equatable {
       isOpenForApplications: json['is_open_for_applications'] as bool? ?? false,
       contactChannel: json['contact_channel'] as String? ?? 'app',
       vacanciesCount: json['vacancies_count'] as int? ?? 1,
-      applicationFields:
-          (json['application_fields'] as List<dynamic>? ?? [])
-              .map((e) => ApplicationFieldModel.fromJson(e as Map<String, dynamic>))
-              .toList(),
+      applicationFields: (json['application_fields'] as List<dynamic>? ?? [])
+          .map((e) => ApplicationFieldModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
       description: json['description'] as String?,
       category: category is Map<String, dynamic>
           ? JobCategoryRef.fromJson(category)

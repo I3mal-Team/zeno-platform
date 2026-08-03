@@ -10,7 +10,8 @@ part 'applicants_state.dart';
 
 class ApplicantsCubit extends Cubit<ApplicantsState> {
   /// A null [jobUuid] lists every applicant across the employer's listings.
-  ApplicantsCubit(this._repo, [this.jobUuid]) : super(const ApplicantsLoading());
+  ApplicantsCubit(this._repo, [this.jobUuid])
+    : super(const ApplicantsLoading());
 
   final EmployerRepo _repo;
   final String? jobUuid;

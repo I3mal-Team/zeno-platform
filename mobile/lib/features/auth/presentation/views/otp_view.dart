@@ -38,7 +38,11 @@ class OtpView extends StatelessWidget {
                   // Employers branch on whether the account is new; job seekers
                   // branch on whether they've saved their profile yet, so a
                   // returning-but-incomplete candidate still lands on the form.
-                  context.go(switch ((isEmployer, session.isNewUser, session.profileCompleted)) {
+                  context.go(switch ((
+                    isEmployer,
+                    session.isNewUser,
+                    session.profileCompleted,
+                  )) {
                     (true, true, _) => RoutesKeys.registerEmployer,
                     (true, false, _) => RoutesKeys.employerJobs,
                     (false, _, false) => RoutesKeys.registerCandidate,
@@ -84,9 +88,7 @@ class OtpView extends StatelessWidget {
                     _ResendRow(onResend: cubit.resend),
                     if (AppEnvironment.current == AppEnvironment.dev) ...[
                       const SizedBox(height: AppDimensions.space12),
-                      _AutoFillButton(
-                        onTap: () => fillController.fill('4829'),
-                      ),
+                      _AutoFillButton(onTap: () => fillController.fill('4829')),
                     ],
                     const Spacer(),
                     AppButton(
@@ -151,7 +153,11 @@ class _AutoFillButton extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.bolt_rounded, size: 17, color: AppColors.warningFg),
+            const Icon(
+              Icons.bolt_rounded,
+              size: 17,
+              color: AppColors.warningFg,
+            ),
             const SizedBox(width: AppDimensions.space6),
             Text(
               'تعبئة تلقائية (تجريبي)',

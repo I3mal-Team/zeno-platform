@@ -33,12 +33,18 @@ class NotificationsRepoImpl implements NotificationsRepo {
 
   @override
   Future<Either<Failure, Unit>> markRead(String id) {
-    return _handle(() => _api.post(EndPoints.notificationRead(id)), (_) => unit);
+    return _handle(
+      () => _api.post(EndPoints.notificationRead(id)),
+      (_) => unit,
+    );
   }
 
   @override
   Future<Either<Failure, Unit>> markAllRead() {
-    return _handle(() => _api.post(EndPoints.notificationsReadAll), (_) => unit);
+    return _handle(
+      () => _api.post(EndPoints.notificationsReadAll),
+      (_) => unit,
+    );
   }
 
   @override

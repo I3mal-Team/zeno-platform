@@ -68,10 +68,7 @@ class _EntranceState extends State<Entrance>
         final settled = animation.value;
         return Transform.translate(
           offset: Offset(0, AppMotion.cardOffset * (1 - settled)),
-          child: Transform.scale(
-            scale: 0.97 + 0.03 * settled,
-            child: child,
-          ),
+          child: Transform.scale(scale: 0.97 + 0.03 * settled, child: child),
         );
       },
       child: widget.child,

@@ -35,7 +35,9 @@ class PhoneCubit extends Cubit<PhoneState> {
     result.fold((_) {}, (list) {
       countries = list;
       selectedCountry ??= list.isNotEmpty ? list.first : null;
-      safeEmit(PhoneCountriesLoaded(countries: list, selected: selectedCountry));
+      safeEmit(
+        PhoneCountriesLoaded(countries: list, selected: selectedCountry),
+      );
     });
   }
 

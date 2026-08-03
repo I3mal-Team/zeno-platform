@@ -45,14 +45,11 @@ class ChatCubit extends Cubit<ChatState> {
 
     final result = await _repo.fetchMessages(conversationUuid);
 
-    result.fold(
-      (failure) => safeEmit(ChatFailed(failure)),
-      (list) {
-        messages = list;
-        safeEmit(ChatReady(messages));
-        _listen();
-      },
-    );
+    result.fold((failure) => safeEmit(ChatFailed(failure)), (list) {
+      messages = list;
+      safeEmit(ChatReady(messages));
+      _listen();
+    });
   }
 
   /// Opens the live feed once the thread is on screen. Best-effort: if the

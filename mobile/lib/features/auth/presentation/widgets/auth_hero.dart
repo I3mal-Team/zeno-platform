@@ -59,7 +59,11 @@ class AuthHero extends StatelessWidget {
                   ),
                 ],
               ),
-              child: Icon(icon, size: discSize * 0.45, color: const Color(0xFFFFFFFF)),
+              child: Icon(
+                icon,
+                size: discSize * 0.45,
+                color: const Color(0xFFFFFFFF),
+              ),
             ),
           ),
           // Accent dots pinned to the disc's corners.

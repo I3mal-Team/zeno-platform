@@ -219,7 +219,11 @@ class _NextButton extends StatelessWidget {
 }
 
 class _SlideView extends StatelessWidget {
-  const _SlideView({required this.index, required this.title, required this.body});
+  const _SlideView({
+    required this.index,
+    required this.title,
+    required this.body,
+  });
 
   final int index;
   final String title;
@@ -457,12 +461,7 @@ class _ConnectArt extends StatelessWidget {
         clipBehavior: Clip.none,
         alignment: Alignment.center,
         children: [
-          const Positioned(
-            top: 128,
-            left: 34,
-            right: 34,
-            child: DashedLine(),
-          ),
+          const Positioned(top: 128, left: 34, right: 34, child: DashedLine()),
           Positioned(
             left: 8,
             top: 92,

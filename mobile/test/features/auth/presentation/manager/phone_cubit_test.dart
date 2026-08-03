@@ -23,9 +23,8 @@ void main() {
   late MockAuthRepo repo;
 
   setUpAll(
-    () => registerFallbackValue(
-      const RequestOtpParam(phone: '', country: 'SA'),
-    ),
+    () =>
+        registerFallbackValue(const RequestOtpParam(phone: '', country: 'SA')),
   );
 
   setUp(() {

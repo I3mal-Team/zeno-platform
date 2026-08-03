@@ -300,7 +300,10 @@ class _ComposerState extends State<_Composer> {
               child: Container(
                 decoration: BoxDecoration(
                   color: AppColors.paper,
-                  border: Border.all(color: const Color(0xFFE5EAE6), width: 1.5),
+                  border: Border.all(
+                    color: const Color(0xFFE5EAE6),
+                    width: 1.5,
+                  ),
                   borderRadius: BorderRadius.circular(14),
                 ),
                 child: TextField(

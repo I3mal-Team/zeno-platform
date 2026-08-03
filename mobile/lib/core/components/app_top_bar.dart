@@ -52,8 +52,7 @@ class AppTopBar extends StatelessWidget {
           )
         else
           const Spacer(),
-        trailingWidget ??
-            const SizedBox(width: AppDimensions.iconButtonSize),
+        trailingWidget ?? const SizedBox(width: AppDimensions.iconButtonSize),
       ],
     );
   }

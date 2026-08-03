@@ -127,9 +127,10 @@ class _SuccessMark extends StatelessWidget {
           ),
           // Popping tick disc.
           ScaleTransition(
-            scale: Tween<double>(begin: 0.4, end: 1).animate(
-              CurvedAnimation(parent: pop, curve: AppMotion.overshoot),
-            ),
+            scale: Tween<double>(
+              begin: 0.4,
+              end: 1,
+            ).animate(CurvedAnimation(parent: pop, curve: AppMotion.overshoot)),
             child: Container(
               width: 96,
               height: 96,

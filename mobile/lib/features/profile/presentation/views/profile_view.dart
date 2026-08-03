@@ -150,7 +150,9 @@ class _Header extends StatelessWidget {
                   color: const Color(0xFFC7C2B8),
                 ),
               ),
-              _EditButton(onTap: () => context.push(RoutesKeys.registerCandidate)),
+              _EditButton(
+                onTap: () => context.push(RoutesKeys.registerCandidate),
+              ),
             ],
           ),
           const SizedBox(height: 16),
@@ -164,7 +166,8 @@ class _Header extends StatelessWidget {
                         width: 72,
                         height: 56,
                         fit: BoxFit.cover,
-                        errorBuilder: (_, _, _) => _AvatarLetter(profile: profile),
+                        errorBuilder: (_, _, _) =>
+                            _AvatarLetter(profile: profile),
                       )
                     : _AvatarLetter(profile: profile),
               ),
@@ -175,7 +178,9 @@ class _Header extends StatelessWidget {
                   children: [
                     Text(
                       profile.fullName,
-                      style: AppTextStyles.titleLg.copyWith(color: Colors.white),
+                      style: AppTextStyles.titleLg.copyWith(
+                        color: Colors.white,
+                      ),
                     ),
                     if (profile.jobTitle != null) ...[
                       const SizedBox(height: 4),
@@ -385,7 +390,11 @@ class _LogoutButton extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.logout_rounded, size: 21, color: AppColors.errorFg),
+            const Icon(
+              Icons.logout_rounded,
+              size: 21,
+              color: AppColors.errorFg,
+            ),
             const SizedBox(width: 8),
             Text(
               'تسجيل الخروج',
@@ -432,7 +441,11 @@ class _LoadFailed extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(message, style: AppTextStyles.bodyLg, textAlign: TextAlign.center),
+            Text(
+              message,
+              style: AppTextStyles.bodyLg,
+              textAlign: TextAlign.center,
+            ),
             const SizedBox(height: AppDimensions.space20),
             AppButton(
               label: 'إعادة المحاولة',

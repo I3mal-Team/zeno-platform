@@ -228,8 +228,9 @@ class _PostJobFormState extends State<_PostJobForm> {
                 AppField(
                   controller: _title,
                   hint: 'مثال: باريستا، عامل نظافة، سائق...',
-                  validator: (v) =>
-                      (v ?? '').trim().length < 3 ? 'أدخل المسمى الوظيفي' : null,
+                  validator: (v) => (v ?? '').trim().length < 3
+                      ? 'أدخل المسمى الوظيفي'
+                      : null,
                 ),
                 const _Label('المدينة'),
                 AppSelectField<int>(
@@ -281,8 +282,9 @@ class _PostJobFormState extends State<_PostJobForm> {
                   keyboardType: TextInputType.number,
                   textDirection: TextDirection.rtl,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  validator: (v) =>
-                      (int.tryParse(v ?? '') ?? 0) < 1 ? 'أدخل عدداً صحيحاً' : null,
+                  validator: (v) => (int.tryParse(v ?? '') ?? 0) < 1
+                      ? 'أدخل عدداً صحيحاً'
+                      : null,
                 ),
                 const _Label('وصف الوظيفة'),
                 AppField(

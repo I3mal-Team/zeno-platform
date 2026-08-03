@@ -58,8 +58,8 @@ class Job extends Model
 
     protected $fillable = [
         'uuid', 'organization_id', 'created_by_user_id', 'title', 'slug',
-        'description', 'category_id', 'work_type_id', 'salary_unit_id',
-        'gender_requirement_id', 'nationality_requirement_id',
+        'description', 'application_fields', 'category_id', 'work_type_id',
+        'salary_unit_id', 'gender_requirement_id', 'nationality_requirement_id',
         'salary_amount', 'salary_amount_max', 'salary_currency',
         'hours_per_week', 'shift_note', 'vacancies_count',
         'city_id', 'district_id', 'address_line',
@@ -86,6 +86,7 @@ class Job extends Model
             'vacancies_count' => 'integer',
             'views_count' => 'integer',
             'hours_per_week' => 'integer',
+            'application_fields' => 'array',
         ];
     }
 

@@ -6,6 +6,7 @@ namespace App\Http\Requests\Api\V1\Jobs;
 
 use App\Data\Jobs\JobData;
 use App\Enums\ContactChannel;
+use App\Support\ApplicationForm;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
@@ -16,6 +17,7 @@ final class SaveJobRequest extends FormRequest
     public function rules(): array
     {
         return [
+            ...ApplicationForm::definitionRules(),
             'title' => ['required', 'string', 'min:3', 'max:120'],
             'description' => ['nullable', 'string', 'max:5000'],
             'category_id' => ['required', 'integer', 'exists:categories,id'],
@@ -63,6 +65,7 @@ final class SaveJobRequest extends FormRequest
             longitude: $this->filled('longitude') ? (float) $this->input('longitude') : null,
             contactChannel: ContactChannel::from($this->string('contact_channel')->toString()),
             expiresAt: $this->filled('expires_at') ? Carbon::parse($this->string('expires_at')->toString()) : null,
+            applicationFields: ApplicationForm::normalize($this->input('application_fields')),
         );
     }
 }

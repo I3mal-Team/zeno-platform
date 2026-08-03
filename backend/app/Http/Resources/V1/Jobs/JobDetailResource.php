@@ -19,6 +19,7 @@ final class JobDetailResource extends JsonResource
             'title' => $this->title,
             'slug' => $this->slug,
             'description' => $this->description,
+            'application_fields' => $this->application_fields ?? [],
             'salary' => [
                 'amount' => (float) $this->salary_amount,
                 'amount_max' => $this->salary_amount_max !== null ? (float) $this->salary_amount_max : null,

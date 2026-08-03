@@ -29,5 +29,7 @@ final readonly class JobData
         public ?float $longitude,
         public ContactChannel $contactChannel,
         public ?Carbon $expiresAt,
+        /** @var list<array<string, mixed>> */
+        public array $applicationFields = [],
     ) {}
 }

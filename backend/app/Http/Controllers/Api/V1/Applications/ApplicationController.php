@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\V1\Applications;
 
 use App\Http\Controllers\Api\V1\ApiController;
+use App\Http\Requests\Jobs\StoreApplicationRequest;
 use App\Http\Resources\V1\Applications\ApplicationResource;
 use App\Services\ApplicationService;
 use App\Services\JobService;
@@ -23,11 +24,16 @@ final class ApplicationController extends ApiController
         );
     }
 
-    public function store(Request $request, JobService $jobs, string $slug): JsonResponse
+    public function store(StoreApplicationRequest $request, JobService $jobs, string $slug): JsonResponse
     {
         $job = $jobs->findPublicBySlug($slug) ?? throw new NotFoundHttpException;
 
-        $application = $this->applications->apply($request->user(), $job);
+        $application = $this->applications->apply(
+            $request->user(),
+            $job,
+            $request->scalarAnswers(),
+            $request->uploadedFiles(),
+        );
 
         return $this->createdResponse(
             new ApplicationResource($application->load('job.organization', 'job.category')),

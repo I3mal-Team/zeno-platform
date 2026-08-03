@@ -6,6 +6,7 @@ namespace App\Http\Requests\Site\Employer;
 
 use App\Data\Jobs\JobData;
 use App\Enums\ContactChannel;
+use App\Support\ApplicationForm;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -15,6 +16,7 @@ final class SaveJobRequest extends FormRequest
     public function rules(): array
     {
         return [
+            ...ApplicationForm::definitionRules(),
             'title' => ['required', 'string', 'min:3', 'max:120'],
             'description' => ['nullable', 'string', 'max:5000'],
             'category_id' => ['required', 'integer', 'exists:categories,id'],
@@ -57,6 +59,7 @@ final class SaveJobRequest extends FormRequest
             longitude: null,
             contactChannel: ContactChannel::from($this->string('contact_channel')->toString()),
             expiresAt: null,
+            applicationFields: ApplicationForm::normalize($this->input('application_fields')),
         );
     }
 }

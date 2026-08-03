@@ -27,7 +27,11 @@ final class ApplicationService
         private readonly SubscriptionService $subscriptions,
     ) {}
 
-    public function apply(User $candidate, Job $job): Application
+    /**
+     * @param  array<string, mixed>  $answers  scalar answers keyed by field key
+     * @param  array<string, \Illuminate\Http\UploadedFile>  $files  uploads keyed by field key
+     */
+    public function apply(User $candidate, Job $job, array $answers = [], array $files = []): Application
     {
         if (! $job->status->acceptsApplications()) {
             throw new JobNotActiveException;
@@ -39,7 +43,7 @@ final class ApplicationService
             throw new ApplicationAlreadyExistsException;
         }
 
-        $application = DB::transaction(function () use ($candidate, $job) {
+        $application = DB::transaction(function () use ($candidate, $job, $answers, $files) {
             $application = $this->applications->create([
                 'reference_number' => $this->applications->nextReference(),
                 'job_id' => $job->id,
@@ -47,9 +51,14 @@ final class ApplicationService
                 'organization_id' => $job->organization_id,
                 'status' => ApplicationStatus::Submitted->value,
                 'contact_channel' => $job->contact_channel->value,
+                'answers' => $answers !== [] ? $answers : null,
                 'profile_access_token' => (string) Str::ulid(),
                 'profile_access_expires_at' => now()->addDays(self::PROFILE_ACCESS_DAYS),
             ]);
+
+            foreach ($files as $key => $file) {
+                $application->addMedia($file)->toMediaCollection(Application::answerCollection($key));
+            }
 
             $this->applications->recordStatusChange(
                 $application, null, ApplicationStatus::Submitted, 'user', $candidate->id,

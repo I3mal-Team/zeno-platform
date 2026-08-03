@@ -11,6 +11,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
 /**
  * @property int $id
@@ -30,14 +32,22 @@ use Illuminate\Support\Carbon;
  * @property User $candidate
  * @property Organization $organization
  */
-class Application extends Model
+class Application extends Model implements HasMedia
 {
+    use InteractsWithMedia;
+
     /** Statuses that still represent a candidate awaiting an outcome. */
     public const LIVE_STATUSES = ['submitted', 'review', 'accepted'];
 
+    /** Media collection holding one uploaded file/image answer per field key. */
+    public static function answerCollection(string $fieldKey): string
+    {
+        return 'answer_'.$fieldKey;
+    }
+
     protected $fillable = [
         'reference_number', 'job_id', 'candidate_id', 'organization_id',
-        'status', 'contact_channel', 'profile_access_token',
+        'status', 'contact_channel', 'answers', 'profile_access_token',
         'profile_access_expires_at', 'viewed_at', 'decided_at',
         'decided_by_user_id', 'withdrawn_at',
     ];
@@ -51,6 +61,7 @@ class Application extends Model
         return [
             'status' => ApplicationStatus::class,
             'contact_channel' => ContactChannel::class,
+            'answers' => 'array',
             'profile_access_expires_at' => 'datetime',
             'viewed_at' => 'datetime',
             'decided_at' => 'datetime',

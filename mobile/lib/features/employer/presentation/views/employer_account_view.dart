@@ -129,7 +129,10 @@ class _Header extends StatelessWidget {
                   color: const Color(0xFFC7C2B8),
                 ),
               ),
-              _EditButton(onTap: () => context.push(RoutesKeys.registerEmployer)),
+              _EditButton(
+                onTap: () =>
+                    context.push(RoutesKeys.registerEmployer, extra: org),
+              ),
             ],
           ),
           const SizedBox(height: 16),

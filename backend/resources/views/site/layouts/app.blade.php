@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'زينو') — زينو</title>
+    <title>@yield('title', 'AMS') — AMS</title>
     <meta name="description" content="@yield('description', 'منصة التوظيف المحلي التي تربط الباحثين عن عمل بالمنشآت القريبة منهم في السعودية.')">
 
     <link rel="icon" href="{{ asset('assets/zeno-mark.png') }}">
@@ -17,7 +17,7 @@
     @stack('head')
 </head>
 <body>
-    <div style="direction:rtl;overflow-x:hidden;background:#FAF8F3">
+    <div style="direction:rtl;overflow-x:hidden;background:#F4F6F3">
         @yield('content')
     </div>
     @stack('scripts')

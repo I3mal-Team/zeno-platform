@@ -347,7 +347,7 @@ class _Chip extends StatelessWidget {
         decoration: BoxDecoration(
           color: active ? AppColors.warningBg : AppColors.surface,
           border: Border.all(
-            color: active ? AppColors.amber : const Color(0xFFECEAE3),
+            color: active ? AppColors.amber : const Color(0xFFE5EAE6),
             width: 1.5,
           ),
           borderRadius: BorderRadius.circular(12),
@@ -461,7 +461,7 @@ class _Segment extends StatelessWidget {
         decoration: BoxDecoration(
           color: active ? AppColors.warningBg : AppColors.surface,
           border: Border.all(
-            color: active ? AppColors.amber : const Color(0xFFECEAE3),
+            color: active ? AppColors.amber : const Color(0xFFE5EAE6),
             width: 1.5,
           ),
           borderRadius: BorderRadius.circular(12),
@@ -492,7 +492,7 @@ class _SubmitBar extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
       decoration: const BoxDecoration(
         color: AppColors.surface,
-        border: Border(top: BorderSide(color: Color(0xFFEFEDE6))),
+        border: Border(top: BorderSide(color: Color(0xFFE5EAE6))),
       ),
       child: SafeArea(
         top: false,

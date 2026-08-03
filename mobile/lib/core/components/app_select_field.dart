@@ -35,7 +35,7 @@ class AppSelectField<T> extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16),
         decoration: BoxDecoration(
           color: AppColors.surface,
-          border: Border.all(color: const Color(0xFFECEAE3)),
+          border: Border.all(color: const Color(0xFFE5EAE6)),
           borderRadius: BorderRadius.circular(14),
         ),
         child: Row(

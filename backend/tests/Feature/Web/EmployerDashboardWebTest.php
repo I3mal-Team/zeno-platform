@@ -78,7 +78,7 @@ it('finds an applicant by name from the topbar search', function () {
     applicationFor($job->slug)->candidate->candidateProfile()->updateOrCreate([], ['full_name' => 'سعود الحربي', 'completion_percentage' => 40]);
     applicationFor($job->slug)->candidate->candidateProfile()->updateOrCreate([], ['full_name' => 'خالد الدوسري', 'completion_percentage' => 40]);
 
-    test()->actingAs($employer)->get('/employer/applicants?q=خالد')
+    test()->actingAs($employer)->get('/employer/applicants?q='.urlencode('خالد'))
         ->assertOk()
         ->assertSee('خالد الدوسري', false)
         ->assertDontSee('سعود الحربي', false);

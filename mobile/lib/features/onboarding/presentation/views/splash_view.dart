@@ -55,7 +55,7 @@ class _SplashViewState extends State<SplashView>
           gradient: RadialGradient(
             center: Alignment(0, -0.36),
             radius: 1.3,
-            colors: [Color(0xFFFFFFFF), Color(0xFFF4F2EC)],
+            colors: [Color(0xFFFFFFFF), Color(0xFFEDF1EC)],
           ),
         ),
         child: Center(
@@ -73,7 +73,7 @@ class _SplashViewState extends State<SplashView>
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: const Color(0xFFF0EDE3),
+                          color: const Color(0xFFE5EAE6),
                           width: 3,
                         ),
                       ),
@@ -103,7 +103,7 @@ class _SplashViewState extends State<SplashView>
               ),
               const SizedBox(height: AppDimensions.space22),
               Text(
-                'zeno',
+                'AMS',
                 textDirection: TextDirection.ltr,
                 style: AppTextStyles.displayLg.copyWith(
                   fontSize: 32,
@@ -117,7 +117,7 @@ class _SplashViewState extends State<SplashView>
                 style: AppTextStyles.caption.copyWith(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
-                  color: const Color(0xFF9A958A),
+                  color: const Color(0xFF869089),
                 ),
               ),
             ],

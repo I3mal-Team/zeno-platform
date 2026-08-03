@@ -21,7 +21,7 @@ final class ContactViewModel
     public function channels(): array
     {
         return [
-            ['icon' => 'send-2', 'label' => 'البريد الإلكتروني', 'value' => 'hello@zeno.sa', 'href' => 'mailto:hello@zeno.sa', 'bg' => '#FDF1CC', 'fg' => '#8A6D12'],
+            ['icon' => 'send-2', 'label' => 'البريد الإلكتروني', 'value' => 'hello@zeno.sa', 'href' => 'mailto:hello@zeno.sa', 'bg' => '#F3ECD6', 'fg' => '#8A6D12'],
             ['icon' => 'message-text', 'label' => 'واتساب الأعمال', 'value' => '+966 55 000 0000', 'href' => 'https://wa.me/966550000000', 'bg' => '#E7F4EC', 'fg' => '#1F8A4D'],
             ['icon' => 'location', 'label' => 'المقر', 'value' => 'الرياض، المملكة العربية السعودية', 'href' => null, 'bg' => '#E2EEF4', 'fg' => '#2E6E8A'],
         ];

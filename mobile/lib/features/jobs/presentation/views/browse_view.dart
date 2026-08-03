@@ -104,7 +104,7 @@ class _Hero extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topRight,
           end: Alignment.bottomLeft,
-          colors: [Color(0xFF34302B), Color(0xFF2B2724), Color(0xFF26221F)],
+          colors: [Color(0xFF315C4A), Color(0xFF284C3D), Color(0xFF223F31)],
         ),
         borderRadius: BorderRadius.vertical(bottom: Radius.circular(28)),
       ),
@@ -393,7 +393,7 @@ class _NearbyCard extends StatelessWidget {
             gradient: const LinearGradient(
               begin: Alignment.centerRight,
               end: Alignment.centerLeft,
-              colors: [Color(0xFF2B2724), Color(0xFF34302B)],
+              colors: [Color(0xFF284C3D), Color(0xFF315C4A)],
             ),
             borderRadius: BorderRadius.circular(20),
           ),

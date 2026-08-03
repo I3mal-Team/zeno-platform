@@ -176,11 +176,11 @@ class _Group extends StatelessWidget {
                     vertical: 10,
                   ),
                   decoration: BoxDecoration(
-                    color: on ? AppColors.charcoalSoft : const Color(0xFFFBFAF7),
+                    color: on ? AppColors.charcoalSoft : const Color(0xFFF7F9F7),
                     border: Border.all(
                       color: on
                           ? AppColors.charcoalSoft
-                          : const Color(0xFFE7E3DA),
+                          : const Color(0xFFDCE3DD),
                     ),
                     borderRadius: BorderRadius.circular(12),
                   ),

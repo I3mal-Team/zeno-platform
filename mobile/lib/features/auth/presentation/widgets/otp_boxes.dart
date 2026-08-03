@@ -124,7 +124,7 @@ class _OtpBoxesState extends State<OtpBoxes> {
                     contentPadding: EdgeInsets.zero,
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(18),
-                      borderSide: const BorderSide(color: Color(0xFFECEAE3)),
+                      borderSide: const BorderSide(color: Color(0xFFE5EAE6)),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(18),

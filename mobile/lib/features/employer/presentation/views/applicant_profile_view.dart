@@ -161,14 +161,14 @@ class _Header extends StatelessWidget {
                   borderRadius: BorderRadius.all(Radius.circular(22)),
                   gradient: RadialGradient(
                     center: Alignment(-.3, -.4),
-                    colors: [Color(0xFFFDEFC2), Color(0xFFF6D783)],
+                    colors: [Color(0xFF3E6B54), Color(0xFF284C3D)],
                   ),
                 ),
                 child: Text(
                   profile.name?.characters.firstOrNull ?? 'م',
                   style: AppTextStyles.displayLg.copyWith(
                     fontSize: 30,
-                    color: const Color(0xFF7A5E0E),
+                    color: const Color(0xFFFFFFFF),
                   ),
                 ),
               ),

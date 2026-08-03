@@ -110,7 +110,7 @@ class JobCard extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 13),
-              const Divider(height: 1, color: Color(0xFFF4F1EA)),
+              const Divider(height: 1, color: Color(0xFFEDF1EC)),
               const SizedBox(height: 12),
               Row(
                 children: [
@@ -160,7 +160,7 @@ class _Chip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: accent ? AppColors.warningBg : const Color(0xFFF6F5F1),
+        color: accent ? AppColors.warningBg : const Color(0xFFF4F6F3),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Row(

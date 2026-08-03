@@ -123,7 +123,7 @@ class _RegisterCandidateViewState extends State<RegisterCandidateView> {
           gradient: RadialGradient(
             center: Alignment(0, -1.1),
             radius: 1.1,
-            colors: [Color(0xFFFFFFFF), Color(0xFFF4F2EC)],
+            colors: [Color(0xFFFFFFFF), Color(0xFFEDF1EC)],
             stops: [0, .7],
           ),
         ),

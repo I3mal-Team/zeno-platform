@@ -20,7 +20,7 @@ class ScreenBackground extends StatelessWidget {
         gradient: RadialGradient(
           center: Alignment(0, -1.1),
           radius: 1.25,
-          colors: [Color(0xFFFFFFFF), Color(0xFFF4F2EC), Color(0xFFEDE9DF)],
+          colors: [Color(0xFFFFFFFF), Color(0xFFEDF1EC), Color(0xFFEDE9DF)],
           stops: [0, .55, 1],
         ),
       ),
@@ -93,7 +93,7 @@ class _DotPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = const Color(0xFF2B2724).withValues(alpha: .045);
+      ..color = const Color(0xFF284C3D).withValues(alpha: .045);
 
     for (var y = 0.0; y < size.height; y += _spacing) {
       for (var x = 0.0; x < size.width; x += _spacing) {

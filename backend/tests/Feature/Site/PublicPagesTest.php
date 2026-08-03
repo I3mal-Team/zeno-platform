@@ -59,7 +59,7 @@ it('renders the about page with the design content', function () {
         ->assertOk()
         ->assertSee('نقرّب المسافة بين', false)
         ->assertSee('ما نؤمن به', false)
-        ->assertSee('محطات زينو', false)
+        ->assertSee('محطات AMS', false)
         ->assertSee('أحمد الشمري', false);
 });
 

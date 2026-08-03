@@ -31,11 +31,11 @@ final class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->authGuard('admin')
             ->login()
-            ->brandName('زينو — لوحة الإدارة')
+            ->brandName('AMS — لوحة الإدارة')
             ->font('Tajawal')
             ->colors([
-                'primary' => Color::hex('#F7BE17'),
-                'gray' => Color::hex('#5A554C'),
+                'primary' => Color::hex('#284C3D'),
+                'gray' => Color::hex('#566159'),
             ])
             ->discoverResources(in: app_path('Filament/Admin/Resources'), for: 'App\Filament\Admin\Resources')
             ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\Filament\Admin\Pages')

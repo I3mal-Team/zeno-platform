@@ -6,9 +6,9 @@ import '../styles/app_dimensions.dart';
 import '../styles/app_shadows.dart';
 import '../styles/app_text_styles.dart';
 
-/// The primary call-to-action, matching the design: a tall amber pill with an
-/// amber glow, a directional forward arrow, and a press-scale response. Pass
-/// [dark] for the charcoal-on-amber-text variant.
+/// The primary call-to-action: a tall deep-green pill with a soft glow, a
+/// directional forward arrow, and a press-scale response. Pass [dark] for the
+/// gold-text variant.
 class AppButton extends StatelessWidget {
   const AppButton({
     required this.label,
@@ -34,9 +34,9 @@ class AppButton extends StatelessWidget {
     final isEnabled = onPressed != null && !isLoading;
     final isRtl = Directionality.of(context) == TextDirection.rtl;
 
-    final background = dark ? AppColors.charcoalSoft : AppColors.amber;
-    final foreground = dark ? AppColors.amber : AppColors.textStrong;
-    final glow = dark ? AppShadows.charcoalGlow : AppShadows.amberGlow;
+    final background = AppColors.charcoalSoft;
+    final foreground = dark ? AppColors.amber : AppColors.textOnDark;
+    final glow = AppShadows.charcoalGlow;
 
     return Pressable(
       onTap: isEnabled ? onPressed : null,

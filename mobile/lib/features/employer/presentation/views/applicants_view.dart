@@ -190,13 +190,13 @@ class _ApplicantCard extends StatelessWidget {
                     shape: BoxShape.circle,
                     gradient: RadialGradient(
                       center: Alignment(-.3, -.4),
-                      colors: [Color(0xFFFDEFC2), Color(0xFFF6D783)],
+                      colors: [Color(0xFF3E6B54), Color(0xFF284C3D)],
                     ),
                   ),
                   child: Text(
                     applicant.name?.characters.firstOrNull ?? 'م',
                     style: AppTextStyles.titleLg.copyWith(
-                      color: const Color(0xFF7A5E0E),
+                      color: const Color(0xFFFFFFFF),
                     ),
                   ),
                 ),
@@ -238,7 +238,7 @@ class _ApplicantCard extends StatelessWidget {
                 const Icon(
                   Icons.chevron_left_rounded,
                   size: 21,
-                  color: Color(0xFFC9C4B9),
+                  color: Color(0xFFBAC4BD),
                 ),
               ],
             ),
@@ -414,7 +414,7 @@ class _EmptyState extends StatelessWidget {
           child: const Icon(
             Icons.person_search_rounded,
             size: 40,
-            color: Color(0xFFC9C4B9),
+            color: Color(0xFFBAC4BD),
           ),
         ),
         const SizedBox(height: 16),

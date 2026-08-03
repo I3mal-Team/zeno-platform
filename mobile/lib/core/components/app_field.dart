@@ -56,7 +56,7 @@ class AppField extends StatelessWidget {
           horizontal: 16,
           vertical: multiline ? 14 : 15,
         ),
-        enabledBorder: _border(const Color(0xFFECEAE3)),
+        enabledBorder: _border(const Color(0xFFE5EAE6)),
         focusedBorder: _border(AppColors.charcoalSoft, width: 1.5),
         errorBorder: _border(AppColors.errorFg),
         focusedErrorBorder: _border(AppColors.errorFg, width: 1.5),

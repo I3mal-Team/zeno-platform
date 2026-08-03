@@ -85,7 +85,7 @@ class _WhatsAppSheet extends StatelessWidget {
                 icon: const Icon(Icons.close_rounded, size: 20),
                 color: const Color(0xFF8A857A),
                 style: IconButton.styleFrom(
-                  backgroundColor: const Color(0xFFF4F2EC),
+                  backgroundColor: const Color(0xFFEDF1EC),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(11),
                   ),

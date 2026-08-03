@@ -18,7 +18,7 @@ class ChatView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFEFEDE6),
+      backgroundColor: const Color(0xFFE5EAE6),
       body: Column(
         children: [
           _Header(title: title),
@@ -213,7 +213,7 @@ class _Bubble extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
         decoration: BoxDecoration(
           color: mine ? AppColors.amber : AppColors.surface,
-          border: mine ? null : Border.all(color: const Color(0xFFECEAE3)),
+          border: mine ? null : Border.all(color: const Color(0xFFE5EAE6)),
           borderRadius: BorderRadius.only(
             topLeft: const Radius.circular(16),
             topRight: const Radius.circular(16),
@@ -289,7 +289,7 @@ class _ComposerState extends State<_Composer> {
     return Container(
       decoration: const BoxDecoration(
         color: AppColors.surface,
-        border: Border(top: BorderSide(color: Color(0xFFEFEDE6))),
+        border: Border(top: BorderSide(color: Color(0xFFE5EAE6))),
       ),
       padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
       child: SafeArea(
@@ -300,7 +300,7 @@ class _ComposerState extends State<_Composer> {
               child: Container(
                 decoration: BoxDecoration(
                   color: AppColors.paper,
-                  border: Border.all(color: const Color(0xFFEFEDE6), width: 1.5),
+                  border: Border.all(color: const Color(0xFFE5EAE6), width: 1.5),
                   borderRadius: BorderRadius.circular(14),
                 ),
                 child: TextField(

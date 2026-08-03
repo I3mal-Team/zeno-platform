@@ -61,14 +61,21 @@ final class OrganizationRepository
 
     public function update(Organization $organization, OrganizationData $data): Organization
     {
-        $organization->update([
+        $attributes = [
             'type' => $data->type->value,
             'name' => $data->name,
-            'commercial_registration' => $data->commercialRegistration,
             'responsible_person_name' => $data->responsiblePersonName,
             'city_id' => $data->cityId,
             'about' => $data->about,
-        ]);
+        ];
+
+        // The CR is encrypted and never returned to clients to prefill an edit
+        // form, so a null here means "leave it as it is", not "clear it".
+        if ($data->commercialRegistration !== null) {
+            $attributes['commercial_registration'] = $data->commercialRegistration;
+        }
+
+        $organization->update($attributes);
 
         return $organization->fresh(['city']);
     }

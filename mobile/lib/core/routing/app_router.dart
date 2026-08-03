@@ -19,6 +19,7 @@ import '../../features/chat/presentation/views/conversations_view.dart';
 import '../../features/employer/presentation/manager/applicant_profile_cubit/applicant_profile_cubit.dart';
 import '../../features/employer/presentation/manager/applicants_cubit/applicants_cubit.dart';
 import '../../features/employer/presentation/manager/employer_jobs_cubit/employer_jobs_cubit.dart';
+import '../../features/employer/data/models/organization_model.dart';
 import '../../features/employer/presentation/manager/employer_profile_cubit/employer_profile_cubit.dart';
 import '../../features/employer/presentation/manager/publish_job_cubit/publish_job_cubit.dart';
 import '../../features/employer/presentation/views/applicant_profile_view.dart';
@@ -98,9 +99,11 @@ abstract final class AppRouter {
       ),
       GoRoute(
         path: RoutesKeys.registerEmployer,
-        builder: (_, _) => BlocProvider(
+        builder: (_, state) => BlocProvider(
           create: (_) => EmployerProfileCubit(getIt()),
-          child: const RegisterEmployerView(),
+          child: RegisterEmployerView(
+            organization: state.extra as OrganizationModel?,
+          ),
         ),
       ),
       StatefulShellRoute.indexedStack(

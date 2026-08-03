@@ -15,7 +15,7 @@ class AuthSessionModel extends Equatable {
         token: json['token'] as String,
         user: UserModel.fromJson(json['user'] as Map<String, dynamic>),
         isNewUser: json['is_new_user'] as bool? ?? false,
-        profileCompleted: json['profile_completed'] as bool? ?? true,
+        profileCompleted: json['profile_completed'] as bool? ?? false,
       );
 
   final String token;

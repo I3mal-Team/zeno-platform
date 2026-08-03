@@ -244,7 +244,7 @@ class _ProgressTrack extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const pending = Color(0xFFE7E3DA);
+    const pending = Color(0xFFDCE3DD);
     final reached = status == 'review' ||
         status == 'accepted' ||
         status == 'rejected';

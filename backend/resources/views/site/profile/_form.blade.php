@@ -1,8 +1,8 @@
 @php
   $profile = $profile ?? null;
   $method = $method ?? 'POST';
-  $boxBase = 'width:100%;height:54px;border:1px solid #ECEAE3;border-radius:16px;background:#fff;padding:0 18px;font-family:inherit;font-size:15px;font-weight:600;color:#2B2724;outline:none';
-  $errBorder = fn ($field) => $errors->has($field) ? '#E5484D' : '#ECEAE3';
+  $boxBase = 'width:100%;height:54px;border:1px solid #E5EAE6;border-radius:16px;background:#fff;padding:0 18px;font-family:inherit;font-size:15px;font-weight:600;color:#284C3D;outline:none';
+  $errBorder = fn ($field) => $errors->has($field) ? '#E5484D' : '#E5EAE6';
   $val = fn ($field, $fallback = null) => old($field, $fallback);
 @endphp
 
@@ -25,10 +25,10 @@
   <div style="display:flex;gap:12px">
     @php($cityVal = $val('city_id', $profile?->city_id))
     <div style="flex:1.7">
-      <select name="city_id" style="{{ $boxBase }};border-color:{{ $errBorder('city_id') }};color:{{ $cityVal ? '#2B2724' : '#9A948A' }};cursor:pointer">
+      <select name="city_id" style="{{ $boxBase }};border-color:{{ $errBorder('city_id') }};color:{{ $cityVal ? '#284C3D' : '#9A948A' }};cursor:pointer">
         <option value="" style="color:#9A948A">المدينة</option>
         @foreach ($cities as $city)
-          <option value="{{ $city->id }}" style="color:#2B2724" @selected($cityVal == $city->id)>{{ $city->name }}</option>
+          <option value="{{ $city->id }}" style="color:#284C3D" @selected($cityVal == $city->id)>{{ $city->name }}</option>
         @endforeach
       </select>
       @error('city_id')<div style="font-size:13px;color:#E5484D;font-weight:700;margin-top:6px">{{ $message }}</div>@enderror
@@ -42,10 +42,10 @@
 
   <div>
     @php($natVal = $val('nationality_code', $profile?->nationality_code))
-    <select name="nationality_code" style="{{ $boxBase }};border-color:{{ $errBorder('nationality_code') }};color:{{ $natVal ? '#2B2724' : '#9A948A' }};cursor:pointer">
+    <select name="nationality_code" style="{{ $boxBase }};border-color:{{ $errBorder('nationality_code') }};color:{{ $natVal ? '#284C3D' : '#9A948A' }};cursor:pointer">
       <option value="" style="color:#9A948A">الجنسية</option>
       @foreach ($countries as $country)
-        <option value="{{ $country->iso2 }}" style="color:#2B2724" @selected($natVal === $country->iso2)>{{ $country->flag }} {{ $country->name }}</option>
+        <option value="{{ $country->iso2 }}" style="color:#284C3D" @selected($natVal === $country->iso2)>{{ $country->flag }} {{ $country->name }}</option>
       @endforeach
     </select>
     @error('nationality_code')<div style="font-size:13px;color:#E5484D;font-weight:700;margin-top:6px">{{ $message }}</div>@enderror
@@ -65,12 +65,12 @@
 
   <div>
     <textarea name="bio" placeholder="نبذة مختصرة عنك (اختياري)"
-      style="width:100%;height:120px;resize:none;border:1px solid {{ $errBorder('bio') }};border-radius:16px;background:#fff;padding:15px 18px;font-family:inherit;font-size:15px;font-weight:600;color:#2B2724;outline:none;text-align:right">{{ $val('bio', $profile?->bio) }}</textarea>
+      style="width:100%;height:120px;resize:none;border:1px solid {{ $errBorder('bio') }};border-radius:16px;background:#fff;padding:15px 18px;font-family:inherit;font-size:15px;font-weight:600;color:#284C3D;outline:none;text-align:right">{{ $val('bio', $profile?->bio) }}</textarea>
     @error('bio')<div style="font-size:13px;color:#E5484D;font-weight:700;margin-top:6px">{{ $message }}</div>@enderror
   </div>
 
-  <button type="submit" style="display:flex;align-items:center;justify-content:center;gap:9px;background:#F7BE17;color:#2B2724;border:none;font-family:inherit;font-size:16px;font-weight:800;padding:16px;border-radius:16px;cursor:pointer;margin-top:8px">
+  <button type="submit" style="display:flex;align-items:center;justify-content:center;gap:9px;background:#C9A24B;color:#284C3D;border:none;font-family:inherit;font-size:16px;font-weight:800;padding:16px;border-radius:16px;cursor:pointer;margin-top:8px">
     {{ $submitLabel }}
-    <i class="iconsax" style="font-size:20px;color:#2B2724" icon-name="arrow-left"></i>
+    <i class="iconsax" style="font-size:20px;color:#284C3D" icon-name="arrow-left"></i>
   </button>
 </form>

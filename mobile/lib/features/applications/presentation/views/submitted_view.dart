@@ -215,7 +215,7 @@ class _SecondaryButton extends StatelessWidget {
         alignment: Alignment.center,
         decoration: BoxDecoration(
           color: AppColors.surface,
-          border: Border.all(color: const Color(0xFFECEAE3), width: 1.5),
+          border: Border.all(color: const Color(0xFFE5EAE6), width: 1.5),
           borderRadius: BorderRadius.circular(17),
         ),
         child: Text(

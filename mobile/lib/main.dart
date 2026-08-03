@@ -29,7 +29,7 @@ class ZenoApp extends StatelessWidget {
 
   Widget _buildApp() {
     return MaterialApp.router(
-      title: 'zeno',
+      title: 'AMS',
       debugShowCheckedModeBanner: false,
       routerConfig: AppRouter.router,
       locale: const Locale('ar'),

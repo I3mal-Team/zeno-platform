@@ -14,10 +14,14 @@ import '../../../../core/routing/routes_keys.dart';
 import '../../../../core/styles/app_colors.dart';
 import '../../../../core/styles/app_dimensions.dart';
 import '../../../../core/styles/app_text_styles.dart';
+import '../../data/models/organization_model.dart';
 import '../manager/employer_profile_cubit/employer_profile_cubit.dart';
 
 class RegisterEmployerView extends StatefulWidget {
-  const RegisterEmployerView({super.key});
+  const RegisterEmployerView({this.organization, super.key});
+
+  /// When set, the form opens in edit mode, pre-filled with the current data.
+  final OrganizationModel? organization;
 
   @override
   State<RegisterEmployerView> createState() => _RegisterEmployerViewState();
@@ -28,21 +32,35 @@ class _RegisterEmployerViewState extends State<RegisterEmployerView> {
   final _name = TextEditingController();
   final _responsible = TextEditingController();
   final _registration = TextEditingController();
+  final _about = TextEditingController();
 
   String _type = 'company';
   int? _cityId;
 
   bool get _isCompany => _type == 'company';
+  bool get _isEditing => widget.organization != null;
 
   @override
   void initState() {
     super.initState();
     context.read<EmployerProfileCubit>().loadCities();
+
+    // Seed the form from the existing organization so an edit doesn't start
+    // blank and reset the account type. The CR is never returned by the API, so
+    // it stays empty and is only re-sent if the user types a new one.
+    final org = widget.organization;
+    if (org != null) {
+      _type = org.type;
+      _name.text = org.name;
+      _responsible.text = org.responsiblePersonName ?? '';
+      _about.text = org.about ?? '';
+      _cityId = org.cityId;
+    }
   }
 
   @override
   void dispose() {
-    for (final c in [_name, _responsible, _registration]) {
+    for (final c in [_name, _responsible, _registration, _about]) {
       c.dispose();
     }
     super.dispose();
@@ -52,18 +70,18 @@ class _RegisterEmployerViewState extends State<RegisterEmployerView> {
     if (!(_formKey.currentState?.validate() ?? false)) return;
 
     final responsible = _responsible.text.trim();
+    final registration = _registration.text.trim();
+    final about = _about.text.trim();
 
     context.read<EmployerProfileCubit>().save(
       SaveOrganizationParam(
         type: _type,
-        // An individual has no separate trade name — the person is the entity.
-        name: _isCompany ? _name.text.trim() : responsible,
+        name: _name.text.trim(),
         responsiblePersonName: responsible.isEmpty ? null : responsible,
         commercialRegistration:
-            _isCompany && _registration.text.trim().isNotEmpty
-            ? _registration.text.trim()
-            : null,
+            _isCompany && registration.isNotEmpty ? registration : null,
         cityId: _cityId,
+        about: about.isEmpty ? null : about,
       ),
     );
   }
@@ -76,7 +94,7 @@ class _RegisterEmployerViewState extends State<RegisterEmployerView> {
           gradient: RadialGradient(
             center: Alignment(0, -1.1),
             radius: 1.1,
-            colors: [Color(0xFFFFFFFF), Color(0xFFF4F2EC)],
+            colors: [Color(0xFFFFFFFF), Color(0xFFEDF1EC)],
             stops: [0, .7],
           ),
         ),
@@ -84,7 +102,12 @@ class _RegisterEmployerViewState extends State<RegisterEmployerView> {
           child: BlocConsumer<EmployerProfileCubit, EmployerProfileState>(
             listener: (context, state) {
               if (state is EmployerProfileSaved) {
-                context.go(RoutesKeys.employerJobs);
+                if (_isEditing) {
+                  AppToast.success(context, 'تم حفظ التعديلات.');
+                  context.pop();
+                } else {
+                  context.go(RoutesKeys.employerJobs);
+                }
               }
               if (state case EmployerProfileFailed(:final failure)) {
                 AppToast.error(context, failure.message);
@@ -101,7 +124,7 @@ class _RegisterEmployerViewState extends State<RegisterEmployerView> {
                     const AppTopBar(showLogo: true),
                     const SizedBox(height: AppDimensions.space22),
                     Text(
-                      'بيانات صاحب العمل',
+                      _isEditing ? 'تعديل بيانات جهتك' : 'بيانات صاحب العمل',
                       style: AppTextStyles.displayLg.copyWith(fontSize: 24),
                     ),
                     const SizedBox(height: AppDimensions.space6),
@@ -117,7 +140,7 @@ class _RegisterEmployerViewState extends State<RegisterEmployerView> {
                       style: AppTextStyles.caption.copyWith(
                         fontSize: 13,
                         fontWeight: FontWeight.w800,
-                        color: const Color(0xFF9A958A),
+                        color: const Color(0xFF869089),
                       ),
                     ),
                     const SizedBox(height: 9),
@@ -139,36 +162,46 @@ class _RegisterEmployerViewState extends State<RegisterEmployerView> {
                       ],
                     ),
                     const SizedBox(height: 18),
+                    // The name is collected for both types (like the website); an
+                    // individual enters their own name as the account name.
+                    AppField(
+                      controller: _name,
+                      hint: _isCompany ? 'اسم المنشأة' : 'الاسم الكامل',
+                      validator: (value) => (value ?? '').trim().length < 2
+                          ? (_isCompany ? 'أدخل اسم المنشأة' : 'أدخل الاسم')
+                          : null,
+                    ),
+                    const SizedBox(height: 13),
                     if (_isCompany) ...[
                       AppField(
-                        controller: _name,
-                        hint: 'اسم المنشأة',
-                        validator: (value) => (value ?? '').trim().length < 2
-                            ? 'أدخل اسم المنشأة'
-                            : null,
-                      ),
-                      const SizedBox(height: 13),
-                      AppField(
                         controller: _registration,
-                        hint: 'رقم السجل التجاري',
+                        hint: _isEditing
+                            ? 'رقم السجل التجاري (اتركه فارغاً لعدم التغيير)'
+                            : 'رقم السجل التجاري',
                         keyboardType: TextInputType.number,
                         textDirection: TextDirection.rtl,
                         inputFormatters: [
                           FilteringTextInputFormatter.digitsOnly,
                           LengthLimitingTextInputFormatter(10),
                         ],
-                        validator: (value) => (value ?? '').trim().length != 10
-                            ? 'السجل التجاري 10 أرقام'
-                            : null,
+                        validator: (value) {
+                          final cr = (value ?? '').trim();
+                          // Required on create; on edit an empty value means
+                          // "keep the current CR".
+                          if (!_isEditing && cr.length != 10) {
+                            return 'السجل التجاري 10 أرقام';
+                          }
+                          if (cr.isNotEmpty && cr.length != 10) {
+                            return 'السجل التجاري 10 أرقام';
+                          }
+                          return null;
+                        },
                       ),
                       const SizedBox(height: 13),
                     ],
                     AppField(
                       controller: _responsible,
-                      hint: 'اسم المسؤول',
-                      validator: (value) => (value ?? '').trim().length < 2
-                          ? 'أدخل اسم المسؤول'
-                          : null,
+                      hint: 'اسم الشخص المسؤول (اختياري)',
                     ),
                     const SizedBox(height: 13),
                     AppSelectField<int>(
@@ -180,9 +213,15 @@ class _RegisterEmployerViewState extends State<RegisterEmployerView> {
                       ],
                       onChanged: (id) => setState(() => _cityId = id),
                     ),
+                    const SizedBox(height: 13),
+                    AppField(
+                      controller: _about,
+                      hint: 'نبذة عن جهتك (اختياري)',
+                      maxLines: 4,
+                    ),
                     const SizedBox(height: AppDimensions.space22),
                     AppButton(
-                      label: 'إنشاء الحساب',
+                      label: _isEditing ? 'حفظ التعديلات' : 'إنشاء الحساب',
                       isLoading: state is EmployerProfileSaving,
                       onPressed: _submit,
                     ),
@@ -222,7 +261,7 @@ class _TypeOption extends StatelessWidget {
           decoration: BoxDecoration(
             color: selected ? AppColors.warningBg : AppColors.surface,
             border: Border.all(
-              color: selected ? AppColors.amber : const Color(0xFFECEAE3),
+              color: selected ? AppColors.amber : const Color(0xFFE5EAE6),
               width: selected ? 1.5 : 1,
             ),
             borderRadius: BorderRadius.circular(14),

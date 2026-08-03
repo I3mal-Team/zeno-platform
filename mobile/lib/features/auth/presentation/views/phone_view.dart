@@ -138,7 +138,7 @@ class _PhoneField extends StatelessWidget {
               height: AppDimensions.inputHeight,
               decoration: BoxDecoration(
                 color: AppColors.surface,
-                border: Border.all(color: const Color(0xFFECEAE3)),
+                border: Border.all(color: const Color(0xFFE5EAE6)),
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: AppShadows.chip,
               ),
@@ -188,7 +188,7 @@ class _CountryChip extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 15),
         decoration: BoxDecoration(
           color: AppColors.surface,
-          border: Border.all(color: const Color(0xFFECEAE3)),
+          border: Border.all(color: const Color(0xFFE5EAE6)),
           borderRadius: BorderRadius.circular(16),
           boxShadow: AppShadows.chip,
         ),

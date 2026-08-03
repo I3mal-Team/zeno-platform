@@ -11,8 +11,8 @@
   <div class="job-form-grid" style="display:grid;grid-template-columns:1.5fr 1fr;gap:18px;align-items:start">
 
     {{-- Main details --}}
-    <div class="cardh" style="background:#fff;border:1px solid #EDEAE2;border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:16px">
-      <div style="font-size:15px;font-weight:900;color:#211F20">تفاصيل الوظيفة</div>
+    <div class="cardh" style="background:#fff;border:1px solid #E5EAE6;border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:16px">
+      <div style="font-size:15px;font-weight:900;color:#22302A">تفاصيل الوظيفة</div>
 
       <x-employer.field name="title" label="المسمى الوظيفي" :value="old('title', $j?->title)" placeholder="مثال: باريستا"/>
 
@@ -35,37 +35,37 @@
     </div>
 
     {{-- Contact + description --}}
-    <div class="cardh" style="background:#fff;border:1px solid #EDEAE2;border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:16px">
-      <div style="font-size:15px;font-weight:900;color:#211F20">التواصل والوصف</div>
+    <div class="cardh" style="background:#fff;border:1px solid #E5EAE6;border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:16px">
+      <div style="font-size:15px;font-weight:900;color:#22302A">التواصل والوصف</div>
 
       <div>
-        <div style="font-size:14px;font-weight:800;color:#2B2724;margin-bottom:9px">طريقة التواصل</div>
+        <div style="font-size:14px;font-weight:800;color:#284C3D;margin-bottom:9px">طريقة التواصل</div>
         <div style="display:flex;gap:10px">
           @foreach (['app' => 'داخل التطبيق', 'whatsapp' => 'واتساب', 'both' => 'كلاهما'] as $value => $label)
             <label style="flex:1;cursor:pointer">
               <input type="radio" name="contact_channel" value="{{ $value }}" @checked(old('contact_channel', $j?->contact_channel->value ?? 'app') === $value) style="position:absolute;opacity:0;pointer-events:none" class="ch-radio">
-              <span style="display:block;text-align:center;font-size:14px;font-weight:800;padding:12px;border-radius:13px;border:1.5px solid #E7E3DA;background:#FBFAF7;color:#6C665C">{{ $label }}</span>
+              <span style="display:block;text-align:center;font-size:14px;font-weight:800;padding:12px;border-radius:13px;border:1.5px solid #DCE3DD;background:#F7F9F7;color:#5C6862">{{ $label }}</span>
             </label>
           @endforeach
         </div>
       </div>
 
       <div style="display:flex;flex-direction:column;flex:1">
-        <div style="font-size:14px;font-weight:800;color:#2B2724;margin-bottom:9px">وصف الوظيفة</div>
-        <textarea name="description" placeholder="تفاصيل المهام والمتطلبات…" style="width:100%;min-height:220px;flex:1;resize:vertical;border:1px solid {{ $errors->has('description') ? '#B23232' : '#E7E3DA' }};border-radius:14px;background:#FBFAF7;padding:14px 16px;font-family:inherit;font-size:15px;font-weight:600;color:#2B2724;outline:none;line-height:1.7">{{ old('description', $j?->description) }}</textarea>
+        <div style="font-size:14px;font-weight:800;color:#284C3D;margin-bottom:9px">وصف الوظيفة</div>
+        <textarea name="description" placeholder="تفاصيل المهام والمتطلبات…" style="width:100%;min-height:220px;flex:1;resize:vertical;border:1px solid {{ $errors->has('description') ? '#B23232' : '#DCE3DD' }};border-radius:14px;background:#F7F9F7;padding:14px 16px;font-family:inherit;font-size:15px;font-weight:600;color:#284C3D;outline:none;line-height:1.7">{{ old('description', $j?->description) }}</textarea>
       </div>
     </div>
 
   </div>
 
   <div style="display:flex;gap:12px">
-    <button type="submit" class="btn" style="background:#F7BE17;color:#2B2724;border:none;font-family:inherit;font-size:15.5px;font-weight:800;padding:14px 26px;border-radius:14px;cursor:pointer">{{ $submitLabel }}</button>
-    <a href="{{ route('employer.jobs.index') }}" class="btn" style="background:#fff;color:#2B2724;border:1px solid #E7E3DA;font-size:15px;font-weight:800;padding:14px 24px;border-radius:14px">إلغاء</a>
+    <button type="submit" class="btn" style="background:#C9A24B;color:#284C3D;border:none;font-family:inherit;font-size:15.5px;font-weight:800;padding:14px 26px;border-radius:14px;cursor:pointer">{{ $submitLabel }}</button>
+    <a href="{{ route('employer.jobs.index') }}" class="btn" style="background:#fff;color:#284C3D;border:1px solid #DCE3DD;font-size:15px;font-weight:800;padding:14px 24px;border-radius:14px">إلغاء</a>
   </div>
 </form>
 
 <style>
-  .ch-radio:checked + span { border-color:#F7BE17 !important; background:#FDF3D6 !important; color:#8A6D12 !important; }
+  .ch-radio:checked + span { border-color:#C9A24B !important; background:#F3ECD6 !important; color:#8A6D12 !important; }
   @media (max-width: 900px) {
     .job-form-grid { grid-template-columns:1fr !important; }
   }

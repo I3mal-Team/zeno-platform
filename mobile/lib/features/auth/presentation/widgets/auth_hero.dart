@@ -48,18 +48,18 @@ class AuthHero extends StatelessWidget {
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   center: Alignment(-.36, -.48),
-                  colors: [Color(0xFFFDEFC2), Color(0xFFF6D783)],
+                  colors: [Color(0xFF3E6B54), Color(0xFF284C3D)],
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Color(0x8CF7BE17),
+                    color: Color(0x8C284C3D),
                     blurRadius: 32,
                     offset: Offset(0, 18),
                     spreadRadius: -14,
                   ),
                 ],
               ),
-              child: Icon(icon, size: discSize * 0.45, color: const Color(0xFF7A5E0E)),
+              child: Icon(icon, size: discSize * 0.45, color: const Color(0xFFFFFFFF)),
             ),
           ),
           // Accent dots pinned to the disc's corners.

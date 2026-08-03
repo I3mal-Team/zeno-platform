@@ -334,11 +334,11 @@ class _LocationArt extends StatelessWidget {
                 shape: BoxShape.circle,
                 gradient: const RadialGradient(
                   center: Alignment(-.36, -.48),
-                  colors: [Color(0xFFFBD46B), Color(0xFFF2A50E)],
+                  colors: [Color(0xFF3E6B54), Color(0xFF284C3D)],
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFFF2A50E).withValues(alpha: .5),
+                    color: const Color(0xFF284C3D).withValues(alpha: .5),
                     blurRadius: 50,
                     offset: const Offset(0, 26),
                     spreadRadius: -18,
@@ -359,10 +359,10 @@ class _LocationArt extends StatelessWidget {
               size: 58,
               radius: 18,
               background: AppColors.surface,
-              border: const Color(0xFFF0EDE6),
+              border: const Color(0xFFE5EAE6),
               shadow: AppShadows.card,
               icon: Icons.local_cafe_rounded,
-              iconColor: const Color(0xFF8A6D2E),
+              iconColor: const Color(0xFF2E4A3C),
               iconSize: 28,
               amplitude: 12,
             ),
@@ -374,7 +374,7 @@ class _LocationArt extends StatelessWidget {
               size: 54,
               radius: 17,
               background: AppColors.surface,
-              border: const Color(0xFFF0EDE6),
+              border: const Color(0xFFE5EAE6),
               shadow: AppShadows.card,
               icon: Icons.local_shipping_rounded,
               iconColor: const Color(0xFF2E6E8A),
@@ -406,7 +406,7 @@ class _GridArt extends StatelessWidget {
   const _GridArt();
 
   static const _tiles = <(Color, IconData, Color)>[
-    (Color(0xFFFDF1CC), Icons.local_cafe_rounded, Color(0xFF8A6D12)),
+    (Color(0xFFE4EDE8), Icons.local_cafe_rounded, Color(0xFF8A6D12)),
     (Color(0xFFE2EEF4), Icons.cleaning_services_rounded, Color(0xFF2E6E8A)),
     (Color(0xFFE6F0E1), Icons.local_shipping_rounded, Color(0xFF4F7A2E)),
     (Color(0xFFECE6F4), Icons.auto_awesome_rounded, Color(0xFF6A4E8A)),
@@ -467,8 +467,8 @@ class _ConnectArt extends StatelessWidget {
             left: 8,
             top: 92,
             child: _BigDisc(
-              gradient: const [Color(0xFFFBD46B), Color(0xFFF2A50E)],
-              glow: const Color(0xFFF2A50E),
+              gradient: const [Color(0xFF3E6B54), Color(0xFF284C3D)],
+              glow: const Color(0xFF284C3D),
               icon: Icons.person_rounded,
               iconColor: Colors.white,
             ),
@@ -477,7 +477,7 @@ class _ConnectArt extends StatelessWidget {
             right: 8,
             top: 92,
             child: _BigDisc(
-              gradient: const [Color(0xFF3A352F), Color(0xFF241F1C)],
+              gradient: const [Color(0xFF2E4A3C), Color(0xFF1E3A2E)],
               glow: AppColors.charcoalSoft,
               icon: Icons.work_rounded,
               iconColor: AppColors.amber,
@@ -490,7 +490,7 @@ class _ConnectArt extends StatelessWidget {
               size: 84,
               radius: 26,
               background: AppColors.surface,
-              border: const Color(0xFFF0EDE6),
+              border: const Color(0xFFE5EAE6),
               shadow: AppShadows.card,
               icon: Icons.forum_rounded,
               iconColor: const Color(0xFF8A6D12),
@@ -516,7 +516,7 @@ class _ConnectArt extends StatelessWidget {
             child: _FloatTile(
               size: 44,
               radius: 14,
-              background: const Color(0xFFFDF3D6),
+              background: const Color(0xFFF3ECD6),
               icon: Icons.call_rounded,
               iconColor: const Color(0xFF8A6D12),
               iconSize: 22,

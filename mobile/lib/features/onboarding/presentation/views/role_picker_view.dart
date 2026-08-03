@@ -56,7 +56,7 @@ class RolePickerView extends StatelessWidget {
                       style: AppTextStyles.caption.copyWith(
                         fontSize: 12.5,
                         fontWeight: FontWeight.w800,
-                        color: const Color(0xFFA39E92),
+                        color: const Color(0xFF869089),
                       ),
                     ),
                   ),
@@ -67,10 +67,10 @@ class RolePickerView extends StatelessWidget {
                     title: 'أبحث عن عمل',
                     subtitle: 'تصفّح الوظائف القريبة وقدّم بسهولة',
                     icon: Icons.person_search_rounded,
-                    iconColor: const Color(0xFF7A5E0E),
-                    discGradient: const [Color(0xFFFDEFC2), Color(0xFFF6D783)],
+                    iconColor: const Color(0xFFFFFFFF),
+                    discGradient: const [Color(0xFF3E6B54), Color(0xFF284C3D)],
                     glowColor: AppColors.amber,
-                    borderColor: const Color(0xFFF1ECDD),
+                    borderColor: const Color(0xFFEDF1EC),
                     onTap: () =>
                         context.push('${RoutesKeys.phone}?role=candidate'),
                   ),
@@ -83,9 +83,9 @@ class RolePickerView extends StatelessWidget {
                     subtitle: 'انشر وظيفة وتواصل مع المرشحين',
                     icon: Icons.work_rounded,
                     iconColor: AppColors.amber,
-                    discGradient: const [Color(0xFF3A352F), Color(0xFF241F1C)],
+                    discGradient: const [Color(0xFF2E4A3C), Color(0xFF1E3A2E)],
                     glowColor: AppColors.charcoalSoft,
-                    borderColor: const Color(0xFFECE9E2),
+                    borderColor: const Color(0xFFE5EAE6),
                     onTap: () =>
                         context.push('${RoutesKeys.phone}?role=employer'),
                   ),
@@ -160,7 +160,7 @@ class _RoleCard extends StatelessWidget {
             const Icon(
               Icons.chevron_left_rounded,
               size: 26,
-              color: Color(0xFFC9C4B9),
+              color: Color(0xFFBAC4BD),
             ),
           ],
         ),

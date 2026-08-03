@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 
 /// Every colour in the app. Features must not declare `Color(0xFF...)`.
+///
+/// Brand palette: a deep green primary (`charcoal*` — the dark surfaces and
+/// primary buttons) with a refined gold accent (`amber*`). The token names are
+/// kept for continuity even though the values are now green/gold.
 abstract final class AppColors {
-  static const amber = Color(0xFFF7BE17);
+  static const amber = Color(0xFFC9A24B);
 
-  static const amberDeep = Color(0xFFF2A50E);
+  static const amberDeep = Color(0xFFB88A2E);
 
   static const amberGradient = LinearGradient(
     begin: Alignment.topRight,
@@ -12,36 +16,36 @@ abstract final class AppColors {
     colors: [amber, amberDeep],
   );
 
-  static const charcoal = Color(0xFF211F20);
-  static const charcoalSoft = Color(0xFF2B2724);
+  static const charcoal = Color(0xFF22302A);
+  static const charcoalSoft = Color(0xFF284C3D);
 
   static const charcoalGradient = LinearGradient(
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
-    colors: [Color(0xFF34302B), Color(0xFF26221F)],
+    colors: [Color(0xFF315C4A), Color(0xFF1E3A2E)],
   );
 
-  static const paper = Color(0xFFF6F5F1);
+  static const paper = Color(0xFFF4F6F3);
 
   static const surface = Color(0xFFFFFFFF);
 
-  static const border = Color(0xFFEFEDE6);
-  static const borderStrong = Color(0xFFE7E3DA);
+  static const border = Color(0xFFE5EAE6);
+  static const borderStrong = Color(0xFFDCE3DD);
 
-  static const textStrong = Color(0xFF211F20);
+  static const textStrong = Color(0xFF22302A);
 
-  static const textBody = Color(0xFF5A554C);
+  static const textBody = Color(0xFF566159);
 
-  static const textMuted = Color(0xFF8A857A);
+  static const textMuted = Color(0xFF7E8B84);
 
   static const textOnDark = Color(0xFFFFFFFF);
-  static const textOnDarkMuted = Color(0xFFC7C2B8);
+  static const textOnDarkMuted = Color(0xFFB8C4BC);
 
   static const successFg = Color(0xFF1F7A3D);
   static const successBg = Color(0xFFE3F3E8);
 
   static const warningFg = Color(0xFF8A6D12);
-  static const warningBg = Color(0xFFFDF3D6);
+  static const warningBg = Color(0xFFF3ECD6);
 
   static const errorFg = Color(0xFFB23232);
   static const errorBg = Color(0xFFFBE6E6);

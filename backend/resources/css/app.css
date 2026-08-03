@@ -6,25 +6,26 @@
 @theme {
     --font-sans: 'Tajawal', ui-sans-serif, system-ui, sans-serif;
 
-    --color-amber: #f7be17;
-    --color-amber-deep: #f2a50e;
+    /* Brand: deep green primary with a refined gold accent. */
+    --color-amber: #c9a24b;
+    --color-amber-deep: #b88a2e;
 
-    --color-charcoal: #211f20;
-    --color-charcoal-soft: #2b2724;
+    --color-charcoal: #22302a;
+    --color-charcoal-soft: #284c3d;
 
-    --color-paper: #faf8f3;
-    --color-paper-app: #f6f5f1;
-    --color-paper-web: #f1efe9;
+    --color-paper: #f4f6f3;
+    --color-paper-app: #f4f6f3;
+    --color-paper-web: #eef2ee;
 
-    --color-ink: #211f20;
-    --color-body: #5a554c;
-    --color-muted: #8a857a;
-    --color-line: #efede6;
+    --color-ink: #22302a;
+    --color-body: #566159;
+    --color-muted: #7e8b84;
+    --color-line: #e5eae6;
 
     --color-success: #1f7a3d;
     --color-success-bg: #e3f3e8;
     --color-warning: #8a6d12;
-    --color-warning-bg: #fdf3d6;
+    --color-warning-bg: #f3ecd6;
     --color-danger: #b23232;
     --color-danger-bg: #fbe6e6;
     --color-info: #2e6e8a;

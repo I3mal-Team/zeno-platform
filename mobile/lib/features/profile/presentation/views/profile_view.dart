@@ -156,21 +156,17 @@ class _Header extends StatelessWidget {
           const SizedBox(height: 16),
           Row(
             children: [
-              Container(
-                width: 72,
-                height: 56,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: AppColors.amber,
-                  borderRadius: BorderRadius.circular(22),
-                ),
-                child: Text(
-                  profile.fullName.characters.firstOrNull ?? '؟',
-                  style: AppTextStyles.displayLg.copyWith(
-                    fontSize: 24,
-                    color: AppColors.textStrong,
-                  ),
-                ),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(22),
+                child: profile.avatarUrl != null
+                    ? Image.network(
+                        profile.avatarUrl!,
+                        width: 72,
+                        height: 56,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, _, _) => _AvatarLetter(profile: profile),
+                      )
+                    : _AvatarLetter(profile: profile),
               ),
               const SizedBox(width: 15),
               Expanded(
@@ -444,6 +440,32 @@ class _LoadFailed extends StatelessWidget {
               onPressed: () => context.read<ProfileCubit>().load(),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _AvatarLetter extends StatelessWidget {
+  const _AvatarLetter({required this.profile});
+
+  final CandidateProfileModel profile;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 72,
+      height: 56,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: AppColors.amber,
+        borderRadius: BorderRadius.circular(22),
+      ),
+      child: Text(
+        profile.fullName.characters.firstOrNull ?? '؟',
+        style: AppTextStyles.displayLg.copyWith(
+          fontSize: 24,
+          color: AppColors.textStrong,
         ),
       ),
     );

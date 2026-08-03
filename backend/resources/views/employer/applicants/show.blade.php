@@ -11,36 +11,36 @@
     <div style="background:#E7F4EC;color:#1F8A4D;border-radius:14px;padding:13px 16px;font-size:14px;font-weight:700;margin-bottom:16px">{{ session('status') }}</div>
   @endif
 
-  <a href="{{ route('employer.applicants.index') }}" style="font-size:14px;font-weight:800;color:#8A857A;display:inline-block;margin-bottom:14px">‹ كل المتقدمين</a>
+  <a href="{{ route('employer.applicants.index') }}" style="font-size:14px;font-weight:800;color:#7E8B84;display:inline-block;margin-bottom:14px">‹ كل المتقدمين</a>
 
-  <div class="cardh" style="background:#fff;border:1px solid #EDEAE2;border-radius:20px;padding:26px">
+  <div class="cardh" style="background:#fff;border:1px solid #E5EAE6;border-radius:20px;padding:26px">
     <div style="display:flex;align-items:center;gap:16px">
-      <div style="width:64px;height:64px;border-radius:18px;background:radial-gradient(circle at 30% 26%,#FDF1CC,#F6D783);color:#7A5E0E;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900">{{ mb_substr($profile?->full_name ?? 'م', 0, 1) }}</div>
+      <div style="width:64px;height:64px;border-radius:18px;background:radial-gradient(circle at 30% 26%,#F3ECD6,#F6D783);color:#7A5E0E;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900">{{ mb_substr($profile?->full_name ?? 'م', 0, 1) }}</div>
       <div style="flex:1">
-        <div style="font-size:22px;font-weight:900;color:#211F20">{{ $profile?->full_name ?? 'مرشح' }}</div>
-        <div style="font-size:14px;color:#8A857A;font-weight:700;margin-top:2px">{{ $profile?->job_title ?? '—' }}</div>
+        <div style="font-size:22px;font-weight:900;color:#22302A">{{ $profile?->full_name ?? 'مرشح' }}</div>
+        <div style="font-size:14px;color:#7E8B84;font-weight:700;margin-top:2px">{{ $profile?->job_title ?? '—' }}</div>
       </div>
       <span style="font-size:12.5px;font-weight:800;padding:7px 14px;border-radius:10px;background:{{ $s->badgeBackground() }};color:{{ $s->badgeForeground() }}">{{ $s->employerLabel() }}</span>
     </div>
 
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:22px">
-      <div style="background:#FBFAF7;border:1px solid #EFEDE6;border-radius:14px;padding:14px"><div style="font-size:12.5px;color:#9A958A;font-weight:700">العمر</div><div style="font-size:16px;font-weight:800;color:#2B2724;margin-top:5px">{{ $profile?->age ?? '—' }}</div></div>
-      <div style="background:#FBFAF7;border:1px solid #EFEDE6;border-radius:14px;padding:14px"><div style="font-size:12.5px;color:#9A958A;font-weight:700">سنوات الخبرة</div><div style="font-size:16px;font-weight:800;color:#2B2724;margin-top:5px">{{ $profile?->years_of_experience ?? '—' }}</div></div>
-      <div style="background:#FBFAF7;border:1px solid #EFEDE6;border-radius:14px;padding:14px"><div style="font-size:12.5px;color:#9A958A;font-weight:700">المدينة</div><div style="font-size:16px;font-weight:800;color:#2B2724;margin-top:5px">{{ $profile?->city?->name ?? '—' }}</div></div>
+      <div style="background:#F7F9F7;border:1px solid #E5EAE6;border-radius:14px;padding:14px"><div style="font-size:12.5px;color:#869089;font-weight:700">العمر</div><div style="font-size:16px;font-weight:800;color:#284C3D;margin-top:5px">{{ $profile?->age ?? '—' }}</div></div>
+      <div style="background:#F7F9F7;border:1px solid #E5EAE6;border-radius:14px;padding:14px"><div style="font-size:12.5px;color:#869089;font-weight:700">سنوات الخبرة</div><div style="font-size:16px;font-weight:800;color:#284C3D;margin-top:5px">{{ $profile?->years_of_experience ?? '—' }}</div></div>
+      <div style="background:#F7F9F7;border:1px solid #E5EAE6;border-radius:14px;padding:14px"><div style="font-size:12.5px;color:#869089;font-weight:700">المدينة</div><div style="font-size:16px;font-weight:800;color:#284C3D;margin-top:5px">{{ $profile?->city?->name ?? '—' }}</div></div>
     </div>
 
     @if ($profile?->skills)
-      <div style="margin-top:20px"><div style="font-size:14px;font-weight:800;color:#2B2724;margin-bottom:9px">المهارات</div>
+      <div style="margin-top:20px"><div style="font-size:14px;font-weight:800;color:#284C3D;margin-bottom:9px">المهارات</div>
         <div style="display:flex;flex-wrap:wrap;gap:8px">
           @foreach ($profile->skills as $skill)
-            <span style="font-size:13px;font-weight:700;color:#56524A;background:#F6F5F1;border-radius:10px;padding:7px 13px">{{ $skill }}</span>
+            <span style="font-size:13px;font-weight:700;color:#56524A;background:#F4F6F3;border-radius:10px;padding:7px 13px">{{ $skill }}</span>
           @endforeach
         </div>
       </div>
     @endif
 
     @if ($profile?->bio)
-      <div style="margin-top:20px"><div style="font-size:14px;font-weight:800;color:#2B2724;margin-bottom:8px">نبذة</div>
+      <div style="margin-top:20px"><div style="font-size:14px;font-weight:800;color:#284C3D;margin-bottom:8px">نبذة</div>
         <div style="font-size:14.5px;line-height:1.85;color:#56524A;font-weight:500">{{ $profile->bio }}</div>
       </div>
     @endif

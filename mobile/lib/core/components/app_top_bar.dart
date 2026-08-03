@@ -73,7 +73,7 @@ class _BackBox extends StatelessWidget {
         height: AppDimensions.iconButtonSize,
         decoration: BoxDecoration(
           color: AppColors.surface,
-          border: Border.all(color: const Color(0xFFECEAE3)),
+          border: Border.all(color: const Color(0xFFE5EAE6)),
           borderRadius: BorderRadius.circular(13),
         ),
         // chevron_right is the "back" direction in this RTL flow.

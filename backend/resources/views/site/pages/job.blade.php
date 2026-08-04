@@ -62,6 +62,19 @@
 
   @auth
     @if (auth()->user()->role === 'candidate')
+      @php($saved = $isSaved ?? false)
+      <form method="POST" action="{{ $saved ? route('site.jobs.unsave', $job->slug) : route('site.jobs.save', $job->slug) }}" style="margin-top:16px">
+        @csrf
+        @if ($saved) @method('DELETE') @endif
+        <button type="submit" class="btn" style="width:100%;display:flex;align-items:center;justify-content:center;gap:8px;background:{{ $saved ? '#F3ECD6' : '#fff' }};color:#284C3D;border:1.5px solid {{ $saved ? '#C9A24B' : '#DCE3DD' }};font-family:inherit;font-size:15px;font-weight:800;padding:13px;border-radius:14px;cursor:pointer">
+          <i class="iconsax" style="font-size:20px" icon-name="{{ $saved ? 'heart-tick' : 'heart-add' }}"></i>{{ $saved ? 'محفوظة — إزالة' : 'حفظ الوظيفة' }}
+        </button>
+      </form>
+    @endif
+  @endauth
+
+  @auth
+    @if (auth()->user()->role === 'candidate')
       @php($afFields = $job->application_fields ?? [])
       @php($hasUploads = collect($afFields)->contains(fn ($f) => in_array($f['type'] ?? '', ['file', 'image'], true)))
       @php($inp = 'width:100%;border-radius:13px;background:#F7F9F7;padding:13px 15px;font-family:inherit;font-size:15px;font-weight:600;color:#284C3D;outline:none;box-sizing:border-box')

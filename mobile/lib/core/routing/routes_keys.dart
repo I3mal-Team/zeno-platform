@@ -13,6 +13,7 @@ abstract final class RoutesKeys {
   static const nearby = '/nearby';
   static const applications = '/applications';
   static const applicationSubmitted = '/applications/submitted';
+  static const saved = '/saved';
   static const messages = '/messages';
   static const chatPath = '/chat/:uuid';
   static const profile = '/profile';

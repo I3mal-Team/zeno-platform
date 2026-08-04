@@ -51,7 +51,7 @@ final class JobRepository
      * it. The status list is derived from the enum so the rule lives in one
      * place rather than drifting between here and JobStatus.
      */
-    public function findReachableBySlug(string $slug): ?Job
+    public function findReachableBySlug(string $slug, ?int $savedBy = null): ?Job
     {
         $reachable = array_map(
             fn (JobStatus $status) => $status->value,
@@ -61,6 +61,7 @@ final class JobRepository
         return Job::query()
             ->whereIn('status', $reachable)
             ->with(self::DETAIL_RELATIONS)
+            ->withSavedFlag($savedBy)
             ->where('slug', $slug)
             ->first();
     }
@@ -69,11 +70,12 @@ final class JobRepository
      * @param  array<string, mixed>  $filters
      * @return LengthAwarePaginator<int, Job>
      */
-    public function searchPublished(array $filters, int $perPage): LengthAwarePaginator
+    public function searchPublished(array $filters, int $perPage, ?int $savedBy = null): LengthAwarePaginator
     {
         return Job::query()
             ->published()
             ->with(self::LIST_RELATIONS)
+            ->withSavedFlag($savedBy)
             ->when($filters['query'] ?? null, fn ($q, $term) => $q->where('title', 'ilike', "%{$term}%"))
             ->when($filters['category'] ?? null, fn ($q, $code) => $q->whereHas('category', fn ($c) => $c->where('code', $code)))
             ->when($filters['work_type'] ?? null, fn ($q, $code) => $q->whereHas('workType', fn ($w) => $w->where('code', $code)))

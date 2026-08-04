@@ -41,4 +41,24 @@ class JobsRepoImpl implements JobsRepo {
       (data) => JobFormOptions.fromJson(data as Map<String, dynamic>),
     );
   }
+
+  @override
+  Future<Either<Failure, Unit>> save(String slug) {
+    return _handle(() => _api.post(EndPoints.saveJob(slug)), (_) => unit);
+  }
+
+  @override
+  Future<Either<Failure, Unit>> unsave(String slug) {
+    return _handle(() => _api.delete(EndPoints.saveJob(slug)), (_) => unit);
+  }
+
+  @override
+  Future<Either<Failure, List<JobModel>>> listSaved() {
+    return _handle(
+      () => _api.get(EndPoints.savedJobs),
+      (data) => (data as List<dynamic>)
+          .map((e) => JobModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+  }
 }

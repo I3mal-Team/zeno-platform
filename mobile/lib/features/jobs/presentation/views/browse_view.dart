@@ -116,6 +116,8 @@ class _Hero extends StatelessWidget {
             children: [
               _LocationPill(onTap: () => context.go(RoutesKeys.nearby)),
               const Spacer(),
+              _SavedButton(onTap: () => context.push(RoutesKeys.saved)),
+              const SizedBox(width: 10),
               _BellButton(onTap: () => context.push(RoutesKeys.notifications)),
             ],
           ),
@@ -178,6 +180,34 @@ class _LocationPill extends StatelessWidget {
               color: Color(0xFF9A958A),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SavedButton extends StatelessWidget {
+  const _SavedButton({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Pressable(
+      onTap: onTap,
+      child: Container(
+        width: 42,
+        height: 42,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: AppColors.charcoalSoft,
+          border: Border.all(color: const Color(0xFF3A332E)),
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: const Icon(
+          Icons.favorite_rounded,
+          size: 20,
+          color: Color(0xFFEDE9E0),
         ),
       ),
     );

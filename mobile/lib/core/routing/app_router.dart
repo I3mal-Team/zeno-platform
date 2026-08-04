@@ -30,8 +30,10 @@ import '../../features/employer/presentation/views/post_job_view.dart';
 import '../../features/employer/presentation/views/register_employer_view.dart';
 import '../../features/jobs/presentation/manager/browse_cubit/browse_cubit.dart';
 import '../../features/jobs/presentation/manager/job_detail_cubit/job_detail_cubit.dart';
+import '../../features/jobs/presentation/manager/saved_jobs_cubit/saved_jobs_cubit.dart';
 import '../../features/jobs/presentation/manager/search_cubit/search_cubit.dart';
 import '../../features/jobs/presentation/views/browse_view.dart';
+import '../../features/jobs/presentation/views/saved_jobs_view.dart';
 import '../../features/jobs/presentation/views/search_view.dart';
 import '../../features/jobs/presentation/views/job_detail_view.dart';
 import '../../features/notifications/presentation/manager/notifications_cubit/notifications_cubit.dart';
@@ -188,6 +190,14 @@ abstract final class AppRouter {
         parentNavigatorKey: parentKey,
         builder: (_, state) =>
             SubmittedView(reference: state.uri.queryParameters['ref'] ?? ''),
+      ),
+      GoRoute(
+        path: RoutesKeys.saved,
+        parentNavigatorKey: parentKey,
+        builder: (_, _) => BlocProvider(
+          create: (_) => SavedJobsCubit(getIt())..load(),
+          child: const SavedJobsView(),
+        ),
       ),
       GoRoute(
         path: RoutesKeys.chatPath,

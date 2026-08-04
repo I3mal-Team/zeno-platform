@@ -8,6 +8,7 @@ use App\Enums\UserRole;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -37,6 +38,18 @@ class User extends Authenticatable implements FilamentUser
     public function candidateProfile(): HasOne
     {
         return $this->hasOne(CandidateProfile::class);
+    }
+
+    /**
+     * Listings this candidate bookmarked, newest first.
+     *
+     * @return BelongsToMany<Job, $this>
+     */
+    public function savedJobs(): BelongsToMany
+    {
+        return $this->belongsToMany(Job::class, 'saved_jobs', 'candidate_id', 'job_id')
+            ->withPivot('created_at')
+            ->orderByPivot('created_at', 'desc');
     }
 
     /**

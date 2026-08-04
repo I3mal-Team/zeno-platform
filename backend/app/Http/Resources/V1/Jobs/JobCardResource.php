@@ -41,6 +41,7 @@ final class JobCardResource extends JsonResource
             ]),
             'status' => $this->status->value,
             'contact_channel' => $this->contact_channel->value,
+            'is_saved' => (bool) ($this->is_saved ?? false),
             'published_at' => $this->published_at?->toIso8601String(),
             // Present only on the employer's own list, via withCount.
             'applications_count' => $this->whenNotNull($this->live_applications_count ?? null),

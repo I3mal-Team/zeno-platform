@@ -28,6 +28,7 @@ class JobDetailModel extends Equatable {
     this.organizationName,
     this.organizationVerified = false,
     this.organizationLogo,
+    this.isSaved = false,
     this.publishedAt,
   });
 
@@ -71,6 +72,7 @@ class JobDetailModel extends Equatable {
       organizationLogo: organization is Map<String, dynamic>
           ? organization['logo_url'] as String?
           : null,
+      isSaved: json['is_saved'] as bool? ?? false,
       publishedAt: json['published_at'] as String?,
     );
   }
@@ -98,6 +100,7 @@ class JobDetailModel extends Equatable {
   final String? organizationName;
   final bool organizationVerified;
   final String? organizationLogo;
+  final bool isSaved;
   final String? publishedAt;
 
   String get categoryCode => category?.code ?? 'other';

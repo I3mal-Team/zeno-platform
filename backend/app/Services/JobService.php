@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\Data\Jobs\JobData;
 use App\Enums\JobStatus;
+use App\Enums\UserRole;
 use App\Events\JobMateriallyChanged;
 use App\Exceptions\Domain\InvalidJobTransitionException;
 use App\Exceptions\Domain\JobNotEditableException;
@@ -45,15 +46,21 @@ final class JobService
      * @param  array<string, mixed>  $filters
      * @return LengthAwarePaginator<int, Job>
      */
-    public function browse(array $filters, int $perPage): LengthAwarePaginator
+    public function browse(array $filters, int $perPage, ?User $viewer = null): LengthAwarePaginator
     {
-        return $this->jobs->searchPublished($filters, $perPage);
+        return $this->jobs->searchPublished($filters, $perPage, $this->savedByCandidateId($viewer));
     }
 
     /** Resolves a listing for a candidate, including the paused direct-link case (D-12). */
-    public function findPublicBySlug(string $slug): ?Job
+    public function findPublicBySlug(string $slug, ?User $viewer = null): ?Job
     {
-        return $this->jobs->findReachableBySlug($slug);
+        return $this->jobs->findReachableBySlug($slug, $this->savedByCandidateId($viewer));
+    }
+
+    /** The viewer's id only when they are a candidate — the `is_saved` flag is theirs alone. */
+    private function savedByCandidateId(?User $viewer): ?int
+    {
+        return $viewer !== null && $viewer->role === UserRole::Candidate->value ? $viewer->id : null;
     }
 
     /** @return LengthAwarePaginator<int, Job> */

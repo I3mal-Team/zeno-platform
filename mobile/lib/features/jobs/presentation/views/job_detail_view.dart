@@ -12,6 +12,7 @@ import '../../../applications/presentation/manager/apply_cubit/apply_cubit.dart'
 import '../../../applications/presentation/views/widgets/apply_form_sheet.dart';
 import '../../data/models/job_detail_model.dart';
 import '../manager/job_detail_cubit/job_detail_cubit.dart';
+import 'widgets/save_button.dart';
 
 class JobDetailView extends StatelessWidget {
   const JobDetailView({super.key});
@@ -98,12 +99,19 @@ class _DetailHeader extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Align(
-              alignment: AlignmentDirectional.centerStart,
-              child: _RoundIconButton(
-                icon: Icons.chevron_right_rounded,
-                onTap: () => Navigator.of(context).maybePop(),
-              ),
+            Row(
+              children: [
+                _RoundIconButton(
+                  icon: Icons.chevron_right_rounded,
+                  onTap: () => Navigator.of(context).maybePop(),
+                ),
+                const Spacer(),
+                SaveButton(
+                  slug: job.slug,
+                  initialSaved: job.isSaved,
+                  onDark: true,
+                ),
+              ],
             ),
             const SizedBox(height: 18),
             Row(

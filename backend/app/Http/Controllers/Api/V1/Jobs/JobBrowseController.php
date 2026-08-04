@@ -20,14 +20,14 @@ final class JobBrowseController extends ApiController
 
     public function index(BrowseJobsRequest $request): JsonResponse
     {
-        $jobs = $this->jobs->browse($request->filters(), $request->perPage());
+        $jobs = $this->jobs->browse($request->filters(), $request->perPage(), $request->user());
 
         return $this->successResponse(JobCardResource::collection($jobs));
     }
 
     public function show(Request $request, string $slug): JsonResponse
     {
-        $job = $this->jobs->findPublicBySlug($slug) ?? throw new NotFoundHttpException;
+        $job = $this->jobs->findPublicBySlug($slug, $request->user()) ?? throw new NotFoundHttpException;
 
         $this->jobs->recordView($job, $request->user(), ViewerFingerprint::for($request));
 

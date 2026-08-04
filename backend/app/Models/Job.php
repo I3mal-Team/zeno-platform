@@ -9,6 +9,7 @@ use App\Enums\JobStatus;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
@@ -149,6 +150,29 @@ class Job extends Model
     public function revisions(): HasMany
     {
         return $this->hasMany(JobRevision::class);
+    }
+
+    /**
+     * Candidates who bookmarked this listing.
+     *
+     * @return BelongsToMany<User, $this>
+     */
+    public function savers(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'saved_jobs', 'job_id', 'candidate_id');
+    }
+
+    /**
+     * Tags each row with `is_saved` for the given candidate (null = skip), so a
+     * listing can tell the viewer whether they already bookmarked it.
+     *
+     * @param  Builder<Job>  $query
+     */
+    public function scopeWithSavedFlag(Builder $query, ?int $candidateId): void
+    {
+        $query->when($candidateId !== null, fn (Builder $q) => $q->withExists([
+            'savers as is_saved' => fn ($s) => $s->where('candidate_id', $candidateId),
+        ]));
     }
 
     /** @param  Builder<Job>  $query */

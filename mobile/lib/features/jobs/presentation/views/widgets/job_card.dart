@@ -6,6 +6,7 @@ import '../../../../../core/styles/app_shadows.dart';
 import '../../../../../core/styles/app_text_styles.dart';
 import '../../../../../core/styles/category_visuals.dart';
 import '../../../data/models/job_model.dart';
+import 'save_button.dart';
 
 class JobCard extends StatelessWidget {
   const JobCard({required this.job, required this.onTap, super.key});
@@ -103,6 +104,7 @@ class JobCard extends StatelessWidget {
                     ],
                   ),
                 ),
+                SaveButton(slug: job.slug, initialSaved: job.isSaved),
               ],
             ),
             const SizedBox(height: 13),

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Site\Jobs\ApplyController;
+use App\Http\Controllers\Site\Jobs\JobAlertController;
 use App\Http\Controllers\Site\Jobs\JobIndexController;
 use App\Http\Controllers\Site\Jobs\JobShowController;
 use App\Http\Controllers\Site\Jobs\SavedJobController;
@@ -21,6 +22,10 @@ Route::middleware(['auth', 'role:candidate', 'candidate.profile'])->group(functi
     Route::get('saved', [SavedJobController::class, 'index'])->name('saved');
     Route::post('jobs/{slug}/save', [SavedJobController::class, 'store'])->name('jobs.save');
     Route::delete('jobs/{slug}/save', [SavedJobController::class, 'destroy'])->name('jobs.unsave');
+
+    Route::get('job-alerts', [JobAlertController::class, 'index'])->name('job-alerts');
+    Route::post('job-alerts', [JobAlertController::class, 'store'])->name('job-alerts.store');
+    Route::delete('job-alerts/{id}', [JobAlertController::class, 'destroy'])->name('job-alerts.destroy');
 });
 
 // Reporting needs an account so a complaint is attributable; the throttle keeps

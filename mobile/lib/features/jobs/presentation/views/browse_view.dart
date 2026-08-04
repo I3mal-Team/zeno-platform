@@ -118,6 +118,11 @@ class _Hero extends StatelessWidget {
               const Spacer(),
               _SavedButton(onTap: () => context.push(RoutesKeys.saved)),
               const SizedBox(width: 10),
+              _TopIconButton(
+                icon: Icons.notifications_active_rounded,
+                onTap: () => context.push(RoutesKeys.jobAlerts),
+              ),
+              const SizedBox(width: 10),
               _BellButton(onTap: () => context.push(RoutesKeys.notifications)),
             ],
           ),
@@ -193,6 +198,18 @@ class _SavedButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return _TopIconButton(icon: Icons.favorite_rounded, onTap: onTap);
+  }
+}
+
+class _TopIconButton extends StatelessWidget {
+  const _TopIconButton({required this.icon, required this.onTap});
+
+  final IconData icon;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
     return Pressable(
       onTap: onTap,
       child: Container(
@@ -204,11 +221,7 @@ class _SavedButton extends StatelessWidget {
           border: Border.all(color: const Color(0xFF3A332E)),
           borderRadius: BorderRadius.circular(14),
         ),
-        child: const Icon(
-          Icons.favorite_rounded,
-          size: 20,
-          color: Color(0xFFEDE9E0),
-        ),
+        child: Icon(icon, size: 20, color: const Color(0xFFEDE9E0)),
       ),
     );
   }

@@ -12,6 +12,7 @@
               ? ['تم قبول طلبك', "تم قبولك في «{$job}» — ستصلك طريقة التواصل."]
               : ['تحديث على طلبك', "تم تحديث حالة طلبك على «{$job}»."],
           'job_changed' => ['تغيير في وظيفة قدّمت عليها', "تغيّرت بيانات وظيفة «{$job}»."],
+          'job_alert' => ['وظيفة جديدة تطابق تنبيهك', "وظيفة «{$job}» — قد تناسبك."],
           'message_received' => ['رسالة جديدة', $data['preview'] ?? ''],
           default => ['إشعار', ''],
       };
@@ -26,6 +27,9 @@
           return auth()->user()?->role === 'employer'
               ? route('employer.messages.show', $data['conversation_uuid'])
               : route('messages.show', $data['conversation_uuid']);
+      }
+      if (($data['type'] ?? '') === 'job_alert' && ! empty($data['job_slug'])) {
+          return route('site.jobs.show', $data['job_slug']);
       }
       return null;
   }

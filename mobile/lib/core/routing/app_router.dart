@@ -29,10 +29,12 @@ import '../../features/employer/presentation/views/employer_jobs_view.dart';
 import '../../features/employer/presentation/views/post_job_view.dart';
 import '../../features/employer/presentation/views/register_employer_view.dart';
 import '../../features/jobs/presentation/manager/browse_cubit/browse_cubit.dart';
+import '../../features/jobs/presentation/manager/job_alerts_cubit/job_alerts_cubit.dart';
 import '../../features/jobs/presentation/manager/job_detail_cubit/job_detail_cubit.dart';
 import '../../features/jobs/presentation/manager/saved_jobs_cubit/saved_jobs_cubit.dart';
 import '../../features/jobs/presentation/manager/search_cubit/search_cubit.dart';
 import '../../features/jobs/presentation/views/browse_view.dart';
+import '../../features/jobs/presentation/views/job_alerts_view.dart';
 import '../../features/jobs/presentation/views/saved_jobs_view.dart';
 import '../../features/jobs/presentation/views/search_view.dart';
 import '../../features/jobs/presentation/views/job_detail_view.dart';
@@ -197,6 +199,14 @@ abstract final class AppRouter {
         builder: (_, _) => BlocProvider(
           create: (_) => SavedJobsCubit(getIt())..load(),
           child: const SavedJobsView(),
+        ),
+      ),
+      GoRoute(
+        path: RoutesKeys.jobAlerts,
+        parentNavigatorKey: parentKey,
+        builder: (_, _) => BlocProvider(
+          create: (_) => JobAlertsCubit(getIt())..load(),
+          child: const JobAlertsView(),
         ),
       ),
       GoRoute(

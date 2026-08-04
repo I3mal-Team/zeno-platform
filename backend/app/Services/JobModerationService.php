@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Enums\JobStatus;
+use App\Events\JobPublished;
 use App\Exceptions\Domain\InvalidJobTransitionException;
 use App\Models\Job;
 use App\Repositories\JobRepository;
@@ -29,7 +30,7 @@ final class JobModerationService
     {
         $this->assertPending($job);
 
-        return DB::transaction(function () use ($adminId, $job) {
+        $approved = DB::transaction(function () use ($adminId, $job) {
             $approved = $this->jobs->applyStatus($job, JobStatus::Active, ['published_at' => now()]);
             $this->jobs->recordStatusChange($approved, JobStatus::PendingReview, JobStatus::Active, 'admin', $adminId);
             $this->organizations->enableAutoPublish($approved->organization);
@@ -37,6 +38,11 @@ final class JobModerationService
 
             return $approved;
         });
+
+        // Approval is the first time this listing is public — fan out to alerts.
+        JobPublished::dispatch($approved);
+
+        return $approved;
     }
 
     public function reject(int $adminId, Job $job, string $reason): Job

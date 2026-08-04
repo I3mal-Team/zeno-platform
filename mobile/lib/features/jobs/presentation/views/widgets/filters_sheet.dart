@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../core/components/app_toast.dart';
 import '../../../../../core/params/job_params.dart';
+import '../../../../../core/services/service_locator.dart';
 import '../../../../../core/styles/app_colors.dart';
 import '../../../../../core/styles/app_text_styles.dart';
 import '../../../../employer/data/models/job_form_options.dart';
+import '../../../data/repos/jobs_repo.dart';
 
 /// The advanced-filter sheet: work type, gender and nationality. Edits are held
 /// locally and only handed back on apply, so backing out leaves the results
@@ -33,6 +36,35 @@ class _FiltersSheet extends StatefulWidget {
 
 class _FiltersSheetState extends State<_FiltersSheet> {
   late JobFilters _draft = widget.filters;
+
+  int? _idFor(List<RefOption> options, String? code) {
+    if (code == null) return null;
+    for (final option in options) {
+      if (option.code == code) return option.id;
+    }
+    return null;
+  }
+
+  Future<void> _saveAlert(BuildContext context) async {
+    final categoryId = _idFor(widget.options.categories, _draft.categoryCode);
+    final workTypeId = _idFor(widget.options.workTypes, _draft.workTypeCode);
+    final keyword = _draft.query?.trim();
+
+    final params = <String, dynamic>{
+      if (keyword != null && keyword.isNotEmpty) 'keyword': keyword,
+      'city_id': ?_draft.cityId,
+      'category_id': ?categoryId,
+      'work_type_id': ?workTypeId,
+    };
+
+    final result = await getIt<JobsRepo>().createAlert(params);
+    if (!context.mounted) return;
+
+    result.fold((failure) => AppToast.error(context, failure.message), (_) {
+      AppToast.success(context, 'تم إنشاء التنبيه — سنُشعرك بأي وظيفة مطابقة.');
+      Navigator.of(context).pop();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -115,7 +147,28 @@ class _FiltersSheetState extends State<_FiltersSheet> {
               ),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
+          SizedBox(
+            height: 50,
+            child: OutlinedButton.icon(
+              onPressed: () => _saveAlert(context),
+              icon: const Icon(Icons.notifications_active_rounded, size: 19),
+              label: Text(
+                'احفظ هذا البحث كتنبيه',
+                style: AppTextStyles.bodyMd.copyWith(
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppColors.charcoalSoft,
+                side: const BorderSide(color: AppColors.border, width: 1.5),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(17),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
           SizedBox(
             height: 54,
             child: ElevatedButton(

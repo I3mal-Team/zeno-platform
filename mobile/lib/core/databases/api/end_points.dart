@@ -28,8 +28,10 @@ abstract final class EndPoints {
   static const jobs = '/jobs';
   static const jobsNearby = '/jobs/nearby';
   static const savedJobs = '/saved-jobs';
+  static const jobAlerts = '/job-alerts';
   static String job(String id) => '/jobs/$id';
   static String saveJob(String slug) => '/jobs/$slug/save';
+  static String jobAlert(int id) => '/job-alerts/$id';
 
   static const jobForm = '/catalog/job-form';
   static const employerJobs = '/employer/jobs';

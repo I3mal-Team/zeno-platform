@@ -8,6 +8,7 @@ use App\Data\Jobs\JobData;
 use App\Enums\JobStatus;
 use App\Enums\UserRole;
 use App\Events\JobMateriallyChanged;
+use App\Events\JobPublished;
 use App\Exceptions\Domain\InvalidJobTransitionException;
 use App\Exceptions\Domain\JobNotEditableException;
 use App\Exceptions\Domain\OrganizationMissingException;
@@ -89,12 +90,20 @@ final class JobService
             ? JobStatus::Active
             : JobStatus::PendingReview;
 
-        return DB::transaction(function () use ($data, $status, $organization, $user) {
+        $job = DB::transaction(function () use ($data, $status, $organization, $user) {
             $job = $this->jobs->create($data, $status, $organization->id, $user->id);
             $this->jobs->recordStatusChange($job, null, $status, 'user', $user->id);
 
             return $job;
         });
+
+        // A listing that went straight to active is a genuinely new opening —
+        // fan it out to matching job alerts (a review-gated one waits for D-15).
+        if ($job->status === JobStatus::Active) {
+            JobPublished::dispatch($job);
+        }
+
+        return $job;
     }
 
     /**

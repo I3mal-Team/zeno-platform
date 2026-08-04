@@ -30,6 +30,7 @@ class NotificationModel extends Equatable {
     'application_decision' =>
       (data['accepted'] == true) ? 'تم قبول طلبك' : 'تحديث على طلبك',
     'job_changed' => 'تغيير في وظيفة قدّمت عليها',
+    'job_alert' => 'وظيفة جديدة تطابق تنبيهك',
     _ => 'إشعار',
   };
 
@@ -42,6 +43,7 @@ class NotificationModel extends Equatable {
             ? 'تم قبولك في «${job ?? ''}» — ستصلك طريقة التواصل.'
             : 'تم تحديث حالة طلبك على «${job ?? ''}».',
       'job_changed' => 'تغيّرت بيانات وظيفة «${job ?? ''}».',
+      'job_alert' => 'وظيفة «${job ?? ''}» — قد تناسبك.',
       _ => '',
     };
   }

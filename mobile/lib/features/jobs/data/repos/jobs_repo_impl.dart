@@ -5,8 +5,9 @@ import '../../../../core/databases/api/end_points.dart';
 import '../../../../core/databases/api/handle_request.dart';
 import '../../../../core/errors/failure.dart';
 import '../../../../core/params/job_params.dart';
-import '../models/job_detail_model.dart';
 import '../../../employer/data/models/job_form_options.dart';
+import '../models/job_alert_model.dart';
+import '../models/job_detail_model.dart';
 import '../models/job_model.dart';
 import 'jobs_repo.dart';
 
@@ -60,5 +61,28 @@ class JobsRepoImpl implements JobsRepo {
           .map((e) => JobModel.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
+  }
+
+  @override
+  Future<Either<Failure, Unit>> createAlert(Map<String, dynamic> filters) {
+    return _handle(
+      () => _api.post(EndPoints.jobAlerts, body: filters),
+      (_) => unit,
+    );
+  }
+
+  @override
+  Future<Either<Failure, List<JobAlertModel>>> listAlerts() {
+    return _handle(
+      () => _api.get(EndPoints.jobAlerts),
+      (data) => (data as List<dynamic>)
+          .map((e) => JobAlertModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+  }
+
+  @override
+  Future<Either<Failure, Unit>> deleteAlert(int id) {
+    return _handle(() => _api.delete(EndPoints.jobAlert(id)), (_) => unit);
   }
 }

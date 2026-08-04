@@ -2,8 +2,9 @@ import 'package:dartz/dartz.dart';
 
 import '../../../../core/errors/failure.dart';
 import '../../../../core/params/job_params.dart';
-import '../models/job_detail_model.dart';
 import '../../../employer/data/models/job_form_options.dart';
+import '../models/job_alert_model.dart';
+import '../models/job_detail_model.dart';
 import '../models/job_model.dart';
 
 abstract interface class JobsRepo {
@@ -16,6 +17,12 @@ abstract interface class JobsRepo {
   Future<Either<Failure, Unit>> unsave(String slug);
 
   Future<Either<Failure, List<JobModel>>> listSaved();
+
+  Future<Either<Failure, Unit>> createAlert(Map<String, dynamic> filters);
+
+  Future<Either<Failure, List<JobAlertModel>>> listAlerts();
+
+  Future<Either<Failure, Unit>> deleteAlert(int id);
 
   /// The reference lists the advanced-filter sheet renders. Shares the publish
   /// form's catalog endpoint — the same work types and requirements.

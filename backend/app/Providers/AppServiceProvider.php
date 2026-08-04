@@ -7,8 +7,10 @@ namespace App\Providers;
 use App\Events\ApplicationDecided;
 use App\Events\ApplicationSubmitted;
 use App\Events\JobMateriallyChanged;
+use App\Events\JobPublished;
 use App\Listeners\NotifyApplicantsOfJobChange;
 use App\Listeners\NotifyCandidateOfDecision;
+use App\Listeners\NotifyCandidatesOfMatchingJob;
 use App\Listeners\NotifyEmployerOfApplication;
 use App\Services\NotificationService;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -38,6 +40,7 @@ class AppServiceProvider extends ServiceProvider
         $this->registerRateLimiters();
 
         Event::listen(JobMateriallyChanged::class, NotifyApplicantsOfJobChange::class);
+        Event::listen(JobPublished::class, NotifyCandidatesOfMatchingJob::class);
         Event::listen(ApplicationSubmitted::class, NotifyEmployerOfApplication::class);
         Event::listen(ApplicationDecided::class, NotifyCandidateOfDecision::class);
 

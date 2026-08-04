@@ -162,6 +162,7 @@ class _NotificationTile extends StatelessWidget {
       ),
       'application_decision' => (Icons.verified_rounded, AppColors.successFg),
       'job_changed' => (Icons.edit_note_rounded, AppColors.warningFg),
+      'job_alert' => (Icons.notifications_active_rounded, AppColors.amber),
       _ => (Icons.notifications_rounded, AppColors.textMuted),
     };
 

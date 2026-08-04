@@ -22,6 +22,20 @@
       </select>
       <button type="submit" class="btn" style="background:#C9A24B;color:#284C3D;border:none;font-family:inherit;font-size:15px;font-weight:800;padding:13px 28px;border-radius:15px;cursor:pointer">بحث</button>
     </form>
+
+    @auth
+      @if (auth()->user()->role === 'candidate')
+        @php($alertCategoryId = optional($categories->firstWhere('code', $filters['category']))->id)
+        <form method="POST" action="{{ route('site.job-alerts.store') }}" style="margin-top:14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+          @csrf
+          @if ($filters['query'])<input type="hidden" name="keyword" value="{{ $filters['query'] }}">@endif
+          @if ($filters['city'])<input type="hidden" name="city_id" value="{{ $filters['city'] }}">@endif
+          @if ($alertCategoryId)<input type="hidden" name="category_id" value="{{ $alertCategoryId }}">@endif
+          <button type="submit" class="btn" style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.28);font-family:inherit;font-size:14px;font-weight:800;padding:11px 18px;border-radius:13px;cursor:pointer"><i class="iconsax" style="font-size:18px" icon-name="notification-bing"></i>احفظ هذا البحث كتنبيه</button>
+          <a href="{{ route('site.job-alerts') }}" class="lnk" style="font-size:13.5px;font-weight:800;color:rgba(255,255,255,.85)">تنبيهاتي</a>
+        </form>
+      @endif
+    @endauth
   </div>
 </section>
 

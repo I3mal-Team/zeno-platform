@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
 
 import '../../../../core/databases/api/api_consumer.dart';
 import '../../../../core/databases/api/end_points.dart';
@@ -35,6 +38,19 @@ class EmployerRepoImpl implements EmployerRepo {
   ) {
     return _handle(
       () => _api.put(EndPoints.employerProfile, body: param.toJson()),
+      (data) => OrganizationModel.fromJson(data as Map<String, dynamic>),
+    );
+  }
+
+  @override
+  Future<Either<Failure, OrganizationModel>> uploadLogo(File file) {
+    return _handle(
+      () async => _api.post(
+        EndPoints.employerLogo,
+        body: FormData.fromMap({
+          'logo': await MultipartFile.fromFile(file.path),
+        }),
+      ),
       (data) => OrganizationModel.fromJson(data as Map<String, dynamic>),
     );
   }

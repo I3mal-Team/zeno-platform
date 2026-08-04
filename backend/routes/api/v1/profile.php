@@ -14,4 +14,5 @@ Route::middleware('auth:sanctum')->prefix('profile')->name('profile.')->group(fu
 
     Route::get('employer', [OrganizationController::class, 'show'])->name('employer.show');
     Route::put('employer', [OrganizationController::class, 'save'])->name('employer.save');
+    Route::post('employer/logo', [OrganizationController::class, 'logo'])->name('employer.logo');
 });

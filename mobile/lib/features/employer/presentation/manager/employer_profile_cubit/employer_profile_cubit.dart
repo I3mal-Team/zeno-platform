@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -43,6 +45,12 @@ class EmployerProfileCubit extends Cubit<EmployerProfileState> {
     safeEmit(const EmployerProfileSaving());
 
     final result = await _repo.saveProfile(param);
+
+    safeEmit(result.fold(EmployerProfileFailed.new, EmployerProfileSaved.new));
+  }
+
+  Future<void> uploadLogo(File file) async {
+    final result = await _repo.uploadLogo(file);
 
     safeEmit(result.fold(EmployerProfileFailed.new, EmployerProfileSaved.new));
   }

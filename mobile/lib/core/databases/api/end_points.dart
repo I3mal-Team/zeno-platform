@@ -22,6 +22,7 @@ abstract final class EndPoints {
   static const candidateProfile = '/profile/candidate';
   static const candidateAvatar = '/profile/candidate/avatar';
   static const employerProfile = '/profile/employer';
+  static const employerLogo = '/profile/employer/logo';
 
   static const jobs = '/jobs';
   static const jobsNearby = '/jobs/nearby';

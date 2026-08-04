@@ -11,6 +11,7 @@ class OrganizationModel extends Equatable {
     this.cityId,
     this.cityName,
     this.about,
+    this.logoUrl,
   });
 
   factory OrganizationModel.fromJson(Map<String, dynamic> json) {
@@ -27,6 +28,7 @@ class OrganizationModel extends Equatable {
       cityId: city is Map<String, dynamic> ? city['id'] as int? : null,
       cityName: city is Map<String, dynamic> ? city['name'] as String? : null,
       about: json['about'] as String?,
+      logoUrl: json['logo_url'] as String?,
     );
   }
 
@@ -39,6 +41,7 @@ class OrganizationModel extends Equatable {
   final int? cityId;
   final String? cityName;
   final String? about;
+  final String? logoUrl;
 
   bool get isCompany => type == 'company';
 

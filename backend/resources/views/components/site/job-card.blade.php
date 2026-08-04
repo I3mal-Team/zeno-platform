@@ -1,7 +1,14 @@
 @props(['job'])
 
+@php($orgLogo = $job->organization->getFirstMediaUrl(\App\Models\Organization::LOGO_COLLECTION))
 <a href="{{ route('site.jobs.show', $job->slug) }}" class="cardh" style="background:#fff;border:1px solid #E5EAE6;border-radius:20px;padding:20px;display:flex;gap:15px;align-items:flex-start">
-  <div style="width:56px;height:56px;border-radius:16px;background:{{ $job->category->tintBackground() }};display:flex;align-items:center;justify-content:center;color:{{ $job->category->tintForeground() }};flex:0 0 auto"><i class="iconsax" style="font-size:27px" icon-name="{{ $job->category->icon }}"></i></div>
+  <div style="width:56px;height:56px;border-radius:16px;background:{{ $orgLogo ? '#fff' : $job->category->tintBackground() }};border:1px solid #EEF1EE;display:flex;align-items:center;justify-content:center;color:{{ $job->category->tintForeground() }};flex:0 0 auto;overflow:hidden">
+    @if ($orgLogo)
+      <img src="{{ $orgLogo }}" alt="{{ $job->organization->name }}" style="width:100%;height:100%;object-fit:cover">
+    @else
+      <i class="iconsax" style="font-size:27px" icon-name="{{ $job->category->icon }}"></i>
+    @endif
+  </div>
 
   <div style="flex:1">
     <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">

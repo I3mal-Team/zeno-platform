@@ -17,11 +17,11 @@ use Illuminate\Support\Str;
 final class JobRepository
 {
     private const LIST_RELATIONS = [
-        'organization', 'category', 'workType', 'salaryUnit', 'district',
+        'organization.media', 'category', 'workType', 'salaryUnit', 'district',
     ];
 
     private const DETAIL_RELATIONS = [
-        'organization', 'category', 'workType', 'salaryUnit', 'city',
+        'organization.media', 'category', 'workType', 'salaryUnit', 'city',
         'district', 'genderRequirement', 'nationalityRequirement',
     ];
 

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dartz/dartz.dart';
 
 import '../../../../core/errors/failure.dart';
@@ -17,6 +19,8 @@ abstract interface class EmployerRepo {
   Future<Either<Failure, OrganizationModel>> saveProfile(
     SaveOrganizationParam param,
   );
+
+  Future<Either<Failure, OrganizationModel>> uploadLogo(File file);
 
   Future<Either<Failure, List<CityModel>>> fetchCities();
 

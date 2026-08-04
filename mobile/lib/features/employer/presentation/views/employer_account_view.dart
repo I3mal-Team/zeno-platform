@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -30,6 +33,35 @@ class EmployerAccountView extends StatelessWidget {
             child: CircularProgressIndicator(color: AppColors.amber),
           ),
         },
+      ),
+    );
+  }
+}
+
+/// Picks a logo and hands it to the cubit, which refreshes the org on success.
+Future<void> _pickAndUploadLogo(BuildContext context) async {
+  final cubit = context.read<EmployerProfileCubit>();
+  final result = await FilePicker.platform.pickFiles(type: FileType.image);
+  final path = result?.files.single.path;
+  if (path == null) return;
+
+  await cubit.uploadLogo(File(path));
+}
+
+class _LogoLetter extends StatelessWidget {
+  const _LogoLetter({required this.org});
+
+  final OrganizationModel org;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text(
+        org.name.characters.firstOrNull ?? 'ك',
+        style: AppTextStyles.displayLg.copyWith(
+          fontSize: 24,
+          color: AppColors.textStrong,
+        ),
       ),
     );
   }
@@ -140,20 +172,51 @@ class _Header extends StatelessWidget {
           const SizedBox(height: 16),
           Row(
             children: [
-              Container(
-                width: 72,
-                height: 56,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: AppColors.amber,
-                  borderRadius: BorderRadius.circular(22),
-                ),
-                child: Text(
-                  org.name.characters.firstOrNull ?? 'ك',
-                  style: AppTextStyles.displayLg.copyWith(
-                    fontSize: 24,
-                    color: AppColors.textStrong,
-                  ),
+              GestureDetector(
+                onTap: () => _pickAndUploadLogo(context),
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Container(
+                      width: 72,
+                      height: 56,
+                      alignment: Alignment.center,
+                      clipBehavior: Clip.antiAlias,
+                      decoration: BoxDecoration(
+                        color: AppColors.amber,
+                        borderRadius: BorderRadius.circular(22),
+                      ),
+                      child: org.logoUrl != null
+                          ? Image.network(
+                              org.logoUrl!,
+                              width: 72,
+                              height: 56,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, _, _) => _LogoLetter(org: org),
+                            )
+                          : _LogoLetter(org: org),
+                    ),
+                    Positioned(
+                      right: -4,
+                      bottom: -4,
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: AppColors.amber,
+                          borderRadius: BorderRadius.circular(9),
+                          border: Border.all(
+                            color: AppColors.charcoalSoft,
+                            width: 1.5,
+                          ),
+                        ),
+                        child: const Icon(
+                          Icons.photo_camera_rounded,
+                          size: 13,
+                          color: AppColors.charcoalSoft,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(width: 15),

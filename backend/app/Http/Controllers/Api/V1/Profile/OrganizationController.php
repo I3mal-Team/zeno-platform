@@ -10,6 +10,7 @@ use App\Http\Resources\V1\Profile\OrganizationResource;
 use App\Services\OrganizationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 final class OrganizationController extends ApiController
@@ -31,6 +32,26 @@ final class OrganizationController extends ApiController
         return $this->successResponse(
             new OrganizationResource($organization->load('city')),
             __('messages.profile_saved'),
+        );
+    }
+
+    public function logo(Request $request): JsonResponse
+    {
+        $request->validate([
+            'logo' => ['required', 'image', 'mimes:jpeg,png,webp', 'max:'.config('media.max_upload_kb')],
+        ]);
+
+        $organization = $this->organizations->find($request->user())
+            ?? throw new NotFoundHttpException;
+        $file = $request->file('logo');
+
+        if ($file instanceof UploadedFile) {
+            $this->organizations->saveLogo($organization, $file);
+        }
+
+        return $this->successResponse(
+            new OrganizationResource($organization->fresh('city')),
+            __('messages.logo_saved'),
         );
     }
 }

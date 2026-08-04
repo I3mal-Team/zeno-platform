@@ -8,6 +8,7 @@ use App\Data\Profile\OrganizationData;
 use App\Models\Organization;
 use App\Models\User;
 use App\Repositories\OrganizationRepository;
+use Illuminate\Http\UploadedFile;
 
 final class OrganizationService
 {
@@ -16,6 +17,12 @@ final class OrganizationService
     public function find(User $user): ?Organization
     {
         return $this->organizations->findForUser($user->id);
+    }
+
+    /** Replaces the organisation's logo — the collection keeps a single file. */
+    public function saveLogo(Organization $organization, UploadedFile $file): void
+    {
+        $organization->addMedia($file)->toMediaCollection(Organization::LOGO_COLLECTION);
     }
 
     /** Creating and updating share one entry point because the app has one form. */

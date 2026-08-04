@@ -108,18 +108,35 @@ class _DetailHeader extends StatelessWidget {
             const SizedBox(height: 18),
             Row(
               children: [
-                Container(
-                  width: 64,
-                  height: 64,
-                  decoration: BoxDecoration(
-                    color: tint,
-                    borderRadius: BorderRadius.circular(19),
-                  ),
-                  child: Icon(
-                    CategoryVisuals.icon(job.categoryCode),
-                    color: Colors.white,
-                    size: 32,
-                  ),
+                Builder(
+                  builder: (context) {
+                    final badge = Container(
+                      width: 64,
+                      height: 64,
+                      decoration: BoxDecoration(
+                        color: tint,
+                        borderRadius: BorderRadius.circular(19),
+                      ),
+                      child: Icon(
+                        CategoryVisuals.icon(job.categoryCode),
+                        color: Colors.white,
+                        size: 32,
+                      ),
+                    );
+
+                    return ClipRRect(
+                      borderRadius: BorderRadius.circular(19),
+                      child: job.organizationLogo != null
+                          ? Image.network(
+                              job.organizationLogo!,
+                              width: 64,
+                              height: 64,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, _, _) => badge,
+                            )
+                          : badge,
+                    );
+                  },
                 ),
                 const SizedBox(width: 14),
                 Expanded(

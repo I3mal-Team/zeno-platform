@@ -17,6 +17,7 @@ Route::prefix('employer')
     ->group(function () {
         Route::get('register', [RegisterController::class, 'show'])->name('register');
         Route::post('register', [RegisterController::class, 'store'])->name('register.store');
+        Route::post('logo', [RegisterController::class, 'logo'])->name('logo');
         Route::get('/', DashboardController::class)->name('dashboard');
 
         Route::get('jobs', [JobController::class, 'index'])->name('jobs.index');

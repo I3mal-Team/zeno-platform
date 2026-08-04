@@ -19,6 +19,33 @@
     @endforeach
   </div>
 
+  @if (session('status'))
+    <div style="margin-top:16px;background:#E7F4EC;color:#1F8A4D;border-radius:14px;padding:12px 16px;font-size:14px;font-weight:700">{{ session('status') }}</div>
+  @endif
+
+  @php($orgLogo = $organization->getFirstMediaUrl(\App\Models\Organization::LOGO_COLLECTION))
+  <div class="cardh" style="background:#fff;border:1px solid #E5EAE6;border-radius:20px;padding:20px;margin-top:16px;display:flex;align-items:center;gap:18px">
+    <div style="width:72px;height:72px;border-radius:18px;overflow:hidden;flex:0 0 auto;border:1px solid #EEF1EE;background:#F7F9F7;display:flex;align-items:center;justify-content:center">
+      @if ($orgLogo)
+        <img src="{{ $orgLogo }}" alt="{{ $organization->name }}" style="width:100%;height:100%;object-fit:cover">
+      @else
+        <i class="iconsax" style="font-size:30px;color:#B7C0B8" icon-name="buildings-2"></i>
+      @endif
+    </div>
+    <div style="flex:1">
+      <div style="font-size:16px;font-weight:900;color:#22302A">شعار المنشأة</div>
+      <div style="font-size:13px;color:#7E8B84;font-weight:600;margin-top:3px">يظهر على كل إعلاناتك في نتائج البحث. JPG أو PNG أو WEBP.</div>
+      @error('logo')<div style="font-size:12.5px;color:#B23232;font-weight:700;margin-top:6px">{{ $message }}</div>@enderror
+    </div>
+    <form method="POST" action="{{ route('employer.logo') }}" enctype="multipart/form-data">
+      @csrf
+      <label class="btn" style="display:inline-flex;align-items:center;gap:8px;background:#F3ECD6;color:#8A6D12;font-size:14px;font-weight:800;padding:11px 18px;border-radius:12px;cursor:pointer">
+        <i class="iconsax" style="font-size:18px" icon-name="gallery-add"></i>{{ $orgLogo ? 'تغيير الشعار' : 'رفع شعار' }}
+        <input type="file" name="logo" accept="image/jpeg,image/png,image/webp" required onchange="this.form.submit()" style="display:none">
+      </label>
+    </form>
+  </div>
+
   <div style="display:grid;grid-template-columns:1.6fr 1fr;gap:16px;margin-top:16px">
     {{-- Weekly applications --}}
     <div style="background:#fff;border:1px solid #E5EAE6;border-radius:20px;padding:24px">

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Resources\V1\Jobs;
 
 use App\Models\Job;
+use App\Models\Organization;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -49,6 +50,7 @@ final class JobDetailResource extends JsonResource
                 'id' => $this->organization->uuid,
                 'name' => $this->organization->name,
                 'is_verified' => $this->organization->isVerified(),
+                'logo_url' => $this->organization->getFirstMediaUrl(Organization::LOGO_COLLECTION) ?: null,
             ]),
             'status' => $this->status->value,
             'status_label' => $this->status->label(),

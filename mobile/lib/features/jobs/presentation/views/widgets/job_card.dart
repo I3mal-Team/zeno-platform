@@ -21,6 +21,20 @@ class JobCard extends StatelessWidget {
       job.city,
     ].where((e) => e != null && e.isNotEmpty).join(' · ');
 
+    final Widget categoryBadge = Container(
+      width: 54,
+      height: 54,
+      decoration: BoxDecoration(
+        color: tint,
+        borderRadius: BorderRadius.circular(17),
+      ),
+      child: Icon(
+        CategoryVisuals.icon(job.categoryCode),
+        color: Colors.white,
+        size: 27,
+      ),
+    );
+
     return Pressable(
       onTap: onTap,
       child: Container(
@@ -36,18 +50,17 @@ class JobCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                Container(
-                  width: 54,
-                  height: 54,
-                  decoration: BoxDecoration(
-                    color: tint,
-                    borderRadius: BorderRadius.circular(17),
-                  ),
-                  child: Icon(
-                    CategoryVisuals.icon(job.categoryCode),
-                    color: Colors.white,
-                    size: 27,
-                  ),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(17),
+                  child: job.organizationLogo != null
+                      ? Image.network(
+                          job.organizationLogo!,
+                          width: 54,
+                          height: 54,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, _, _) => categoryBadge,
+                        )
+                      : categoryBadge,
                 ),
                 const SizedBox(width: 12),
                 Expanded(

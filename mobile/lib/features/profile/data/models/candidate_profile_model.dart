@@ -15,6 +15,7 @@ class CandidateProfileModel extends Equatable {
     this.skills = const [],
     this.bio,
     this.avatarUrl,
+    this.resumeUrl,
   });
 
   factory CandidateProfileModel.fromJson(Map<String, dynamic> json) {
@@ -32,6 +33,7 @@ class CandidateProfileModel extends Equatable {
       skills: (json['skills'] as List<dynamic>? ?? []).cast<String>(),
       bio: json['bio'] as String?,
       avatarUrl: json['avatar_url'] as String?,
+      resumeUrl: json['resume_url'] as String?,
     );
   }
 
@@ -46,6 +48,7 @@ class CandidateProfileModel extends Equatable {
   final List<String> skills;
   final String? bio;
   final String? avatarUrl;
+  final String? resumeUrl;
 
   bool get isComplete => completionPercentage >= 100;
 

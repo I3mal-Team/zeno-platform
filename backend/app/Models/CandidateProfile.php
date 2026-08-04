@@ -31,6 +31,8 @@ class CandidateProfile extends Model implements HasMedia
 
     public const AVATAR_COLLECTION = 'avatar';
 
+    public const RESUME_COLLECTION = 'resume';
+
     protected $fillable = [
         'user_id', 'full_name', 'national_id', 'national_id_type', 'birth_date',
         'nationality_code', 'city_id', 'job_title', 'years_of_experience',
@@ -72,6 +74,10 @@ class CandidateProfile extends Model implements HasMedia
         $this->addMediaCollection(self::AVATAR_COLLECTION)
             ->singleFile()
             ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp']);
+
+        // The upload requests gate the type (mimes:pdf,doc,docx); the collection
+        // stays permissive so a valid CV is never rejected at storage time.
+        $this->addMediaCollection(self::RESUME_COLLECTION)->singleFile();
     }
 
     public function registerMediaConversions(?Media $media = null): void

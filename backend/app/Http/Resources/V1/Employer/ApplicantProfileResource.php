@@ -39,6 +39,7 @@ final class ApplicantProfileResource extends JsonResource
                 'bio' => $profile->bio,
                 'city' => $profile->relationLoaded('city') ? $profile->city?->name : null,
                 'avatar_url' => $profile->getFirstMediaUrl(CandidateProfile::AVATAR_COLLECTION) ?: null,
+                'resume_url' => $profile->getFirstMediaUrl(CandidateProfile::RESUME_COLLECTION) ?: null,
             ],
         ];
     }

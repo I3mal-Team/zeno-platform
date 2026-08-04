@@ -66,4 +66,10 @@ class ProfileCubit extends Cubit<ProfileState> {
 
     safeEmit(result.fold(ProfileFailed.new, ProfileSaved.new));
   }
+
+  Future<void> uploadResume(File file) async {
+    final result = await _repo.uploadResume(file);
+
+    safeEmit(result.fold(ProfileFailed.new, ProfileSaved.new));
+  }
 }

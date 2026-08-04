@@ -80,4 +80,22 @@ final class CandidateProfileController extends SiteController
 
         return redirect()->route('profile.edit')->with('status', 'تم تحديث الصورة الشخصية.');
     }
+
+    public function resume(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'resume' => ['required', 'file', 'mimes:pdf,doc,docx', 'max:'.config('media.max_upload_kb')],
+        ]);
+
+        $profile = $this->profiles->find($request->user());
+        $file = $request->file('resume');
+
+        if ($profile === null || ! $file instanceof UploadedFile) {
+            return redirect()->route('profile.edit');
+        }
+
+        $this->profiles->saveResume($profile, $file);
+
+        return redirect()->route('profile.edit')->with('status', 'تم رفع السيرة الذاتية.');
+    }
 }

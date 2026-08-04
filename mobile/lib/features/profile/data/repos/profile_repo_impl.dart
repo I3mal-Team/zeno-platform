@@ -51,6 +51,19 @@ class ProfileRepoImpl implements ProfileRepo {
   }
 
   @override
+  Future<Either<Failure, CandidateProfileModel>> uploadResume(File file) {
+    return _handle(
+      () async => _api.post(
+        EndPoints.candidateResume,
+        body: FormData.fromMap({
+          'resume': await MultipartFile.fromFile(file.path),
+        }),
+      ),
+      (data) => CandidateProfileModel.fromJson(data as Map<String, dynamic>),
+    );
+  }
+
+  @override
   Future<Either<Failure, List<CityModel>>> fetchCities() {
     return _handle(
       () => _api.get(EndPoints.cities),

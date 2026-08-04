@@ -29,6 +29,7 @@ final class CandidateProfileResource extends JsonResource
             'bio' => $this->bio,
             'completion_percentage' => $this->completion_percentage,
             'avatar_url' => $this->getFirstMediaUrl(CandidateProfile::AVATAR_COLLECTION, 'thumb') ?: null,
+            'resume_url' => $this->getFirstMediaUrl(CandidateProfile::RESUME_COLLECTION) ?: null,
         ];
     }
 }

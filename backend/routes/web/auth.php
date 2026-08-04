@@ -45,6 +45,7 @@ Route::middleware(['auth', 'role:candidate'])->group(function () {
         Route::get('profile', [CandidateProfileController::class, 'edit'])->name('profile.edit');
         Route::put('profile', [CandidateProfileController::class, 'update'])->name('profile.update');
         Route::post('profile/avatar', [CandidateProfileController::class, 'avatar'])->name('profile.avatar');
+        Route::post('profile/resume', [CandidateProfileController::class, 'resume'])->name('profile.resume');
 
         Route::prefix('messages')->name('messages.')->group(function () {
             Route::get('/', [MessageController::class, 'index'])->name('index');

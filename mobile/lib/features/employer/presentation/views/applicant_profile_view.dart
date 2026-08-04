@@ -110,6 +110,13 @@ class _Body extends StatelessWidget {
                   ),
                 ),
               ],
+              if (profile.resumeUrl != null) ...[
+                const SizedBox(height: 18),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: _ResumeButton(url: profile.resumeUrl!),
+                ),
+              ],
               if (profile.answers.isNotEmpty) ...[
                 const _SectionTitle('إجابات نموذج التقديم'),
                 Padding(
@@ -348,6 +355,38 @@ class _SkillChip extends StatelessWidget {
       child: Text(
         label,
         style: AppTextStyles.badge.copyWith(fontWeight: FontWeight.w700),
+      ),
+    );
+  }
+}
+
+class _ResumeButton extends StatelessWidget {
+  const _ResumeButton({required this.url});
+
+  final String url;
+
+  @override
+  Widget build(BuildContext context) {
+    return Pressable(
+      onTap: () =>
+          launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          color: AppColors.charcoalSoft,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.download_rounded, size: 20, color: Colors.white),
+            const SizedBox(width: 9),
+            Text(
+              'تحميل السيرة الذاتية',
+              style: AppTextStyles.button.copyWith(color: Colors.white),
+            ),
+          ],
+        ),
       ),
     );
   }

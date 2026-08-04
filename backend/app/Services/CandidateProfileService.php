@@ -43,6 +43,11 @@ final class CandidateProfileService
         $profile->addMedia($file)->toMediaCollection(CandidateProfile::AVATAR_COLLECTION);
     }
 
+    public function saveResume(CandidateProfile $profile, UploadedFile $file): void
+    {
+        $profile->addMedia($file)->toMediaCollection(CandidateProfile::RESUME_COLLECTION);
+    }
+
     private function completion(CandidateProfileData $data): int
     {
         $filled = [

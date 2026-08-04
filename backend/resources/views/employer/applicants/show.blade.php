@@ -45,6 +45,13 @@
       </div>
     @endif
 
+    @php($resumeUrl = $profile?->getFirstMediaUrl(\App\Models\CandidateProfile::RESUME_COLLECTION))
+    @if ($resumeUrl)
+      <div style="margin-top:20px">
+        <a href="{{ $resumeUrl }}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:9px;background:#284C3D;color:#fff;font-size:14.5px;font-weight:800;padding:12px 20px;border-radius:13px;text-decoration:none"><i class="iconsax" style="font-size:20px" icon-name="document-download"></i>تحميل السيرة الذاتية</a>
+      </div>
+    @endif
+
     @php($answers = $application->answerSummary())
     @if ($answers)
       <div style="margin-top:24px;padding-top:22px;border-top:1px solid #EEF1EE">

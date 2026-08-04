@@ -14,6 +14,7 @@ class ApplicantProfileModel extends Equatable {
     this.bio,
     this.city,
     this.avatarUrl,
+    this.resumeUrl,
     this.answers = const [],
   });
 
@@ -33,6 +34,7 @@ class ApplicantProfileModel extends Equatable {
       bio: profile?['bio'] as String?,
       city: profile?['city'] as String?,
       avatarUrl: profile?['avatar_url'] as String?,
+      resumeUrl: profile?['resume_url'] as String?,
       answers: (json['answers'] as List<dynamic>? ?? [])
           .map((e) => ApplicantAnswer.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -51,6 +53,7 @@ class ApplicantProfileModel extends Equatable {
   final String? bio;
   final String? city;
   final String? avatarUrl;
+  final String? resumeUrl;
   final List<ApplicantAnswer> answers;
 
   bool get isDecidable => status == 'submitted' || status == 'review';

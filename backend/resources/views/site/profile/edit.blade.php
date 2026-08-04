@@ -36,6 +36,29 @@
     </form>
   </div>
 
+  @php($resumeUrl = $profile->getFirstMediaUrl(\App\Models\CandidateProfile::RESUME_COLLECTION))
+  <div style="margin-top:16px;background:#fff;border:1px solid #E5EAE6;border-radius:20px;padding:20px;display:flex;align-items:center;gap:18px">
+    <div style="width:56px;height:56px;border-radius:16px;flex:0 0 auto;background:#F3ECD6;display:flex;align-items:center;justify-content:center"><i class="iconsax" style="font-size:26px;color:#8A6D12" icon-name="document-text"></i></div>
+    <div style="flex:1">
+      <div style="font-size:15px;font-weight:800;color:#284C3D">السيرة الذاتية (CV)</div>
+      <div style="font-size:13px;color:#869089;font-weight:600;margin-top:3px">
+        @if ($resumeUrl)
+          <a href="{{ $resumeUrl }}" target="_blank" rel="noopener" style="color:#1F8A4D;font-weight:800">تم الرفع — عرض الملف</a> · تظهر لأصحاب العمل مع طلبك
+        @else
+          PDF أو DOC — تُرفق تلقائيًا مع كل طلب
+        @endif
+      </div>
+      @error('resume')<div style="font-size:13px;color:#B23232;font-weight:700;margin-top:6px">{{ $message }}</div>@enderror
+    </div>
+    <form method="POST" action="{{ route('profile.resume') }}" enctype="multipart/form-data">
+      @csrf
+      <label style="display:inline-flex;align-items:center;gap:8px;background:#F3ECD6;color:#8A6D12;font-size:14px;font-weight:800;padding:10px 16px;border-radius:12px;cursor:pointer">
+        <i class="iconsax" style="font-size:18px" icon-name="document-upload"></i>{{ $resumeUrl ? 'تغيير' : 'رفع' }}
+        <input type="file" name="resume" accept=".pdf,.doc,.docx" required onchange="this.form.submit()" style="display:none">
+      </label>
+    </form>
+  </div>
+
   @include('site.profile._form', [
     'action' => route('profile.update'),
     'method' => 'PUT',

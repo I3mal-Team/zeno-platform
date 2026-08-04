@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/components/app_button.dart';
 import '../../../../core/managers/user_cubit/user_cubit.dart';
@@ -50,6 +51,95 @@ Future<void> _pickAndUploadAvatar(BuildContext context) async {
   if (path == null) return;
 
   await cubit.uploadAvatar(File(path));
+}
+
+/// The reusable CV attached to the profile — a candidate uploads it once and
+/// it rides along with every application.
+class _ResumeCard extends StatelessWidget {
+  const _ResumeCard({required this.profile});
+
+  final CandidateProfileModel profile;
+
+  Future<void> _pick(BuildContext context) async {
+    final cubit = context.read<ProfileCubit>();
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: const ['pdf', 'doc', 'docx'],
+    );
+    final path = result?.files.single.path;
+    if (path == null) return;
+
+    await cubit.uploadResume(File(path));
+  }
+
+  Future<void> _open() async {
+    final url = profile.resumeUrl;
+    if (url == null) return;
+    await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final has = profile.resumeUrl != null;
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        border: Border.all(color: AppColors.border),
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 46,
+            height: 46,
+            decoration: BoxDecoration(
+              color: AppColors.warningBg,
+              borderRadius: BorderRadius.circular(13),
+            ),
+            child: const Icon(
+              Icons.description_rounded,
+              color: AppColors.warningFg,
+            ),
+          ),
+          const SizedBox(width: 13),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('السيرة الذاتية (CV)', style: AppTextStyles.titleSm),
+                const SizedBox(height: 2),
+                GestureDetector(
+                  onTap: has ? _open : null,
+                  child: Text(
+                    has
+                        ? 'تم الرفع — عرض الملف'
+                        : 'PDF أو DOC — تُرفق مع طلباتك',
+                    style: AppTextStyles.caption.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: has ? AppColors.successFg : AppColors.textMuted,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          TextButton(
+            onPressed: () => _pick(context),
+            child: Text(
+              has ? 'تغيير' : 'رفع',
+              style: AppTextStyles.bodySm.copyWith(
+                fontWeight: FontWeight.w800,
+                color: AppColors.charcoalSoft,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class _ProfileBody extends StatelessWidget {
@@ -125,6 +215,8 @@ class _ProfileBody extends StatelessWidget {
             ),
           ),
         ],
+        const _SectionTitle('السيرة الذاتية'),
+        _ResumeCard(profile: profile),
         const SizedBox(height: 18),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),

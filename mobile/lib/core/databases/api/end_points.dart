@@ -1,6 +1,11 @@
 /// Every path and base URL. Features must never hardcode a URL.
 abstract final class EndPoints {
-  static const _dev = 'http://10.0.2.2:8000/api/v1';
+  // 10.0.2.2 reaches the host from the Android emulator. Override for a real
+  // device on the LAN: --dart-define=API_BASE_URL=http://<host-ip>:8000/api/v1
+  static const _dev = String.fromEnvironment(
+    'API_BASE_URL',
+    defaultValue: 'http://10.0.2.2:8000/api/v1',
+  );
   static const _staging = 'https://staging.zeno.sa/api/v1';
   static const _production = 'https://api.zeno.sa/api/v1';
 
@@ -33,7 +38,7 @@ abstract final class EndPoints {
   static String saveJob(String slug) => '/jobs/$slug/save';
   static String jobAlert(int id) => '/job-alerts/$id';
 
-  static const jobForm = '/catalog/job-form';
+  static const jobForm = '/job-form';
   static const employerJobs = '/employer/jobs';
   static String employerJob(String uuid) => '/employer/jobs/$uuid';
   static String employerJobPause(String uuid) => '/employer/jobs/$uuid/pause';

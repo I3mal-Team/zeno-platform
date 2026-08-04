@@ -31,7 +31,11 @@
 
   <form method="POST" action="{{ route('logout') }}" style="padding:14px 18px;border-top:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:11px">
     @csrf
-    <div style="width:40px;height:40px;border-radius:12px;background:radial-gradient(circle at 30% 26%,#3A352F,#241F1C);border:1px solid rgba(247,190,23,.3);display:flex;align-items:center;justify-content:center;color:#C9A24B;font-size:16px;font-weight:900;flex:0 0 auto">{{ $initial }}</div>
+    @if ($logoUrl)
+      <img src="{{ $logoUrl }}" alt="{{ $organizationName }}" style="width:40px;height:40px;border-radius:12px;object-fit:cover;border:1px solid rgba(247,190,23,.3);flex:0 0 auto">
+    @else
+      <div style="width:40px;height:40px;border-radius:12px;background:radial-gradient(circle at 30% 26%,#3A352F,#241F1C);border:1px solid rgba(247,190,23,.3);display:flex;align-items:center;justify-content:center;color:#C9A24B;font-size:16px;font-weight:900;flex:0 0 auto">{{ $initial }}</div>
+    @endif
     <div style="flex:1;min-width:0;line-height:1.35">
       <div style="font-size:14px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ $organizationName }}</div>
       <div style="font-size:12px;color:#7E8B84;font-weight:600">{{ $verificationLabel }}</div>

@@ -6,6 +6,7 @@ namespace App\Http\Resources\V1\Employer;
 
 use App\Models\Application;
 use App\Models\CandidateProfile;
+use App\Support\PublicMedia;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -40,8 +41,8 @@ final class ApplicantProfileResource extends JsonResource
                 'skills' => $profile->skills,
                 'bio' => $profile->bio,
                 'city' => $profile->relationLoaded('city') ? $profile->city?->name : null,
-                'avatar_url' => $profile->getFirstMediaUrl(CandidateProfile::AVATAR_COLLECTION) ?: null,
-                'resume_url' => $profile->getFirstMediaUrl(CandidateProfile::RESUME_COLLECTION) ?: null,
+                'avatar_url' => PublicMedia::url($profile->getFirstMediaUrl(CandidateProfile::AVATAR_COLLECTION) ?: null),
+                'resume_url' => PublicMedia::url($profile->getFirstMediaUrl(CandidateProfile::RESUME_COLLECTION) ?: null),
             ],
         ];
     }

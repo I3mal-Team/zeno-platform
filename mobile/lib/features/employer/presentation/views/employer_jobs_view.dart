@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/components/app_toast.dart';
 import '../../../../core/motion/motion.dart';
 import '../../../../core/routing/routes_keys.dart';
 import '../../../../core/styles/app_colors.dart';
@@ -16,6 +17,81 @@ class EmployerJobsView extends StatelessWidget {
   Future<void> _post(BuildContext context) async {
     await context.push(RoutesKeys.employerPostJob);
     if (context.mounted) context.read<EmployerJobsCubit>().load();
+  }
+
+  Future<void> _view(BuildContext context, JobModel job) async {
+    await context.push(RoutesKeys.employerJobDetail(job.id));
+    if (context.mounted) context.read<EmployerJobsCubit>().load();
+  }
+
+  Future<void> _edit(BuildContext context, JobModel job) async {
+    await context.push(RoutesKeys.employerEditJob(job.id));
+    if (context.mounted) context.read<EmployerJobsCubit>().load();
+  }
+
+  /// Bottom sheet with the status actions valid for this listing.
+  void _manage(BuildContext context, JobModel job) {
+    final cubit = context.read<EmployerJobsCubit>();
+
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (_) => _ManageSheet(
+        job: job,
+        onEdit: () {
+          Navigator.of(context).pop();
+          _edit(context, job);
+        },
+        onPause: () => _run(context, cubit.pause(job.id)),
+        onResume: () => _run(context, cubit.resume(job.id)),
+        onClose: () async {
+          final confirmed = await _confirmClose(context);
+          if (confirmed && context.mounted) {
+            await _run(context, cubit.closeListing(job.id));
+          }
+        },
+      ),
+    );
+  }
+
+  /// Runs a status mutation, closes the sheet, and toasts on failure.
+  Future<void> _run(BuildContext context, Future<Object?> action) async {
+    Navigator.of(context).pop();
+    final failure = await action;
+    if (failure != null && context.mounted) {
+      AppToast.error(context, 'تعذّر تنفيذ العملية. حاول مجددًا.');
+    }
+  }
+
+  Future<bool> _confirmClose(BuildContext context) async {
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: AppColors.surface,
+        title: Text('إغلاق الإعلان', style: AppTextStyles.titleMd),
+        content: Text(
+          'سيتوقف استقبال الطلبات ولا يمكن التراجع. متأكد؟',
+          style: AppTextStyles.bodyMd,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: Text('تراجع', style: AppTextStyles.bodyMd),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: Text(
+              'إغلاق',
+              style: AppTextStyles.bodyMd.copyWith(
+                color: AppColors.errorFg,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+    return result ?? false;
   }
 
   @override
@@ -64,9 +140,11 @@ class EmployerJobsView extends StatelessWidget {
                               index: index,
                               child: _EmployerJobTile(
                                 job: job,
+                                onView: () => _view(context, job),
                                 onApplicants: () => context.push(
                                   RoutesKeys.employerJobApplicants(job.id),
                                 ),
+                                onManage: () => _manage(context, job),
                               ),
                             ),
                           ),
@@ -263,10 +341,17 @@ class _SectionRow extends StatelessWidget {
 }
 
 class _EmployerJobTile extends StatelessWidget {
-  const _EmployerJobTile({required this.job, required this.onApplicants});
+  const _EmployerJobTile({
+    required this.job,
+    required this.onView,
+    required this.onApplicants,
+    required this.onManage,
+  });
 
   final JobModel job;
+  final VoidCallback onView;
   final VoidCallback onApplicants;
+  final VoidCallback onManage;
 
   @override
   Widget build(BuildContext context) {
@@ -286,65 +371,283 @@ class _EmployerJobTile extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: tint,
-                  borderRadius: BorderRadius.circular(14),
+          Pressable(
+            onTap: onView,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: tint,
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Icon(
+                    CategoryVisuals.icon(job.categoryCode),
+                    color: Colors.white,
+                    size: 24,
+                  ),
                 ),
-                child: Icon(
-                  CategoryVisuals.icon(job.categoryCode),
-                  color: Colors.white,
-                  size: 24,
-                ),
-              ),
-              const SizedBox(width: 13),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      job.title,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppTextStyles.titleMd,
-                    ),
-                    if (meta.isNotEmpty) ...[
-                      const SizedBox(height: 2),
+                const SizedBox(width: 13),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                       Text(
-                        meta,
-                        style: AppTextStyles.caption.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.textMuted,
-                        ),
+                        job.title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTextStyles.titleMd,
                       ),
+                      if (meta.isNotEmpty) ...[
+                        const SizedBox(height: 2),
+                        Text(
+                          meta,
+                          style: AppTextStyles.caption.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textMuted,
+                          ),
+                        ),
+                      ],
                     ],
-                  ],
+                  ),
                 ),
+                _StatusBadge(status: job.status),
+              ],
+            ),
+          ),
+          const SizedBox(height: 14),
+          Row(
+            children: [
+              _MiniStat(
+                icon: Icons.people_alt_rounded,
+                value: '${job.applicationsCount ?? 0}',
+                label: 'متقدم',
               ),
-              _StatusBadge(status: job.status),
+              const SizedBox(width: 10),
+              _MiniStat(
+                icon: Icons.visibility_rounded,
+                value: '${job.viewsCount ?? 0}',
+                label: 'مشاهدة',
+              ),
             ],
           ),
-          const SizedBox(height: 15),
+          const SizedBox(height: 14),
           const Divider(height: 1, color: Color(0xFFF2F0EA)),
           const SizedBox(height: 12),
           Row(
             children: [
-              Text(
-                '${job.applicationsCount ?? 0} متقدمين',
-                style: AppTextStyles.titleSm.copyWith(
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
+              _ManageButton(onTap: onManage),
               const Spacer(),
               _ApplicantsButton(onTap: onApplicants),
             ],
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// A compact metric pill (applicants, views) shown on a listing tile.
+class _MiniStat extends StatelessWidget {
+  const _MiniStat({
+    required this.icon,
+    required this.value,
+    required this.label,
+  });
+
+  final IconData icon;
+  final String value;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: AppColors.paper,
+        borderRadius: BorderRadius.circular(11),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 16, color: AppColors.textMuted),
+          const SizedBox(width: 6),
+          Text(
+            value,
+            style: AppTextStyles.titleSm.copyWith(fontWeight: FontWeight.w800),
+          ),
+          const SizedBox(width: 4),
+          Text(
+            label,
+            style: AppTextStyles.caption.copyWith(
+              fontWeight: FontWeight.w700,
+              color: AppColors.textMuted,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ManageButton extends StatelessWidget {
+  const _ManageButton({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Pressable(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+        decoration: BoxDecoration(
+          color: AppColors.paper,
+          border: Border.all(color: AppColors.border),
+          borderRadius: BorderRadius.circular(11),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.tune_rounded, size: 17, color: AppColors.textBody),
+            const SizedBox(width: 6),
+            Text(
+              'إدارة',
+              style: AppTextStyles.caption.copyWith(
+                fontWeight: FontWeight.w800,
+                color: AppColors.textBody,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// The status-management actions for one listing, shown as a bottom sheet.
+/// Only the transitions valid for the current status are offered; the backend
+/// is the final authority and rejects anything stale.
+class _ManageSheet extends StatelessWidget {
+  const _ManageSheet({
+    required this.job,
+    required this.onEdit,
+    required this.onPause,
+    required this.onResume,
+    required this.onClose,
+  });
+
+  final JobModel job;
+  final VoidCallback onEdit;
+  final VoidCallback onPause;
+  final VoidCallback onResume;
+  final VoidCallback onClose;
+
+  @override
+  Widget build(BuildContext context) {
+    const editable = {'active', 'paused', 'pending_review'};
+    const closable = {'active', 'paused', 'pending_review'};
+
+    return SafeArea(
+      top: false,
+      child: Container(
+        margin: const EdgeInsets.all(12),
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(24),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 8),
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: AppColors.border,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 4, 20, 10),
+              child: Text(
+                job.title,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AppTextStyles.titleSm,
+              ),
+            ),
+            if (editable.contains(job.status))
+              _ManageAction(
+                icon: Icons.edit_rounded,
+                label: 'تعديل الإعلان',
+                onTap: onEdit,
+              ),
+            if (job.status == 'active')
+              _ManageAction(
+                icon: Icons.pause_circle_rounded,
+                label: 'إيقاف مؤقت',
+                onTap: onPause,
+              ),
+            if (job.status == 'paused')
+              _ManageAction(
+                icon: Icons.play_circle_rounded,
+                label: 'استئناف',
+                onTap: onResume,
+              ),
+            if (closable.contains(job.status))
+              _ManageAction(
+                icon: Icons.stop_circle_rounded,
+                label: 'إغلاق الإعلان',
+                destructive: true,
+                onTap: onClose,
+              ),
+            const SizedBox(height: 6),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ManageAction extends StatelessWidget {
+  const _ManageAction({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+    this.destructive = false,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+  final bool destructive;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = destructive ? AppColors.errorFg : AppColors.textStrong;
+
+    return Pressable(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+        child: Row(
+          children: [
+            Icon(icon, size: 22, color: color),
+            const SizedBox(width: 14),
+            Text(
+              label,
+              style: AppTextStyles.bodyMd.copyWith(
+                fontWeight: FontWeight.w700,
+                color: color,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

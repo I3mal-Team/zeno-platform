@@ -17,6 +17,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property string $full_name
  * @property string|null $national_id
  * @property Carbon|null $birth_date
+ * @property string|null $gender
  * @property string|null $nationality_code
  * @property string|null $job_title
  * @property int|null $years_of_experience
@@ -35,7 +36,7 @@ class CandidateProfile extends Model implements HasMedia
 
     protected $fillable = [
         'user_id', 'full_name', 'national_id', 'national_id_type', 'birth_date',
-        'nationality_code', 'city_id', 'job_title', 'years_of_experience',
+        'gender', 'nationality_code', 'city_id', 'job_title', 'years_of_experience',
         'skills', 'bio', 'completion_percentage',
     ];
 

@@ -62,6 +62,7 @@ class JobModel extends Equatable {
     this.distanceKm,
     this.publishedAt,
     this.applicationsCount,
+    this.viewsCount,
   });
 
   factory JobModel.fromJson(Map<String, dynamic> json) {
@@ -94,6 +95,7 @@ class JobModel extends Equatable {
       distanceKm: (json['distance_km'] as num?)?.toDouble(),
       publishedAt: json['published_at'] as String?,
       applicationsCount: json['applications_count'] as int?,
+      viewsCount: json['views_count'] as int?,
     );
   }
 
@@ -114,9 +116,17 @@ class JobModel extends Equatable {
   final double? distanceKm;
   final String? publishedAt;
   final int? applicationsCount;
+  final int? viewsCount;
 
   String get categoryCode => category?.code ?? 'other';
 
   @override
-  List<Object?> get props => [id, status, salary, title];
+  List<Object?> get props => [
+    id,
+    status,
+    salary,
+    title,
+    applicationsCount,
+    viewsCount,
+  ];
 }

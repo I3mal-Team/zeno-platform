@@ -6,6 +6,7 @@ namespace App\Http\Resources\V1\Jobs;
 
 use App\Models\Job;
 use App\Models\Organization;
+use App\Support\PublicMedia;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -39,7 +40,7 @@ final class JobCardResource extends JsonResource
             'organization' => $this->whenLoaded('organization', fn () => [
                 'name' => $this->organization->name,
                 'is_verified' => $this->organization->isVerified(),
-                'logo_url' => $this->organization->getFirstMediaUrl(Organization::LOGO_COLLECTION) ?: null,
+                'logo_url' => PublicMedia::url($this->organization->getFirstMediaUrl(Organization::LOGO_COLLECTION) ?: null),
             ]),
             'status' => $this->status->value,
             'contact_channel' => $this->contact_channel->value,
@@ -49,6 +50,7 @@ final class JobCardResource extends JsonResource
                 ? round(((float) $distanceMeters) / 1000, 1)
                 : null,
             'published_at' => $this->published_at?->toIso8601String(),
+            'views_count' => $this->views_count,
             // Present only on the employer's own list, via withCount.
             'applications_count' => $this->whenNotNull($this->live_applications_count ?? null),
         ];

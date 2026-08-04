@@ -32,6 +32,16 @@ use Illuminate\Support\Carbon;
  * @property string|null $closed_reason
  * @property int $views_count
  * @property int $organization_id
+ * @property int $category_id
+ * @property int $work_type_id
+ * @property int $salary_unit_id
+ * @property int $gender_requirement_id
+ * @property int $nationality_requirement_id
+ * @property int $city_id
+ * @property int|null $district_id
+ * @property int|null $hours_per_week
+ * @property string|null $shift_note
+ * @property string|null $address_line
  * @property Organization $organization
  * @property Category $category
  * @property WorkType $workType

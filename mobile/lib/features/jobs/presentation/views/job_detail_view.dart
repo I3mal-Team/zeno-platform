@@ -15,7 +15,12 @@ import '../manager/job_detail_cubit/job_detail_cubit.dart';
 import 'widgets/save_button.dart';
 
 class JobDetailView extends StatelessWidget {
-  const JobDetailView({super.key});
+  const JobDetailView({super.key, this.editUuid});
+
+  /// When set, this is the employer viewing their own listing: the apply bar
+  /// becomes an edit bar, the save button is hidden, and the paused banner is
+  /// dropped (the employer manages status elsewhere).
+  final String? editUuid;
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +34,10 @@ class JobDetailView extends StatelessWidget {
           JobDetailFailed(:final failure) => _DetailError(
             message: failure.message,
           ),
-          JobDetailLoaded(:final job) => _JobDetailBody(job: job),
+          JobDetailLoaded(:final job) => _JobDetailBody(
+            job: job,
+            editUuid: editUuid,
+          ),
         },
       ),
     );
@@ -37,20 +45,24 @@ class JobDetailView extends StatelessWidget {
 }
 
 class _JobDetailBody extends StatelessWidget {
-  const _JobDetailBody({required this.job});
+  const _JobDetailBody({required this.job, this.editUuid});
 
   final JobDetailModel job;
+  final String? editUuid;
 
   @override
   Widget build(BuildContext context) {
+    final isOwner = editUuid != null;
+
     return Column(
       children: [
         Expanded(
           child: ListView(
             padding: EdgeInsets.zero,
             children: [
-              _DetailHeader(job: job),
-              if (!job.isOpenForApplications) const _PausedBanner(),
+              _DetailHeader(job: job, isOwner: isOwner),
+              if (isOwner) _OwnerStatusBanner(job: job),
+              if (!isOwner && !job.isOpenForApplications) const _PausedBanner(),
               _InfoGrid(job: job),
               if (job.description != null && job.description!.isNotEmpty)
                 _Section(
@@ -68,16 +80,20 @@ class _JobDetailBody extends StatelessWidget {
             ],
           ),
         ),
-        _ApplyBar(job: job),
+        if (isOwner)
+          _EmployerBar(uuid: editUuid!, job: job)
+        else
+          _ApplyBar(job: job),
       ],
     );
   }
 }
 
 class _DetailHeader extends StatelessWidget {
-  const _DetailHeader({required this.job});
+  const _DetailHeader({required this.job, this.isOwner = false});
 
   final JobDetailModel job;
+  final bool isOwner;
 
   @override
   Widget build(BuildContext context) {
@@ -106,11 +122,12 @@ class _DetailHeader extends StatelessWidget {
                   onTap: () => Navigator.of(context).maybePop(),
                 ),
                 const Spacer(),
-                SaveButton(
-                  slug: job.slug,
-                  initialSaved: job.isSaved,
-                  onDark: true,
-                ),
+                if (!isOwner)
+                  SaveButton(
+                    slug: job.slug,
+                    initialSaved: job.isSaved,
+                    onDark: true,
+                  ),
               ],
             ),
             const SizedBox(height: 18),
@@ -423,6 +440,137 @@ class _ContactCard extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// A status + views strip shown to the employer at the top of their own
+/// listing so they can see its state at a glance.
+class _OwnerStatusBanner extends StatelessWidget {
+  const _OwnerStatusBanner({required this.job});
+
+  final JobDetailModel job;
+
+  @override
+  Widget build(BuildContext context) {
+    final (fg, bg) = switch (job.status) {
+      'active' => (AppColors.successFg, AppColors.successBg),
+      'paused' => (AppColors.warningFg, AppColors.warningBg),
+      'pending_review' => (AppColors.warningFg, AppColors.warningBg),
+      _ => (AppColors.neutralFg, AppColors.neutralBg),
+    };
+
+    return Container(
+      margin: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 8,
+            height: 8,
+            decoration: BoxDecoration(color: fg, shape: BoxShape.circle),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            job.statusLabel,
+            style: AppTextStyles.bodySm.copyWith(
+              fontWeight: FontWeight.w800,
+              color: fg,
+            ),
+          ),
+          const Spacer(),
+          Icon(Icons.visibility_rounded, size: 17, color: fg),
+          const SizedBox(width: 5),
+          Text(
+            '${job.viewsCount ?? 0} مشاهدة',
+            style: AppTextStyles.caption.copyWith(
+              fontWeight: FontWeight.w700,
+              color: fg,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// The employer's bottom bar on their own listing: edit (primary) plus a jump
+/// to the applicants. Status changes live on the listings screen's manage sheet.
+class _EmployerBar extends StatelessWidget {
+  const _EmployerBar({required this.uuid, required this.job});
+
+  final String uuid;
+  final JobDetailModel job;
+
+  Future<void> _edit(BuildContext context) async {
+    await context.push(RoutesKeys.employerEditJob(uuid));
+    if (context.mounted) context.read<JobDetailCubit>().loadOwned(uuid);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
+      decoration: const BoxDecoration(
+        color: AppColors.surface,
+        border: Border(top: BorderSide(color: AppColors.border)),
+      ),
+      child: SafeArea(
+        top: false,
+        child: Row(
+          children: [
+            Pressable(
+              onTap: () => context.push(RoutesKeys.employerJobApplicants(uuid)),
+              child: Container(
+                height: 52,
+                padding: const EdgeInsets.symmetric(horizontal: 18),
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: AppColors.charcoalSoft,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Text(
+                  'المتقدمون',
+                  style: AppTextStyles.bodyMd.copyWith(
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Pressable(
+                onTap: () => _edit(context),
+                child: Container(
+                  height: 52,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: AppColors.amber,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text('تعديل الإعلان', style: AppTextStyles.button),
+                      const SizedBox(width: 8),
+                      const Icon(
+                        Icons.edit_rounded,
+                        size: 20,
+                        color: AppColors.textStrong,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

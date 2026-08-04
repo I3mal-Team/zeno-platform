@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Resources\V1\Profile;
 
 use App\Models\CandidateProfile;
+use App\Support\PublicMedia;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -18,6 +19,7 @@ final class CandidateProfileResource extends JsonResource
             'full_name' => $this->full_name,
             'age' => $this->age,
             'birth_date' => $this->birth_date?->toDateString(),
+            'gender' => $this->gender,
             'nationality_code' => $this->nationality_code,
             'city' => $this->whenLoaded('city', fn () => [
                 'id' => $this->city->id,
@@ -28,8 +30,8 @@ final class CandidateProfileResource extends JsonResource
             'skills' => $this->skills,
             'bio' => $this->bio,
             'completion_percentage' => $this->completion_percentage,
-            'avatar_url' => $this->getFirstMediaUrl(CandidateProfile::AVATAR_COLLECTION, 'thumb') ?: null,
-            'resume_url' => $this->getFirstMediaUrl(CandidateProfile::RESUME_COLLECTION) ?: null,
+            'avatar_url' => PublicMedia::url($this->getFirstMediaUrl(CandidateProfile::AVATAR_COLLECTION, 'thumb') ?: null),
+            'resume_url' => PublicMedia::url($this->getFirstMediaUrl(CandidateProfile::RESUME_COLLECTION) ?: null),
         ];
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\View\Components\Employer;
 
 use App\Enums\ApplicationStatus;
+use App\Models\Organization;
 use App\Repositories\ApplicationRepository;
 use App\Repositories\ConversationRepository;
 use App\Services\OrganizationService;
@@ -43,12 +44,16 @@ final class Sidebar extends Component
         $organization = app(OrganizationService::class)->find(Auth::user());
         $name = $organization !== null ? $organization->name : 'منشأتك';
         $verified = $organization !== null && $organization->isVerified();
+        $logoUrl = $organization !== null
+            ? ($organization->getFirstMediaUrl(Organization::LOGO_COLLECTION) ?: null)
+            : null;
 
         return view('components.employer.sidebar', [
             'items' => $this->items($organization?->id),
             'organizationName' => $name,
             'verificationLabel' => $verified ? 'منشأة موثّقة' : 'غير موثّقة',
             'initial' => mb_substr($name, 0, 1),
+            'logoUrl' => $logoUrl,
         ]);
     }
 }

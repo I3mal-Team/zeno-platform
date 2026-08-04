@@ -13,6 +13,7 @@ import '../../../../core/styles/app_colors.dart';
 import '../../../../core/styles/app_shadows.dart';
 import '../../../../core/styles/app_text_styles.dart';
 import '../../../../core/styles/category_visuals.dart';
+import '../../../jobs/data/models/job_detail_model.dart';
 import '../../../profile/data/models/city_model.dart';
 import '../../data/models/job_form_options.dart';
 import '../manager/publish_job_cubit/publish_job_cubit.dart';
@@ -27,40 +28,52 @@ class PostJobView extends StatelessWidget {
       body: BlocConsumer<PublishJobCubit, PublishJobState>(
         listener: (context, state) {
           if (state is PublishJobDone) {
-            AppToast.success(context, 'تم نشر الإعلان.');
+            final isEdit = context.read<PublishJobCubit>().editing != null;
+            AppToast.success(
+              context,
+              isEdit ? 'تم تحديث الإعلان.' : 'تم نشر الإعلان.',
+            );
             context.pop();
           }
           if (state case PublishJobFailed(:final failure)) {
             AppToast.error(context, failure.message);
           }
         },
-        builder: (context, state) => Column(
-          children: [
-            const _DarkHeader(),
-            Expanded(
-              child: switch (state) {
-                PublishJobLoading() => const Center(
-                  child: CircularProgressIndicator(color: AppColors.amber),
-                ),
-                PublishJobLoadFailed(:final failure) => Center(
-                  child: Text(failure.message, style: AppTextStyles.bodyMd),
-                ),
-                _ => _PostJobForm(
-                  options: context.read<PublishJobCubit>().options!,
-                  cities: context.read<PublishJobCubit>().cities,
-                  submitting: state is PublishJobSubmitting,
-                ),
-              },
-            ),
-          ],
-        ),
+        builder: (context, state) {
+          final editing = context.read<PublishJobCubit>().editing;
+          return Column(
+            children: [
+              _DarkHeader(
+                title: editing != null ? 'تعديل الإعلان' : 'نشر إعلان وظيفة',
+              ),
+              Expanded(
+                child: switch (state) {
+                  PublishJobLoading() => const Center(
+                    child: CircularProgressIndicator(color: AppColors.amber),
+                  ),
+                  PublishJobLoadFailed(:final failure) => Center(
+                    child: Text(failure.message, style: AppTextStyles.bodyMd),
+                  ),
+                  _ => _PostJobForm(
+                    options: context.read<PublishJobCubit>().options!,
+                    cities: context.read<PublishJobCubit>().cities,
+                    editing: editing,
+                    submitting: state is PublishJobSubmitting,
+                  ),
+                },
+              ),
+            ],
+          );
+        },
       ),
     );
   }
 }
 
 class _DarkHeader extends StatelessWidget {
-  const _DarkHeader();
+  const _DarkHeader({required this.title});
+
+  final String title;
 
   @override
   Widget build(BuildContext context) {
@@ -93,7 +106,7 @@ class _DarkHeader extends StatelessWidget {
           ),
           const SizedBox(width: 12),
           Text(
-            'نشر إعلان وظيفة',
+            title,
             style: AppTextStyles.titleMd.copyWith(color: Colors.white),
           ),
         ],
@@ -106,11 +119,13 @@ class _PostJobForm extends StatefulWidget {
   const _PostJobForm({
     required this.options,
     required this.cities,
+    required this.editing,
     required this.submitting,
   });
 
   final JobFormOptions options;
   final List<CityModel> cities;
+  final JobDetailModel? editing;
   final bool submitting;
 
   @override
@@ -135,6 +150,45 @@ class _PostJobFormState extends State<_PostJobForm> {
   double? _latitude;
   double? _longitude;
   bool _locating = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _seedFromExisting();
+  }
+
+  /// Preselect every field from the listing being edited. District, address,
+  /// salary-max, hours and shift have no input here, so they are carried
+  /// forward untouched on save via [_submit].
+  void _seedFromExisting() {
+    final job = widget.editing;
+    if (job == null) return;
+
+    _title.text = job.title;
+    _description.text = job.description ?? '';
+    _contact = job.contactChannel;
+
+    final e = job.edit;
+    if (e != null) {
+      _categoryId = e.categoryId;
+      _workTypeId = e.workTypeId;
+      _salaryUnitId = e.salaryUnitId;
+      _genderId = e.genderRequirementId;
+      _nationalityId = e.nationalityRequirementId;
+      _cityId = e.cityId;
+      _salary.text = e.salaryAmount.toInt().toString();
+      _vacancies.text = e.vacanciesCount.toString();
+    }
+
+    for (final field in job.applicationFields) {
+      final draft = _FieldDraft()
+        ..type = field.type
+        ..required = field.required;
+      draft.label.text = field.label;
+      if (field.type == 'select') draft.options.text = field.options.join('، ');
+      _fields.add(draft);
+    }
+  }
 
   Future<void> _useCurrentLocation() async {
     setState(() => _locating = true);
@@ -218,26 +272,41 @@ class _PostJobFormState extends State<_PostJobForm> {
       return;
     }
 
-    context.read<PublishJobCubit>().submit(
-      PublishJobParam(
-        title: _title.text.trim(),
-        categoryId: _categoryId!,
-        workTypeId: _workTypeId!,
-        salaryUnitId: _salaryUnitId!,
-        genderRequirementId: _genderId!,
-        nationalityRequirementId: _nationalityId!,
-        salaryAmount: num.tryParse(_salary.text.trim()) ?? 0,
-        vacanciesCount: int.tryParse(_vacancies.text.trim()) ?? 1,
-        cityId: _cityId!,
-        contactChannel: _contact,
-        latitude: _latitude,
-        longitude: _longitude,
-        applicationFields: _buildApplicationFields(),
-        description: _description.text.trim().isEmpty
-            ? null
-            : _description.text.trim(),
-      ),
+    // Fields the form has no input for: keep the listing's current values on
+    // edit so a save never silently wipes them.
+    final preserved = widget.editing?.edit;
+
+    final param = PublishJobParam(
+      title: _title.text.trim(),
+      categoryId: _categoryId!,
+      workTypeId: _workTypeId!,
+      salaryUnitId: _salaryUnitId!,
+      genderRequirementId: _genderId!,
+      nationalityRequirementId: _nationalityId!,
+      salaryAmount: num.tryParse(_salary.text.trim()) ?? 0,
+      salaryAmountMax: preserved?.salaryAmountMax,
+      hoursPerWeek: preserved?.hoursPerWeek,
+      shiftNote: preserved?.shiftNote,
+      vacanciesCount: int.tryParse(_vacancies.text.trim()) ?? 1,
+      cityId: _cityId!,
+      districtId: preserved?.districtId,
+      addressLine: preserved?.addressLine,
+      contactChannel: _contact,
+      latitude: _latitude,
+      longitude: _longitude,
+      applicationFields: _buildApplicationFields(),
+      description: _description.text.trim().isEmpty
+          ? null
+          : _description.text.trim(),
     );
+
+    final cubit = context.read<PublishJobCubit>();
+    final editing = widget.editing;
+    if (editing != null) {
+      cubit.update(editing.id, param);
+    } else {
+      cubit.submit(param);
+    }
   }
 
   @override
@@ -372,7 +441,11 @@ class _PostJobFormState extends State<_PostJobForm> {
             ),
           ),
         ),
-        _SubmitBar(submitting: widget.submitting, onSubmit: _submit),
+        _SubmitBar(
+          submitting: widget.submitting,
+          label: widget.editing != null ? 'حفظ التعديلات' : 'نشر الإعلان',
+          onSubmit: _submit,
+        ),
       ],
     );
   }
@@ -587,9 +660,14 @@ class _Segment extends StatelessWidget {
 }
 
 class _SubmitBar extends StatelessWidget {
-  const _SubmitBar({required this.submitting, required this.onSubmit});
+  const _SubmitBar({
+    required this.submitting,
+    required this.label,
+    required this.onSubmit,
+  });
 
   final bool submitting;
+  final String label;
   final VoidCallback onSubmit;
 
   @override
@@ -624,7 +702,7 @@ class _SubmitBar extends StatelessWidget {
                 : Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text('نشر الإعلان', style: AppTextStyles.button),
+                      Text(label, style: AppTextStyles.button),
                       const SizedBox(width: 8),
                       const Icon(
                         Icons.send_rounded,

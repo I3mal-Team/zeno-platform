@@ -26,6 +26,8 @@ abstract final class RoutesKeys {
   static const employerMessages = '/employer/messages';
   static const employerAccount = '/employer/account';
   static const employerPostJob = '/employer/jobs/new';
+  static const employerEditJobPath = '/employer/jobs/:uuid/edit';
+  static const employerJobDetailPath = '/employer/jobs/:uuid/details';
   static const employerJobApplicantsPath = '/employer/jobs/:uuid/applicants';
   static const employerApplicantPath = '/employer/applicants/:id';
 
@@ -35,6 +37,11 @@ abstract final class RoutesKeys {
 
   static String employerJobApplicants(String uuid) =>
       '/employer/jobs/$uuid/applicants';
+
+  static String employerEditJob(String uuid) => '/employer/jobs/$uuid/edit';
+
+  static String employerJobDetail(String uuid) =>
+      '/employer/jobs/$uuid/details';
 
   static String employerApplicant(int id) => '/employer/applicants/$id';
 }

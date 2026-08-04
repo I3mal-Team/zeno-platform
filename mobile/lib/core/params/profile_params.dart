@@ -34,6 +34,7 @@ class SaveCandidateProfileParam {
     this.nationalId,
     this.nationalIdType,
     this.birthDate,
+    this.gender,
     this.nationalityCode,
     this.cityId,
     this.jobTitle,
@@ -48,6 +49,9 @@ class SaveCandidateProfileParam {
   /// 'national' or 'iqama' — inferred from the ID's leading digit.
   final String? nationalIdType;
   final String? birthDate;
+
+  /// 'male' or 'female'.
+  final String? gender;
   final String? nationalityCode;
   final int? cityId;
   final String? jobTitle;
@@ -60,6 +64,7 @@ class SaveCandidateProfileParam {
     if (nationalId != null) 'national_id': nationalId,
     if (nationalIdType != null) 'national_id_type': nationalIdType,
     if (birthDate != null) 'birth_date': birthDate,
+    if (gender != null) 'gender': gender,
     if (nationalityCode != null) 'nationality_code': nationalityCode,
     if (cityId != null) 'city_id': cityId,
     if (jobTitle != null) 'job_title': jobTitle,

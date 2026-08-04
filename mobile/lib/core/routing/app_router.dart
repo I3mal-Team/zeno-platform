@@ -169,6 +169,15 @@ abstract final class AppRouter {
         ),
       ),
       GoRoute(
+        path: RoutesKeys.employerEditJobPath,
+        builder: (_, state) => BlocProvider(
+          create: (_) =>
+              PublishJobCubit(getIt())
+                ..loadForm(editUuid: state.pathParameters['uuid']),
+          child: const PostJobView(),
+        ),
+      ),
+      GoRoute(
         path: RoutesKeys.employerJobApplicantsPath,
         builder: (_, state) => BlocProvider(
           create: (_) =>
@@ -302,13 +311,24 @@ abstract final class AppRouter {
           providers: [
             BlocProvider(
               create: (_) =>
-                  JobDetailCubit(getIt())
+                  JobDetailCubit(getIt(), getIt())
                     ..load(state.pathParameters['id'] ?? ''),
             ),
             BlocProvider(create: (_) => ApplyCubit(getIt())),
           ],
           child: const JobDetailView(),
         ),
+      ),
+      GoRoute(
+        path: RoutesKeys.employerJobDetailPath,
+        parentNavigatorKey: parentKey,
+        builder: (_, state) {
+          final uuid = state.pathParameters['uuid'] ?? '';
+          return BlocProvider(
+            create: (_) => JobDetailCubit(getIt(), getIt())..loadOwned(uuid),
+            child: JobDetailView(editUuid: uuid),
+          );
+        },
       ),
       GoRoute(
         path: RoutesKeys.notifications,

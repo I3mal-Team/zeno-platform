@@ -30,6 +30,20 @@ abstract interface class EmployerRepo {
 
   Future<Either<Failure, JobDetailModel>> publishJob(PublishJobParam param);
 
+  /// The employer's own listing with the raw ids the edit form needs.
+  Future<Either<Failure, JobDetailModel>> fetchJob(String uuid);
+
+  Future<Either<Failure, JobDetailModel>> updateJob(
+    String uuid,
+    PublishJobParam param,
+  );
+
+  Future<Either<Failure, JobDetailModel>> pauseJob(String uuid);
+
+  Future<Either<Failure, JobDetailModel>> resumeJob(String uuid);
+
+  Future<Either<Failure, JobDetailModel>> closeJob(String uuid);
+
   Future<Either<Failure, List<ApplicantModel>>> listApplicants(String jobUuid);
 
   /// Every applicant across the employer's listings (the "المتقدمون" tab).

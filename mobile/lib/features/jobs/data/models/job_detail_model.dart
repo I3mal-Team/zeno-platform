@@ -30,6 +30,8 @@ class JobDetailModel extends Equatable {
     this.organizationLogo,
     this.isSaved = false,
     this.publishedAt,
+    this.viewsCount,
+    this.edit,
   });
 
   factory JobDetailModel.fromJson(Map<String, dynamic> json) {
@@ -74,6 +76,10 @@ class JobDetailModel extends Equatable {
           : null,
       isSaved: json['is_saved'] as bool? ?? false,
       publishedAt: json['published_at'] as String?,
+      viewsCount: json['views_count'] as int?,
+      edit: json['edit'] is Map<String, dynamic>
+          ? JobEditData.fromJson(json['edit'] as Map<String, dynamic>)
+          : null,
     );
   }
 
@@ -102,9 +108,82 @@ class JobDetailModel extends Equatable {
   final String? organizationLogo;
   final bool isSaved;
   final String? publishedAt;
+  final int? viewsCount;
+
+  /// Raw foreign keys the employer edit form needs to preselect its dropdowns.
+  /// Present only on the employer's own job detail.
+  final JobEditData? edit;
 
   String get categoryCode => category?.code ?? 'other';
 
   @override
-  List<Object?> get props => [id, status, salary];
+  List<Object?> get props => [id, status, salary, viewsCount];
+}
+
+/// The foreign keys and raw values behind a listing, so the edit form can
+/// reopen it with every field preselected. Location (lat/lng) is intentionally
+/// omitted — leaving it null on update keeps the existing pin.
+class JobEditData extends Equatable {
+  const JobEditData({
+    required this.categoryId,
+    required this.workTypeId,
+    required this.salaryUnitId,
+    required this.genderRequirementId,
+    required this.nationalityRequirementId,
+    required this.cityId,
+    required this.salaryAmount,
+    required this.vacanciesCount,
+    this.districtId,
+    this.salaryAmountMax,
+    this.hoursPerWeek,
+    this.shiftNote,
+    this.addressLine,
+  });
+
+  factory JobEditData.fromJson(Map<String, dynamic> json) => JobEditData(
+    categoryId: json['category_id'] as int,
+    workTypeId: json['work_type_id'] as int,
+    salaryUnitId: json['salary_unit_id'] as int,
+    genderRequirementId: json['gender_requirement_id'] as int,
+    nationalityRequirementId: json['nationality_requirement_id'] as int,
+    cityId: json['city_id'] as int,
+    salaryAmount: (json['salary_amount'] as num).toDouble(),
+    vacanciesCount: json['vacancies_count'] as int? ?? 1,
+    districtId: json['district_id'] as int?,
+    salaryAmountMax: (json['salary_amount_max'] as num?)?.toDouble(),
+    hoursPerWeek: json['hours_per_week'] as int?,
+    shiftNote: json['shift_note'] as String?,
+    addressLine: json['address_line'] as String?,
+  );
+
+  final int categoryId;
+  final int workTypeId;
+  final int salaryUnitId;
+  final int genderRequirementId;
+  final int nationalityRequirementId;
+  final int cityId;
+  final double salaryAmount;
+  final int vacanciesCount;
+  final int? districtId;
+  final double? salaryAmountMax;
+  final int? hoursPerWeek;
+  final String? shiftNote;
+  final String? addressLine;
+
+  @override
+  List<Object?> get props => [
+    categoryId,
+    workTypeId,
+    salaryUnitId,
+    genderRequirementId,
+    nationalityRequirementId,
+    cityId,
+    salaryAmount,
+    vacanciesCount,
+    districtId,
+    salaryAmountMax,
+    hoursPerWeek,
+    shiftNote,
+    addressLine,
+  ];
 }

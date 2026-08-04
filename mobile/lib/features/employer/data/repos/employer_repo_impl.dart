@@ -92,6 +92,49 @@ class EmployerRepoImpl implements EmployerRepo {
   }
 
   @override
+  Future<Either<Failure, JobDetailModel>> fetchJob(String uuid) {
+    return _handle(
+      () => _api.get(EndPoints.employerJob(uuid)),
+      (data) => JobDetailModel.fromJson(data as Map<String, dynamic>),
+    );
+  }
+
+  @override
+  Future<Either<Failure, JobDetailModel>> updateJob(
+    String uuid,
+    PublishJobParam param,
+  ) {
+    return _handle(
+      () => _api.put(EndPoints.employerJob(uuid), body: param.toJson()),
+      (data) => JobDetailModel.fromJson(data as Map<String, dynamic>),
+    );
+  }
+
+  @override
+  Future<Either<Failure, JobDetailModel>> pauseJob(String uuid) {
+    return _handle(
+      () => _api.post(EndPoints.employerJobPause(uuid)),
+      (data) => JobDetailModel.fromJson(data as Map<String, dynamic>),
+    );
+  }
+
+  @override
+  Future<Either<Failure, JobDetailModel>> resumeJob(String uuid) {
+    return _handle(
+      () => _api.post(EndPoints.employerJobResume(uuid)),
+      (data) => JobDetailModel.fromJson(data as Map<String, dynamic>),
+    );
+  }
+
+  @override
+  Future<Either<Failure, JobDetailModel>> closeJob(String uuid) {
+    return _handle(
+      () => _api.post(EndPoints.employerJobClose(uuid)),
+      (data) => JobDetailModel.fromJson(data as Map<String, dynamic>),
+    );
+  }
+
+  @override
   Future<Either<Failure, List<ApplicantModel>>> listApplicants(String jobUuid) {
     return _handle(
       () => _api.get(EndPoints.employerJobApplicants(jobUuid)),

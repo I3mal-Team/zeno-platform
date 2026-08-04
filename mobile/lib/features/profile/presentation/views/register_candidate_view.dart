@@ -34,6 +34,7 @@ class _RegisterCandidateViewState extends State<RegisterCandidateView> {
 
   int? _cityId;
   String? _nationalityCode;
+  String? _gender;
 
   @override
   void initState() {
@@ -88,6 +89,7 @@ class _RegisterCandidateViewState extends State<RegisterCandidateView> {
         nationalId: nationalId.isEmpty ? null : nationalId,
         nationalIdType: _nationalIdType(nationalId),
         birthDate: _birthDateFromAge(),
+        gender: _gender,
         nationalityCode: _nationalityCode,
         cityId: _cityId,
         jobTitle: _jobTitle.text.trim().isEmpty ? null : _jobTitle.text.trim(),
@@ -252,6 +254,14 @@ class _RegisterCandidateViewState extends State<RegisterCandidateView> {
                     const SizedBox(height: 13),
                     Entrance(
                       index: 4,
+                      child: _GenderSelector(
+                        value: _gender,
+                        onChanged: (g) => setState(() => _gender = g),
+                      ),
+                    ),
+                    const SizedBox(height: 13),
+                    Entrance(
+                      index: 5,
                       child: AppField(
                         controller: _jobTitle,
                         hint: 'المهنة الحالية أو المستهدفة',
@@ -291,6 +301,90 @@ class _RegisterCandidateViewState extends State<RegisterCandidateView> {
               );
             },
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Two-segment gender picker (optional). Matches the app's chip styling.
+class _GenderSelector extends StatelessWidget {
+  const _GenderSelector({required this.value, required this.onChanged});
+
+  final String? value;
+  final ValueChanged<String> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: _GenderOption(
+            label: 'ذكر',
+            icon: Icons.male_rounded,
+            active: value == 'male',
+            onTap: () => onChanged('male'),
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: _GenderOption(
+            label: 'أنثى',
+            icon: Icons.female_rounded,
+            active: value == 'female',
+            onTap: () => onChanged('female'),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _GenderOption extends StatelessWidget {
+  const _GenderOption({
+    required this.label,
+    required this.icon,
+    required this.active,
+    required this.onTap,
+  });
+
+  final String label;
+  final IconData icon;
+  final bool active;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Pressable(
+      onTap: onTap,
+      child: Container(
+        height: 52,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: active ? AppColors.warningBg : AppColors.surface,
+          border: Border.all(
+            color: active ? AppColors.amber : const Color(0xFFE5EAE6),
+            width: 1.5,
+          ),
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              size: 19,
+              color: active ? AppColors.warningFg : AppColors.textMuted,
+            ),
+            const SizedBox(width: 7),
+            Text(
+              label,
+              style: AppTextStyles.bodyMd.copyWith(
+                fontWeight: FontWeight.w800,
+                color: active ? AppColors.warningFg : AppColors.textBody,
+              ),
+            ),
+          ],
         ),
       ),
     );

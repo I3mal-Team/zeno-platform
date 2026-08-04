@@ -6,6 +6,7 @@ namespace App\Http\Requests\Site\Profile;
 
 use App\Data\Profile\CandidateProfileData;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 /**
  * The web mirror of the API's profile intake. The form collects age (not a
@@ -21,6 +22,7 @@ final class SaveCandidateProfileRequest extends FormRequest
             'full_name' => ['required', 'string', 'min:3', 'max:120'],
             'national_id' => ['required', 'string', 'digits:10'],
             'city_id' => ['required', 'integer', 'exists:cities,id'],
+            'gender' => ['nullable', Rule::in(['male', 'female'])],
             'nationality_code' => ['required', 'string', 'size:2', 'exists:countries,iso2'],
             'age' => ['nullable', 'integer', 'between:16,80'],
             'job_title' => ['nullable', 'string', 'max:120'],
@@ -53,6 +55,7 @@ final class SaveCandidateProfileRequest extends FormRequest
             nationalId: $nationalId,
             nationalIdType: $this->nationalIdType($nationalId),
             birthDate: $this->birthDate(),
+            gender: $this->filled('gender') ? $this->string('gender')->toString() : null,
             nationalityCode: $this->filled('nationality_code')
                 ? strtoupper($this->string('nationality_code')->toString())
                 : null,

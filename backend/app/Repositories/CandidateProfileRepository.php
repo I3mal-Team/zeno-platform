@@ -26,6 +26,7 @@ final class CandidateProfileRepository
                 'national_id' => $data->nationalId,
                 'national_id_type' => $data->nationalIdType,
                 'birth_date' => $data->birthDate,
+                'gender' => $data->gender,
                 'nationality_code' => $data->nationalityCode,
                 'city_id' => $data->cityId,
                 'job_title' => $data->jobTitle,

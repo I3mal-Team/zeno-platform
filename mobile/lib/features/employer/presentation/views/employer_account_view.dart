@@ -128,7 +128,10 @@ class _Body extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: _LogoutButton(
-            onTap: () => context.read<UserCubit>().signOut(),
+            onTap: () async {
+              await context.read<UserCubit>().signOut();
+              if (context.mounted) context.go(RoutesKeys.rolePicker);
+            },
           ),
         ),
       ],

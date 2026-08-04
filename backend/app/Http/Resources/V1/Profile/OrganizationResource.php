@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Resources\V1\Profile;
 
 use App\Models\Organization;
+use App\Support\PublicMedia;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -27,7 +28,7 @@ final class OrganizationResource extends JsonResource
             'about' => $this->about,
             'verification_status' => $this->verification_status->value,
             'is_verified' => $this->isVerified(),
-            'logo_url' => $this->getFirstMediaUrl(Organization::LOGO_COLLECTION) ?: null,
+            'logo_url' => PublicMedia::url($this->getFirstMediaUrl(Organization::LOGO_COLLECTION) ?: null),
         ];
     }
 }

@@ -12,6 +12,7 @@ final readonly class CandidateProfileData
         public ?string $nationalId = null,
         public ?string $nationalIdType = null,
         public ?string $birthDate = null,
+        public ?string $gender = null,
         public ?string $nationalityCode = null,
         public ?int $cityId = null,
         public ?string $jobTitle = null,

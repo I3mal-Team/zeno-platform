@@ -45,6 +45,10 @@ abstract final class EndPoints {
       '/employer/applications/$id/accept';
   static String employerApplicantReject(int id) =>
       '/employer/applications/$id/reject';
+  static String employerApplicantShortlist(int id) =>
+      '/employer/applications/$id/shortlist';
+  static String employerApplicantNote(int id) =>
+      '/employer/applications/$id/note';
 
   static const applications = '/applications';
   static String application(String id) => '/applications/$id';

@@ -23,4 +23,6 @@ Route::middleware('auth:sanctum')->prefix('employer')->name('employer.')->group(
     Route::get('applications/{id}', [ApplicantController::class, 'show'])->name('applicants.show');
     Route::post('applications/{id}/accept', [ApplicantController::class, 'accept'])->name('applicants.accept');
     Route::post('applications/{id}/reject', [ApplicantController::class, 'reject'])->name('applicants.reject');
+    Route::post('applications/{id}/shortlist', [ApplicantController::class, 'shortlist'])->name('applicants.shortlist');
+    Route::put('applications/{id}/note', [ApplicantController::class, 'note'])->name('applicants.note');
 });

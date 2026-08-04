@@ -5,6 +5,8 @@ class ApplicantProfileModel extends Equatable {
     required this.reference,
     required this.status,
     required this.contactChannel,
+    this.shortlisted = false,
+    this.note,
     this.candidatePhone,
     this.name,
     this.age,
@@ -25,6 +27,8 @@ class ApplicantProfileModel extends Equatable {
       reference: json['reference'] as String,
       status: json['status'] as String,
       contactChannel: json['contact_channel'] as String? ?? 'app',
+      shortlisted: json['shortlisted'] as bool? ?? false,
+      note: json['note'] as String?,
       candidatePhone: json['candidate_phone'] as String?,
       name: profile?['name'] as String?,
       age: profile?['age'] as int?,
@@ -44,6 +48,8 @@ class ApplicantProfileModel extends Equatable {
   final String reference;
   final String status;
   final String contactChannel;
+  final bool shortlisted;
+  final String? note;
   final String? candidatePhone;
   final String? name;
   final int? age;
@@ -60,7 +66,7 @@ class ApplicantProfileModel extends Equatable {
   bool get isAccepted => status == 'accepted';
 
   @override
-  List<Object?> get props => [reference, status];
+  List<Object?> get props => [reference, status, shortlisted, note];
 }
 
 /// One answer the candidate gave to the job's custom form, as the employer

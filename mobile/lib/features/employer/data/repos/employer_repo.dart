@@ -40,4 +40,8 @@ abstract interface class EmployerRepo {
   Future<Either<Failure, Unit>> acceptApplicant(int id);
 
   Future<Either<Failure, Unit>> rejectApplicant(int id);
+
+  Future<Either<Failure, Unit>> shortlistApplicant(int id);
+
+  Future<Either<Failure, Unit>> saveApplicantNote(int id, String? note);
 }

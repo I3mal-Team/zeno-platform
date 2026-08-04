@@ -24,6 +24,7 @@ final class ApplicantResource extends JsonResource
             'status' => $this->status->value,
             'status_label' => $this->status->employerLabel(),
             'is_new' => $this->status->value === 'submitted',
+            'shortlisted' => $this->shortlisted,
             'applied_at' => $this->created_at->toIso8601String(),
             'candidate' => [
                 'name' => $profile?->full_name,

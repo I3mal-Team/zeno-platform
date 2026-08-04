@@ -62,4 +62,20 @@ final class ApplicantController extends ApiController
             __('messages.application_rejected'),
         );
     }
+
+    public function shortlist(Request $request, int $id): JsonResponse
+    {
+        $application = $this->review->toggleShortlist($request->user(), $id);
+
+        return $this->successResponse(['shortlisted' => $application->shortlisted]);
+    }
+
+    public function note(Request $request, int $id): JsonResponse
+    {
+        $validated = $request->validate(['note' => ['nullable', 'string', 'max:2000']]);
+
+        $application = $this->review->saveNote($request->user(), $id, $validated['note'] ?? null);
+
+        return $this->successResponse(['note' => $application->employer_note]);
+    }
 }

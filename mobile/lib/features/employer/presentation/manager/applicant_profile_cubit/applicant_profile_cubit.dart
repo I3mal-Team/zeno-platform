@@ -42,4 +42,29 @@ class ApplicantProfileCubit extends Cubit<ApplicantProfileState> {
       (_) => load(),
     );
   }
+
+  Future<void> toggleShortlist() async {
+    final result = await _repo.shortlistApplicant(applicantId);
+    await result.fold(
+      (failure) async => safeEmit(ApplicantProfileFailed(failure)),
+      (_) => _refresh(),
+    );
+  }
+
+  Future<void> saveNote(String? note) async {
+    final result = await _repo.saveApplicantNote(applicantId, note);
+    await result.fold(
+      (failure) async => safeEmit(ApplicantProfileFailed(failure)),
+      (_) => _refresh(),
+    );
+  }
+
+  /// Re-reads the applicant without the full-screen loading flip, so a
+  /// shortlist tap or a saved note updates in place.
+  Future<void> _refresh() async {
+    final result = await _repo.viewApplicant(applicantId);
+    safeEmit(
+      result.fold(ApplicantProfileFailed.new, ApplicantProfileLoaded.new),
+    );
+  }
 }

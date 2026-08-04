@@ -52,6 +52,21 @@
       </div>
     @endif
 
+    {{-- Employer's private shortlist marker + note --}}
+    <div style="margin-top:22px;padding-top:20px;border-top:1px solid #EEF1EE;display:flex;flex-direction:column;gap:14px">
+      <form method="POST" action="{{ route('employer.applicants.shortlist', $application->id) }}">
+        @csrf
+        <button type="submit" class="btn" style="display:inline-flex;align-items:center;gap:8px;background:{{ $application->shortlisted ? '#F3ECD6' : '#fff' }};color:{{ $application->shortlisted ? '#8A6D12' : '#284C3D' }};border:1.5px solid {{ $application->shortlisted ? '#C9A24B' : '#DCE3DD' }};font-family:inherit;font-size:14.5px;font-weight:800;padding:11px 18px;border-radius:13px;cursor:pointer"><i class="iconsax" style="font-size:19px" icon-name="star-1"></i>{{ $application->shortlisted ? 'ضمن القائمة المختصرة — إزالة' : 'أضف للقائمة المختصرة' }}</button>
+      </form>
+      <form method="POST" action="{{ route('employer.applicants.note', $application->id) }}">
+        @csrf
+        @method('PUT')
+        <div style="font-size:14px;font-weight:800;color:#284C3D;margin-bottom:8px">ملاحظة خاصة <span style="font-weight:600;color:#869089;font-size:12.5px">(لا تظهر للمتقدم)</span></div>
+        <textarea name="note" rows="3" placeholder="اكتب ملاحظاتك عن المتقدم…" style="width:100%;box-sizing:border-box;border:1.5px solid #DCE3DD;border-radius:13px;background:#F7F9F7;padding:12px 14px;font-family:inherit;font-size:14.5px;font-weight:600;color:#284C3D;outline:none;resize:vertical;line-height:1.7">{{ old('note', $application->employer_note) }}</textarea>
+        <button type="submit" class="btn" style="margin-top:10px;background:#284C3D;color:#fff;border:none;font-family:inherit;font-size:14px;font-weight:800;padding:10px 20px;border-radius:12px;cursor:pointer">حفظ الملاحظة</button>
+      </form>
+    </div>
+
     @php($answers = $application->answerSummary())
     @if ($answers)
       <div style="margin-top:24px;padding-top:22px;border-top:1px solid #EEF1EE">

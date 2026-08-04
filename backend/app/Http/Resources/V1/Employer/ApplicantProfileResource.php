@@ -26,6 +26,8 @@ final class ApplicantProfileResource extends JsonResource
         return [
             'reference' => $this->reference_number,
             'status' => $this->status->value,
+            'shortlisted' => $this->shortlisted,
+            'note' => $this->employer_note,
             'contact_channel' => $this->contact_channel->value,
             'answers' => $this->answerSummary(),
             // The candidate's phone is released only once accepted (D-21).

@@ -51,4 +51,20 @@ final class ApplicantController extends Controller
 
         return back()->with('status', 'تم رفض المتقدم.');
     }
+
+    public function shortlist(Request $request, int $id): RedirectResponse
+    {
+        $this->review->toggleShortlist($request->user(), $id);
+
+        return back();
+    }
+
+    public function note(Request $request, int $id): RedirectResponse
+    {
+        $validated = $request->validate(['note' => ['nullable', 'string', 'max:2000']]);
+
+        $this->review->saveNote($request->user(), $id, $validated['note'] ?? null);
+
+        return back()->with('status', 'تم حفظ الملاحظة.');
+    }
 }

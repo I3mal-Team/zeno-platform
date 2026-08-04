@@ -134,4 +134,20 @@ class EmployerRepoImpl implements EmployerRepo {
       (_) => unit,
     );
   }
+
+  @override
+  Future<Either<Failure, Unit>> shortlistApplicant(int id) {
+    return _handle(
+      () => _api.post(EndPoints.employerApplicantShortlist(id)),
+      (_) => unit,
+    );
+  }
+
+  @override
+  Future<Either<Failure, Unit>> saveApplicantNote(int id, String? note) {
+    return _handle(
+      () => _api.put(EndPoints.employerApplicantNote(id), body: {'note': note}),
+      (_) => unit,
+    );
+  }
 }

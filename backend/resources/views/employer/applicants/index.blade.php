@@ -35,6 +35,7 @@
               {{-- Opening the profile is what moves a submission into review, so the name carries that link. --}}
               <a href="{{ route('employer.applicants.show', $application->id) }}" style="font-size:16.5px;font-weight:800;color:#284C3D">{{ $name }}</a>
               <span style="font-size:12px;font-weight:800;color:{{ $state->badgeForeground() }};background:{{ $state->badgeBackground() }};padding:3px 10px;border-radius:8px">{{ $state->employerLabel() }}</span>
+              @if ($application->shortlisted)<span style="font-size:12px;font-weight:800;color:#8A6D12;background:#F3ECD6;padding:3px 10px;border-radius:8px"><i class="iconsax" style="font-size:13px;vertical-align:-1px" icon-name="star-1"></i> مرشّح</span>@endif
             </div>
             <div style="font-size:13.5px;color:#7E8B84;font-weight:600;margin-top:3px">تقدّم على {{ $application->job->title }}@if ($profile?->city) · {{ $profile->city->name }}@endif @if ($profile?->years_of_experience) · {{ $profile->years_of_experience }} سنوات @endif · طلب #{{ $application->reference_number }}</div>
           </div>

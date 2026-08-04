@@ -220,6 +220,14 @@ class _ApplicantCard extends StatelessWidget {
                             status: applicant.status,
                             label: applicant.statusLabel,
                           ),
+                          if (applicant.shortlisted) ...[
+                            const SizedBox(width: 6),
+                            const Icon(
+                              Icons.star_rounded,
+                              size: 18,
+                              color: AppColors.amber,
+                            ),
+                          ],
                         ],
                       ),
                       const SizedBox(height: 3),

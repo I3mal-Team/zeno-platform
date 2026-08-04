@@ -22,6 +22,8 @@ use Spatie\MediaLibrary\InteractsWithMedia;
  * @property int $candidate_id
  * @property int $organization_id
  * @property ApplicationStatus $status
+ * @property bool $shortlisted
+ * @property string|null $employer_note
  * @property ContactChannel $contact_channel
  * @property array<string, mixed>|null $answers
  * @property string $profile_access_token
@@ -101,9 +103,9 @@ class Application extends Model implements HasMedia
 
     protected $fillable = [
         'reference_number', 'job_id', 'candidate_id', 'organization_id',
-        'status', 'contact_channel', 'answers', 'profile_access_token',
-        'profile_access_expires_at', 'viewed_at', 'decided_at',
-        'decided_by_user_id', 'withdrawn_at',
+        'status', 'shortlisted', 'employer_note', 'contact_channel', 'answers',
+        'profile_access_token', 'profile_access_expires_at', 'viewed_at',
+        'decided_at', 'decided_by_user_id', 'withdrawn_at',
     ];
 
     protected $attributes = [
@@ -115,6 +117,7 @@ class Application extends Model implements HasMedia
         return [
             'status' => ApplicationStatus::class,
             'contact_channel' => ContactChannel::class,
+            'shortlisted' => 'boolean',
             'answers' => 'array',
             'profile_access_expires_at' => 'datetime',
             'viewed_at' => 'datetime',

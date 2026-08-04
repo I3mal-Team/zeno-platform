@@ -117,6 +117,19 @@ class _Body extends StatelessWidget {
                   child: _ResumeButton(url: profile.resumeUrl!),
                 ),
               ],
+              const SizedBox(height: 18),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: _ShortlistButton(shortlisted: profile.shortlisted),
+              ),
+              const _SectionTitle('ملاحظة خاصة'),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: _NoteCard(
+                  key: ValueKey(profile.note ?? ''),
+                  initialNote: profile.note,
+                ),
+              ),
               if (profile.answers.isNotEmpty) ...[
                 const _SectionTitle('إجابات نموذج التقديم'),
                 Padding(
@@ -355,6 +368,107 @@ class _SkillChip extends StatelessWidget {
       child: Text(
         label,
         style: AppTextStyles.badge.copyWith(fontWeight: FontWeight.w700),
+      ),
+    );
+  }
+}
+
+class _ShortlistButton extends StatelessWidget {
+  const _ShortlistButton({required this.shortlisted});
+
+  final bool shortlisted;
+
+  @override
+  Widget build(BuildContext context) {
+    return Pressable(
+      onTap: () => context.read<ApplicantProfileCubit>().toggleShortlist(),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
+        decoration: BoxDecoration(
+          color: shortlisted ? AppColors.warningBg : AppColors.surface,
+          border: Border.all(
+            color: shortlisted ? AppColors.amber : AppColors.border,
+            width: 1.5,
+          ),
+          borderRadius: BorderRadius.circular(15),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              shortlisted ? Icons.star_rounded : Icons.star_outline_rounded,
+              size: 21,
+              color: shortlisted ? AppColors.warningFg : AppColors.textMuted,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              shortlisted ? 'ضمن القائمة المختصرة' : 'أضف للقائمة المختصرة',
+              style: AppTextStyles.bodySm.copyWith(
+                fontWeight: FontWeight.w800,
+                color: shortlisted ? AppColors.warningFg : AppColors.textBody,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _NoteCard extends StatefulWidget {
+  const _NoteCard({required this.initialNote, super.key});
+
+  final String? initialNote;
+
+  @override
+  State<_NoteCard> createState() => _NoteCardState();
+}
+
+class _NoteCardState extends State<_NoteCard> {
+  late final _controller = TextEditingController(
+    text: widget.initialNote ?? '',
+  );
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(14, 6, 14, 10),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        border: Border.all(color: AppColors.border),
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TextField(
+            controller: _controller,
+            maxLines: 3,
+            style: AppTextStyles.bodyMd,
+            decoration: const InputDecoration(
+              hintText: 'اكتب ملاحظاتك (لا تظهر للمتقدم)…',
+              border: InputBorder.none,
+            ),
+          ),
+          TextButton(
+            onPressed: () => context.read<ApplicantProfileCubit>().saveNote(
+              _controller.text.trim(),
+            ),
+            child: Text(
+              'حفظ الملاحظة',
+              style: AppTextStyles.bodySm.copyWith(
+                fontWeight: FontWeight.w800,
+                color: AppColors.charcoalSoft,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

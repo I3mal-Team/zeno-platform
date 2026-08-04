@@ -50,6 +50,25 @@ final class ApplicationReviewService
         return $this->applications->paginateForOrganization($this->organizationFor($employer)->id, $statuses, $perPage, $search);
     }
 
+    /** Flags/unflags an applicant as a shortlist pick — the employer's private marker. */
+    public function toggleShortlist(User $employer, int $applicationId): Application
+    {
+        $application = $this->resolveApplication($employer, $applicationId);
+        $application->fill(['shortlisted' => ! $application->shortlisted]);
+
+        return $this->applications->save($application);
+    }
+
+    /** Saves (or clears) the employer's private note on an applicant. */
+    public function saveNote(User $employer, int $applicationId, ?string $note): Application
+    {
+        $application = $this->resolveApplication($employer, $applicationId);
+        $note = $note !== null && trim($note) !== '' ? trim($note) : null;
+        $application->fill(['employer_note' => $note]);
+
+        return $this->applications->save($application);
+    }
+
     /** Opening an applicant for the first time moves the application into review. */
     public function view(User $employer, int $applicationId): Application
     {

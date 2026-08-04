@@ -15,6 +15,8 @@ final class JobCardResource extends JsonResource
     /** @return array<string, mixed> */
     public function toArray(Request $request): array
     {
+        $distanceMeters = $this->distance_meters ?? null;
+
         return [
             'id' => $this->uuid,
             'title' => $this->title,
@@ -42,6 +44,10 @@ final class JobCardResource extends JsonResource
             'status' => $this->status->value,
             'contact_channel' => $this->contact_channel->value,
             'is_saved' => (bool) ($this->is_saved ?? false),
+            // Present only on the "nearby" feed, via the distance select.
+            'distance_km' => $distanceMeters !== null
+                ? round(((float) $distanceMeters) / 1000, 1)
+                : null,
             'published_at' => $this->published_at?->toIso8601String(),
             // Present only on the employer's own list, via withCount.
             'applications_count' => $this->whenNotNull($this->live_applications_count ?? null),

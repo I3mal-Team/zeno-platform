@@ -261,14 +261,63 @@ final class JobRepository
 
     private function writeLocation(Job $job, ?float $latitude, ?float $longitude): void
     {
-        if ($latitude === null || $longitude === null) {
+        if ($latitude !== null && $longitude !== null) {
+            DB::statement(
+                'UPDATE jobs SET location = ST_SetSRID(ST_MakePoint(?, ?), 4326) WHERE id = ?',
+                [$longitude, $latitude, $job->id],
+            );
+
             return;
         }
 
+        // No precise pin — fall back to the district's centre, then the city's,
+        // so every listing is still placeable on the "nearby" map.
         DB::statement(
-            'UPDATE jobs SET location = ST_SetSRID(ST_MakePoint(?, ?), 4326) WHERE id = ?',
-            [$longitude, $latitude, $job->id],
+            'UPDATE jobs SET location = COALESCE(
+                (SELECT center_point FROM districts WHERE districts.id = jobs.district_id),
+                (SELECT center_point FROM cities WHERE cities.id = jobs.city_id)
+            ) WHERE jobs.id = ?',
+            [$job->id],
         );
+    }
+
+    /**
+     * Published listings within `radiusMeters` of the point, nearest first, each
+     * tagged with `distance_meters`. Uses the GIST index via ST_DWithin.
+     *
+     * @return LengthAwarePaginator<int, Job>
+     */
+    public function nearby(float $latitude, float $longitude, int $radiusMeters, int $perPage): LengthAwarePaginator
+    {
+        return Job::query()
+            ->published()
+            ->with(self::LIST_RELATIONS)
+            ->whereNotNull('location')
+            ->whereRaw('ST_DWithin(location, ST_SetSRID(ST_MakePoint(?, ?), 4326), ?)', [$longitude, $latitude, $radiusMeters])
+            ->select('jobs.*')
+            ->selectRaw('ST_Distance(location, ST_SetSRID(ST_MakePoint(?, ?), 4326)) AS distance_meters', [$longitude, $latitude])
+            ->orderBy('distance_meters')
+            ->paginate($perPage);
+    }
+
+    /**
+     * The candidate's saved city centre as a search origin, so "nearby" still
+     * works without a live GPS fix.
+     *
+     * @return object{lat: float, lng: float}|null
+     */
+    public function originForCandidate(int $candidateId): ?object
+    {
+        /** @var object{lat: float, lng: float}|null $row */
+        $row = DB::selectOne(
+            'SELECT ST_Y(c.center_point::geometry) AS lat, ST_X(c.center_point::geometry) AS lng
+             FROM candidate_profiles cp
+             JOIN cities c ON c.id = cp.city_id
+             WHERE cp.user_id = ? AND c.center_point IS NOT NULL',
+            [$candidateId],
+        );
+
+        return $row;
     }
 
     /**

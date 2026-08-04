@@ -58,6 +58,28 @@ final class JobService
         return $this->jobs->findReachableBySlug($slug, $this->savedByCandidateId($viewer));
     }
 
+    /**
+     * Listings nearest a point. With no coordinates, falls back to the signed-in
+     * candidate's saved city centre; null means no origin could be resolved.
+     *
+     * @return LengthAwarePaginator<int, Job>|null
+     */
+    public function nearby(?float $latitude, ?float $longitude, ?User $viewer, int $radiusKm, int $perPage): ?LengthAwarePaginator
+    {
+        if ($latitude === null || $longitude === null) {
+            $origin = $viewer !== null ? $this->jobs->originForCandidate($viewer->id) : null;
+
+            if ($origin === null) {
+                return null;
+            }
+
+            $latitude = (float) $origin->lat;
+            $longitude = (float) $origin->lng;
+        }
+
+        return $this->jobs->nearby($latitude, $longitude, $radiusKm * 1000, $perPage);
+    }
+
     /** The viewer's id only when they are a candidate — the `is_saved` flag is theirs alone. */
     private function savedByCandidateId(?User $viewer): ?int
     {

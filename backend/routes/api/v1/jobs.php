@@ -19,6 +19,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::prefix('jobs')->name('jobs.')->group(function () {
     Route::get('/', [JobBrowseController::class, 'index'])->name('index');
+    // Must precede {slug} so "nearby" isn't swallowed as a slug.
+    Route::get('nearby', [JobBrowseController::class, 'nearby'])
+        ->middleware('auth:sanctum')->name('nearby');
     Route::get('{slug}', [JobBrowseController::class, 'show'])->name('show');
     Route::post('{slug}/apply', [ApplicationController::class, 'store'])
         ->middleware('auth:sanctum')->name('apply');

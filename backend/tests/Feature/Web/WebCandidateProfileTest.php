@@ -6,6 +6,8 @@ use App\Models\CandidateProfile;
 use App\Models\City;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 uses(RefreshDatabase::class);
@@ -148,4 +150,31 @@ it('keeps an employer out of the candidate profile form', function () {
     test()->actingAs($employer)
         ->get(route('profile.complete'))
         ->assertRedirect(route('site.home'));
+});
+
+it('uploads an avatar from the web profile page', function () {
+    Storage::fake('public');
+    $user = makeUser('candidate');
+
+    test()->actingAs($user)
+        ->post(route('profile.avatar'), [
+            'avatar' => UploadedFile::fake()->image('me.jpg', 400, 400),
+        ])
+        ->assertRedirect(route('profile.edit'));
+
+    $profile = CandidateProfile::query()->where('user_id', $user->id)->firstOrFail();
+
+    expect($profile->getFirstMediaUrl(CandidateProfile::AVATAR_COLLECTION))->not->toBe('');
+});
+
+it('rejects a non-image avatar upload from the web', function () {
+    $user = makeUser('candidate');
+
+    test()->actingAs($user)
+        ->from(route('profile.edit'))
+        ->post(route('profile.avatar'), [
+            'avatar' => UploadedFile::fake()->create('cv.pdf', 100),
+        ])
+        ->assertRedirect(route('profile.edit'))
+        ->assertSessionHasErrors('avatar');
 });

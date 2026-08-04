@@ -11,6 +11,7 @@ use App\Services\CatalogService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 
 /**
  * The web "أكمل بياناتك" intake a new job seeker lands on straight after OTP,
@@ -60,5 +61,23 @@ final class CandidateProfileController extends SiteController
         $this->profiles->save($request->user(), $request->toDto());
 
         return redirect()->route('profile.edit')->with('status', 'تم تحديث ملفك بنجاح.');
+    }
+
+    public function avatar(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'avatar' => ['required', 'image', 'mimes:jpeg,png,webp', 'max:'.config('media.max_upload_kb')],
+        ]);
+
+        $profile = $this->profiles->find($request->user());
+        $file = $request->file('avatar');
+
+        if ($profile === null || ! $file instanceof UploadedFile) {
+            return redirect()->route('profile.edit');
+        }
+
+        $this->profiles->saveAvatar($profile, $file);
+
+        return redirect()->route('profile.edit')->with('status', 'تم تحديث الصورة الشخصية.');
     }
 }

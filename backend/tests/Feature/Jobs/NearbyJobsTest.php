@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use App\Data\Jobs\JobData;
+use App\Repositories\JobRepository;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 
@@ -85,4 +87,50 @@ it('returns nothing when there is no location to search from', function () {
         ->getJson('/api/v1/jobs/nearby')
         ->assertOk()
         ->assertJsonCount(0, 'data');
+});
+
+it('keeps an existing pin when an edit omits coordinates', function () {
+    [$employer, $org] = makeEmployerWithOrg(verified: true);
+    $job = activeJobFor($org, $employer);
+    placeJob($job->id, 24.7136, 46.6753);
+
+    // Re-run the location write with no coordinates (as an edit would).
+    app(JobRepository::class)->update($job, new JobData(
+        title: $job->title,
+        description: null,
+        categoryId: $job->category_id,
+        workTypeId: $job->work_type_id,
+        salaryUnitId: $job->salary_unit_id,
+        genderRequirementId: $job->gender_requirement_id,
+        nationalityRequirementId: $job->nationality_requirement_id,
+        salaryAmount: (float) $job->salary_amount,
+        salaryAmountMax: null,
+        hoursPerWeek: null,
+        shiftNote: null,
+        vacanciesCount: $job->vacancies_count,
+        cityId: $job->city_id,
+        districtId: null,
+        addressLine: null,
+        latitude: null,
+        longitude: null,
+        contactChannel: $job->contact_channel,
+        expiresAt: null,
+    ));
+
+    $lng = DB::selectOne('SELECT ST_X(location::geometry) AS lng FROM jobs WHERE id = ?', [$job->id])->lng;
+    expect(round((float) $lng, 4))->toBe(46.6753);
+});
+
+it('renders the web nearby page from the candidate city', function () {
+    [$employer, $org] = makeEmployerWithOrg(verified: true);
+    $cityId = (int) DB::table('cities')->whereNotNull('center_point')->value('id');
+    $candidate = makeUser('candidate');
+    $candidate->candidateProfile->update(['city_id' => $cityId]);
+    $job = activeJobFor($org, $employer, ['city_id' => $cityId, 'title' => 'وظيفة قريبة']);
+    DB::statement('UPDATE jobs SET location = (SELECT center_point FROM cities WHERE id = ?) WHERE id = ?', [$cityId, $job->id]);
+
+    test()->actingAs($candidate)
+        ->get(route('site.jobs.nearby'))
+        ->assertOk()
+        ->assertSee('وظيفة قريبة', false);
 });

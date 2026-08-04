@@ -59,6 +59,7 @@ class JobModel extends Equatable {
     this.organizationVerified = false,
     this.organizationLogo,
     this.isSaved = false,
+    this.distanceKm,
     this.publishedAt,
     this.applicationsCount,
   });
@@ -90,6 +91,7 @@ class JobModel extends Equatable {
           ? organization['logo_url'] as String?
           : null,
       isSaved: json['is_saved'] as bool? ?? false,
+      distanceKm: (json['distance_km'] as num?)?.toDouble(),
       publishedAt: json['published_at'] as String?,
       applicationsCount: json['applications_count'] as int?,
     );
@@ -109,6 +111,7 @@ class JobModel extends Equatable {
   final bool organizationVerified;
   final String? organizationLogo;
   final bool isSaved;
+  final double? distanceKm;
   final String? publishedAt;
   final int? applicationsCount;
 

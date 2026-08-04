@@ -32,6 +32,7 @@
           @if ($filters['city'])<input type="hidden" name="city_id" value="{{ $filters['city'] }}">@endif
           @if ($alertCategoryId)<input type="hidden" name="category_id" value="{{ $alertCategoryId }}">@endif
           <button type="submit" class="btn" style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.28);font-family:inherit;font-size:14px;font-weight:800;padding:11px 18px;border-radius:13px;cursor:pointer"><i class="iconsax" style="font-size:18px" icon-name="notification-bing"></i>احفظ هذا البحث كتنبيه</button>
+          <a href="{{ route('site.jobs.nearby') }}" class="btn" style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.28);font-size:14px;font-weight:800;padding:11px 18px;border-radius:13px;text-decoration:none"><i class="iconsax" style="font-size:18px" icon-name="gps"></i>القريبة مني</a>
           <a href="{{ route('site.job-alerts') }}" class="lnk" style="font-size:13.5px;font-weight:800;color:rgba(255,255,255,.85)">تنبيهاتي</a>
         </form>
       @endif

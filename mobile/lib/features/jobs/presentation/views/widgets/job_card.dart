@@ -112,6 +112,12 @@ class JobCard extends StatelessWidget {
               spacing: 7,
               runSpacing: 7,
               children: [
+                if (job.distanceKm != null)
+                  _Chip(
+                    icon: Icons.near_me_rounded,
+                    label: 'على بعد ${job.distanceKm} كم',
+                    accent: true,
+                  ),
                 if (job.workType != null)
                   _Chip(icon: Icons.schedule_rounded, label: job.workType!),
                 if (place.isNotEmpty)

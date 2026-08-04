@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/components/app_field.dart';
@@ -131,6 +132,38 @@ class _PostJobFormState extends State<_PostJobForm> {
   int? _nationalityId;
   int? _cityId;
   String _contact = 'app';
+  double? _latitude;
+  double? _longitude;
+  bool _locating = false;
+
+  Future<void> _useCurrentLocation() async {
+    setState(() => _locating = true);
+    try {
+      if (!await Geolocator.isLocationServiceEnabled()) {
+        throw Exception();
+      }
+      var permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+      }
+      if (permission == LocationPermission.denied ||
+          permission == LocationPermission.deniedForever) {
+        throw Exception();
+      }
+      final position = await Geolocator.getCurrentPosition();
+      if (!mounted) return;
+      setState(() {
+        _latitude = position.latitude;
+        _longitude = position.longitude;
+      });
+    } catch (_) {
+      if (mounted) {
+        AppToast.error(context, 'تعذّر تحديد موقعك. تأكد من تفعيل الموقع.');
+      }
+    } finally {
+      if (mounted) setState(() => _locating = false);
+    }
+  }
 
   @override
   void dispose() {
@@ -197,6 +230,8 @@ class _PostJobFormState extends State<_PostJobForm> {
         vacanciesCount: int.tryParse(_vacancies.text.trim()) ?? 1,
         cityId: _cityId!,
         contactChannel: _contact,
+        latitude: _latitude,
+        longitude: _longitude,
         applicationFields: _buildApplicationFields(),
         description: _description.text.trim().isEmpty
             ? null
@@ -296,6 +331,20 @@ class _PostJobFormState extends State<_PostJobForm> {
                 _ContactSelect(
                   value: _contact,
                   onSelect: (v) => setState(() => _contact = v),
+                ),
+                const _Label('موقع الوظيفة (اختياري)'),
+                Text(
+                  'حدّد الموقع الدقيق لتظهر الوظيفة في «القريبة» بدقة. بدونه نستخدم موقع الحي/المدينة.',
+                  style: AppTextStyles.caption.copyWith(
+                    color: AppColors.textMuted,
+                    height: 1.6,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                _LocationButton(
+                  located: _latitude != null,
+                  loading: _locating,
+                  onTap: _useCurrentLocation,
                 ),
                 const _Label('نموذج التقديم (اختياري)'),
                 Text(
@@ -708,6 +757,68 @@ class _FieldEditor extends StatelessWidget {
             ),
           ],
         ],
+      ),
+    );
+  }
+}
+
+class _LocationButton extends StatelessWidget {
+  const _LocationButton({
+    required this.located,
+    required this.loading,
+    required this.onTap,
+  });
+
+  final bool located;
+  final bool loading;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = located ? AppColors.successFg : AppColors.charcoalSoft;
+
+    return Pressable(
+      onTap: loading ? null : onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          color: located ? AppColors.successBg : AppColors.surface,
+          border: Border.all(
+            color: located ? AppColors.successFg : const Color(0xFFE5EAE6),
+            width: 1.5,
+          ),
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (loading)
+              const SizedBox(
+                width: 18,
+                height: 18,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2.2,
+                  color: AppColors.charcoalSoft,
+                ),
+              )
+            else
+              Icon(
+                located
+                    ? Icons.check_circle_rounded
+                    : Icons.my_location_rounded,
+                size: 20,
+                color: color,
+              ),
+            const SizedBox(width: 9),
+            Text(
+              located ? 'تم تحديد الموقع' : 'استخدم موقعي الحالي',
+              style: AppTextStyles.bodyMd.copyWith(
+                fontWeight: FontWeight.w800,
+                color: color,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

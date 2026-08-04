@@ -31,10 +31,12 @@ import '../../features/employer/presentation/views/register_employer_view.dart';
 import '../../features/jobs/presentation/manager/browse_cubit/browse_cubit.dart';
 import '../../features/jobs/presentation/manager/job_alerts_cubit/job_alerts_cubit.dart';
 import '../../features/jobs/presentation/manager/job_detail_cubit/job_detail_cubit.dart';
+import '../../features/jobs/presentation/manager/nearby_cubit/nearby_cubit.dart';
 import '../../features/jobs/presentation/manager/saved_jobs_cubit/saved_jobs_cubit.dart';
 import '../../features/jobs/presentation/manager/search_cubit/search_cubit.dart';
 import '../../features/jobs/presentation/views/browse_view.dart';
 import '../../features/jobs/presentation/views/job_alerts_view.dart';
+import '../../features/jobs/presentation/views/nearby_view.dart';
 import '../../features/jobs/presentation/views/saved_jobs_view.dart';
 import '../../features/jobs/presentation/views/search_view.dart';
 import '../../features/jobs/presentation/views/job_detail_view.dart';
@@ -49,7 +51,6 @@ import '../../features/onboarding/presentation/views/splash_view.dart';
 import '../navigation_bar/candidate_shell.dart';
 import '../navigation_bar/employer_shell.dart';
 import '../services/service_locator.dart';
-import '../views/placeholder_view.dart';
 import 'routes_keys.dart';
 
 /// Exposed so navigation helpers and screens that must sit above the bottom
@@ -239,7 +240,17 @@ abstract final class AppRouter {
               ),
             ],
           ),
-          _branch(RoutesKeys.nearby, 'الوظائف القريبة مني'),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: RoutesKeys.nearby,
+                builder: (_, _) => BlocProvider(
+                  create: (_) => NearbyCubit(getIt())..load(),
+                  child: const NearbyView(),
+                ),
+              ),
+            ],
+          ),
           StatefulShellBranch(
             routes: [
               GoRoute(
@@ -309,15 +320,4 @@ abstract final class AppRouter {
       ),
     ],
   );
-
-  static StatefulShellBranch _branch(String path, String title) {
-    return StatefulShellBranch(
-      routes: [
-        GoRoute(
-          path: path,
-          builder: (_, _) => PlaceholderView(title: title),
-        ),
-      ],
-    );
-  }
 }

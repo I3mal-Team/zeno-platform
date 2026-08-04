@@ -271,9 +271,11 @@ final class JobRepository
         }
 
         // No precise pin — fall back to the district's centre, then the city's,
-        // so every listing is still placeable on the "nearby" map.
+        // so every listing is placeable. COALESCE keeps an existing location, so
+        // an edit that omits coordinates never clobbers a pin already set.
         DB::statement(
             'UPDATE jobs SET location = COALESCE(
+                location,
                 (SELECT center_point FROM districts WHERE districts.id = jobs.district_id),
                 (SELECT center_point FROM cities WHERE cities.id = jobs.city_id)
             ) WHERE jobs.id = ?',
@@ -297,7 +299,8 @@ final class JobRepository
             ->select('jobs.*')
             ->selectRaw('ST_Distance(location, ST_SetSRID(ST_MakePoint(?, ?), 4326)) AS distance_meters', [$longitude, $latitude])
             ->orderBy('distance_meters')
-            ->paginate($perPage);
+            ->paginate($perPage)
+            ->withQueryString();
     }
 
     /**

@@ -6,12 +6,17 @@ use App\Http\Controllers\Site\Jobs\ApplyController;
 use App\Http\Controllers\Site\Jobs\JobAlertController;
 use App\Http\Controllers\Site\Jobs\JobIndexController;
 use App\Http\Controllers\Site\Jobs\JobShowController;
+use App\Http\Controllers\Site\Jobs\NearbyController;
 use App\Http\Controllers\Site\Jobs\SavedJobController;
 use App\Http\Controllers\Site\ReportController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('jobs')->name('jobs.')->group(function () {
     Route::get('/', JobIndexController::class)->name('index');
+    // Must precede {slug} so "nearby" isn't matched as a job slug.
+    Route::get('nearby', NearbyController::class)
+        ->middleware(['auth', 'role:candidate', 'candidate.profile'])
+        ->name('nearby');
     Route::get('{slug}', JobShowController::class)->name('show');
     Route::post('{slug}/apply', ApplyController::class)
         ->middleware(['auth', 'role:candidate', 'candidate.profile'])

@@ -21,6 +21,8 @@ class PublishJobParam {
     this.shiftNote,
     this.districtId,
     this.addressLine,
+    this.latitude,
+    this.longitude,
   });
 
   final String title;
@@ -43,6 +45,8 @@ class PublishJobParam {
   final String? shiftNote;
   final int? districtId;
   final String? addressLine;
+  final double? latitude;
+  final double? longitude;
 
   Map<String, dynamic> toJson() => {
     'title': title,
@@ -62,6 +66,8 @@ class PublishJobParam {
     if (shiftNote != null) 'shift_note': shiftNote,
     if (districtId != null) 'district_id': districtId,
     if (addressLine != null) 'address_line': addressLine,
+    'latitude': ?latitude,
+    'longitude': ?longitude,
   };
 }
 

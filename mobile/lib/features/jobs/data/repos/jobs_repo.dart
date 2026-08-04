@@ -12,6 +12,8 @@ abstract interface class JobsRepo {
 
   Future<Either<Failure, JobDetailModel>> fetchJob(String slug);
 
+  Future<Either<Failure, List<JobModel>>> nearby({double? lat, double? lng});
+
   Future<Either<Failure, Unit>> save(String slug);
 
   Future<Either<Failure, Unit>> unsave(String slug);

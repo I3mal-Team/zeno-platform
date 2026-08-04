@@ -58,6 +58,20 @@
 
   </div>
 
+  {{-- Location --}}
+  <div class="cardh" style="background:#fff;border:1px solid #E5EAE6;border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:12px">
+    <div>
+      <div style="font-size:15px;font-weight:900;color:#22302A">موقع الوظيفة <span style="font-weight:700;color:#869089;font-size:13px">(اختياري)</span></div>
+      <div style="font-size:13px;color:#869089;font-weight:600;margin-top:4px">حدّد الموقع الدقيق لتظهر الوظيفة في «القريبة» بدقة. بدونه نستخدم موقع الحي/المدينة تلقائيًا.</div>
+    </div>
+    <input type="hidden" name="latitude" id="job-lat" value="{{ old('latitude') }}">
+    <input type="hidden" name="longitude" id="job-lng" value="{{ old('longitude') }}">
+    <div style="display:flex;align-items:center;gap:14px">
+      <button type="button" id="use-loc" class="btn" style="display:inline-flex;align-items:center;gap:8px;background:#284C3D;color:#fff;border:none;font-family:inherit;font-size:14px;font-weight:800;padding:11px 18px;border-radius:12px;cursor:pointer"><i class="iconsax" style="font-size:18px" icon-name="gps"></i>استخدم موقعي الحالي</button>
+      <span id="loc-status" style="font-size:13.5px;font-weight:800;color:#1F8A4D"></span>
+    </div>
+  </div>
+
   {{-- Application-form builder --}}
   @php($afSeed = array_values(old('application_fields', $j?->application_fields ?? [])))
   <div class="cardh" style="background:#fff;border:1px solid #E5EAE6;border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:14px">
@@ -157,6 +171,28 @@
           h.value = opt;
           root.appendChild(h);
         });
+      });
+    });
+  })();
+
+  (function () {
+    const btn = document.getElementById('use-loc');
+    const lat = document.getElementById('job-lat');
+    const lng = document.getElementById('job-lng');
+    const status = document.getElementById('loc-status');
+    if (lat.value) status.textContent = '✓ تم تحديد الموقع';
+    btn.addEventListener('click', function () {
+      if (!navigator.geolocation) return;
+      status.style.color = '#8A6D12';
+      status.textContent = 'جارٍ التحديد…';
+      navigator.geolocation.getCurrentPosition(function (position) {
+        lat.value = position.coords.latitude;
+        lng.value = position.coords.longitude;
+        status.style.color = '#1F8A4D';
+        status.textContent = '✓ تم تحديد الموقع';
+      }, function () {
+        status.style.color = '#B23232';
+        status.textContent = 'تعذّر تحديد الموقع';
       });
     });
   })();

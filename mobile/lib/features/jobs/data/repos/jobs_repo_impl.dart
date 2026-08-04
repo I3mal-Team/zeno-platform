@@ -36,6 +36,19 @@ class JobsRepoImpl implements JobsRepo {
   }
 
   @override
+  Future<Either<Failure, List<JobModel>>> nearby({double? lat, double? lng}) {
+    return _handle(
+      () => _api.get(
+        EndPoints.jobsNearby,
+        queryParameters: {'lat': ?lat, 'lng': ?lng},
+      ),
+      (data) => (data as List<dynamic>)
+          .map((e) => JobModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+  }
+
+  @override
   Future<Either<Failure, JobFormOptions>> fetchFilterOptions() {
     return _handle(
       () => _api.get(EndPoints.jobForm),

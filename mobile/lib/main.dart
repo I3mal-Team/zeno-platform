@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import 'generated/l10n/app_localizations.dart';
@@ -5,6 +7,7 @@ import 'generated/l10n/app_localizations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'core/managers/user_cubit/user_cubit.dart';
+import 'core/notifications/push_notifications.dart';
 import 'core/routing/app_router.dart';
 import 'core/services/service_locator.dart';
 import 'core/styles/app_colors.dart';
@@ -14,6 +17,9 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await setupServiceLocator();
   runApp(const ZenoApp());
+  // Fire-and-forget and fully guarded: never blocks or breaks startup, and is a
+  // no-op until the Firebase config files are added.
+  unawaited(PushNotifications.init());
 }
 
 class ZenoApp extends StatelessWidget {

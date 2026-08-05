@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -36,9 +39,16 @@ class _RegisterEmployerViewState extends State<RegisterEmployerView> {
 
   String _type = 'company';
   int? _cityId;
+  File? _logo;
 
   bool get _isCompany => _type == 'company';
   bool get _isEditing => widget.organization != null;
+
+  Future<void> _pickLogo() async {
+    final result = await FilePicker.platform.pickFiles(type: FileType.image);
+    final path = result?.files.single.path;
+    if (path != null) setState(() => _logo = File(path));
+  }
 
   @override
   void initState() {
@@ -73,7 +83,7 @@ class _RegisterEmployerViewState extends State<RegisterEmployerView> {
     final registration = _registration.text.trim();
     final about = _about.text.trim();
 
-    context.read<EmployerProfileCubit>().save(
+    context.read<EmployerProfileCubit>().saveWithLogo(
       SaveOrganizationParam(
         type: _type,
         name: _name.text.trim(),
@@ -84,6 +94,7 @@ class _RegisterEmployerViewState extends State<RegisterEmployerView> {
         cityId: _cityId,
         about: about.isEmpty ? null : about,
       ),
+      _logo,
     );
   }
 
@@ -133,6 +144,14 @@ class _RegisterEmployerViewState extends State<RegisterEmployerView> {
                       'اختر نوع الحساب وأكمل بيانات جهتك.',
                       style: AppTextStyles.bodyLg.copyWith(
                         color: AppColors.textMuted,
+                      ),
+                    ),
+                    const SizedBox(height: AppDimensions.space20),
+                    Center(
+                      child: _LogoPicker(
+                        file: _logo,
+                        existingUrl: widget.organization?.logoUrl,
+                        onTap: _pickLogo,
                       ),
                     ),
                     const SizedBox(height: AppDimensions.space20),
@@ -232,6 +251,86 @@ class _RegisterEmployerViewState extends State<RegisterEmployerView> {
             },
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// Optional organization logo, picked during sign-up or edit. A failed upload
+/// never blocks saving. Shows a freshly picked file, else the existing logo.
+class _LogoPicker extends StatelessWidget {
+  const _LogoPicker({
+    required this.file,
+    required this.existingUrl,
+    required this.onTap,
+  });
+
+  final File? file;
+  final String? existingUrl;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final DecorationImage? image = file != null
+        ? DecorationImage(image: FileImage(file!), fit: BoxFit.cover)
+        : (existingUrl != null
+              ? DecorationImage(
+                  image: NetworkImage(existingUrl!),
+                  fit: BoxFit.cover,
+                )
+              : null);
+
+    return Pressable(
+      onTap: onTap,
+      child: Column(
+        children: [
+          Stack(
+            children: [
+              Container(
+                width: 96,
+                height: 96,
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: AppColors.amber, width: 2),
+                  image: image,
+                ),
+                child: image == null
+                    ? const Icon(
+                        Icons.storefront_rounded,
+                        size: 42,
+                        color: Color(0xFFC9C4B9),
+                      )
+                    : null,
+              ),
+              Positioned(
+                right: -2,
+                bottom: -2,
+                child: Container(
+                  width: 30,
+                  height: 30,
+                  decoration: const BoxDecoration(
+                    color: AppColors.amber,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.camera_alt_rounded,
+                    size: 16,
+                    color: AppColors.textStrong,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            image == null ? 'إضافة شعار (اختياري)' : 'تغيير الشعار',
+            style: AppTextStyles.caption.copyWith(
+              fontWeight: FontWeight.w700,
+              color: AppColors.textMuted,
+            ),
+          ),
+        ],
       ),
     );
   }

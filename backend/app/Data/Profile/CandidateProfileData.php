@@ -19,5 +19,7 @@ final readonly class CandidateProfileData
         public ?int $yearsOfExperience = null,
         public array $skills = [],
         public ?string $bio = null,
+        public ?float $latitude = null,
+        public ?float $longitude = null,
     ) {}
 }

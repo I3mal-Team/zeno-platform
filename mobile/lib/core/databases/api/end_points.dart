@@ -76,8 +76,15 @@ abstract final class EndPoints {
   // ── Reverb websocket (Pusher protocol) ─────────────────────────────────
   // Separate from [baseUrl] because the browser/app reach Reverb on its own
   // host-published port, which differs from the API's.
+  // 10.0.2.2 reaches the host from the Android emulator. On a real device pass
+  // the Mac's LAN IP: --dart-define=REVERB_HOST=<host-ip> (same host as the API).
+  static const _reverbHostDev = String.fromEnvironment(
+    'REVERB_HOST',
+    defaultValue: '10.0.2.2',
+  );
+
   static String get reverbHost => switch (AppEnvironment.current) {
-    AppEnvironment.dev => '10.0.2.2',
+    AppEnvironment.dev => _reverbHostDev,
     AppEnvironment.staging => 'staging.zeno.sa',
     AppEnvironment.production => 'api.zeno.sa',
   };

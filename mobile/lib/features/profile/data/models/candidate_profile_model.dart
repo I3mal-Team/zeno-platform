@@ -8,6 +8,7 @@ class CandidateProfileModel extends Equatable {
     required this.completionPercentage,
     this.age,
     this.birthDate,
+    this.gender,
     this.nationalityCode,
     this.city,
     this.jobTitle,
@@ -26,6 +27,7 @@ class CandidateProfileModel extends Equatable {
       completionPercentage: json['completion_percentage'] as int? ?? 0,
       age: json['age'] as int?,
       birthDate: json['birth_date'] as String?,
+      gender: json['gender'] as String?,
       nationalityCode: json['nationality_code'] as String?,
       city: city is Map<String, dynamic> ? CityModel.fromJson(city) : null,
       jobTitle: json['job_title'] as String?,
@@ -41,6 +43,7 @@ class CandidateProfileModel extends Equatable {
   final int completionPercentage;
   final int? age;
   final String? birthDate;
+  final String? gender;
   final String? nationalityCode;
   final CityModel? city;
   final String? jobTitle;

@@ -26,6 +26,8 @@ final class SaveCandidateProfileRequest extends FormRequest
             'skills' => ['nullable', 'array', 'max:20'],
             'skills.*' => ['string', 'max:40'],
             'bio' => ['nullable', 'string', 'max:1000'],
+            'latitude' => ['nullable', 'numeric', 'between:-90,90'],
+            'longitude' => ['nullable', 'numeric', 'between:-180,180'],
         ];
     }
 
@@ -45,6 +47,8 @@ final class SaveCandidateProfileRequest extends FormRequest
                 : null,
             skills: $this->input('skills', []),
             bio: $this->input('bio'),
+            latitude: $this->has('latitude') ? (float) $this->input('latitude') : null,
+            longitude: $this->has('longitude') ? (float) $this->input('longitude') : null,
         );
     }
 }

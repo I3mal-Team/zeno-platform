@@ -42,6 +42,7 @@ import '../../features/jobs/presentation/views/search_view.dart';
 import '../../features/jobs/presentation/views/job_detail_view.dart';
 import '../../features/notifications/presentation/manager/notifications_cubit/notifications_cubit.dart';
 import '../../features/notifications/presentation/views/notifications_view.dart';
+import '../../features/profile/data/models/candidate_profile_model.dart';
 import '../../features/profile/presentation/manager/profile_cubit/profile_cubit.dart';
 import '../../features/profile/presentation/views/profile_view.dart';
 import '../../features/profile/presentation/views/register_candidate_view.dart';
@@ -97,9 +98,11 @@ abstract final class AppRouter {
       ),
       GoRoute(
         path: RoutesKeys.registerCandidate,
-        builder: (_, _) => BlocProvider(
+        builder: (_, state) => BlocProvider(
           create: (_) => ProfileCubit(getIt()),
-          child: const RegisterCandidateView(),
+          child: RegisterCandidateView(
+            profile: state.extra as CandidateProfileModel?,
+          ),
         ),
       ),
       GoRoute(
@@ -112,16 +115,24 @@ abstract final class AppRouter {
         ),
       ),
       StatefulShellRoute.indexedStack(
-        builder: (_, _, shell) => EmployerShell(shell: shell),
+        // The tab cubits live above the shell so the nav bar can refresh each
+        // one when its tab is (re)selected, and disposed with the shell on
+        // logout. The branch routes just render their view against them.
+        builder: (_, _, shell) => MultiBlocProvider(
+          providers: [
+            BlocProvider(create: (_) => EmployerJobsCubit(getIt())..load()),
+            BlocProvider(create: (_) => ApplicantsCubit(getIt())..load()),
+            BlocProvider(create: (_) => ConversationsCubit(getIt())..load()),
+            BlocProvider(create: (_) => EmployerProfileCubit(getIt())..load()),
+          ],
+          child: EmployerShell(shell: shell),
+        ),
         branches: [
           StatefulShellBranch(
             routes: [
               GoRoute(
                 path: RoutesKeys.employerJobs,
-                builder: (_, _) => BlocProvider(
-                  create: (_) => EmployerJobsCubit(getIt())..load(),
-                  child: const EmployerJobsView(),
-                ),
+                builder: (_, _) => const EmployerJobsView(),
               ),
             ],
           ),
@@ -129,10 +140,7 @@ abstract final class AppRouter {
             routes: [
               GoRoute(
                 path: RoutesKeys.employerApplicants,
-                builder: (_, _) => BlocProvider(
-                  create: (_) => ApplicantsCubit(getIt())..load(),
-                  child: const ApplicantsView(),
-                ),
+                builder: (_, _) => const ApplicantsView(),
               ),
             ],
           ),
@@ -140,10 +148,7 @@ abstract final class AppRouter {
             routes: [
               GoRoute(
                 path: RoutesKeys.employerMessages,
-                builder: (_, _) => BlocProvider(
-                  create: (_) => ConversationsCubit(getIt())..load(),
-                  child: const ConversationsView(),
-                ),
+                builder: (_, _) => const ConversationsView(),
               ),
             ],
           ),
@@ -151,10 +156,7 @@ abstract final class AppRouter {
             routes: [
               GoRoute(
                 path: RoutesKeys.employerAccount,
-                builder: (_, _) => BlocProvider(
-                  create: (_) => EmployerProfileCubit(getIt())..load(),
-                  child: const EmployerAccountView(),
-                ),
+                builder: (_, _) => const EmployerAccountView(),
               ),
             ],
           ),
@@ -236,16 +238,22 @@ abstract final class AppRouter {
       ),
 
       StatefulShellRoute.indexedStack(
-        builder: (_, _, shell) => CandidateShell(shell: shell),
+        builder: (_, _, shell) => MultiBlocProvider(
+          providers: [
+            BlocProvider(create: (_) => BrowseCubit(getIt())..load()),
+            BlocProvider(create: (_) => NearbyCubit(getIt())..load()),
+            BlocProvider(create: (_) => ApplicationsCubit(getIt())..load()),
+            BlocProvider(create: (_) => ConversationsCubit(getIt())..load()),
+            BlocProvider(create: (_) => ProfileCubit(getIt())..load()),
+          ],
+          child: CandidateShell(shell: shell),
+        ),
         branches: [
           StatefulShellBranch(
             routes: [
               GoRoute(
                 path: RoutesKeys.browse,
-                builder: (_, _) => BlocProvider(
-                  create: (_) => BrowseCubit(getIt())..load(),
-                  child: const BrowseView(),
-                ),
+                builder: (_, _) => const BrowseView(),
               ),
             ],
           ),
@@ -253,10 +261,7 @@ abstract final class AppRouter {
             routes: [
               GoRoute(
                 path: RoutesKeys.nearby,
-                builder: (_, _) => BlocProvider(
-                  create: (_) => NearbyCubit(getIt())..load(),
-                  child: const NearbyView(),
-                ),
+                builder: (_, _) => const NearbyView(),
               ),
             ],
           ),
@@ -264,10 +269,7 @@ abstract final class AppRouter {
             routes: [
               GoRoute(
                 path: RoutesKeys.applications,
-                builder: (_, _) => BlocProvider(
-                  create: (_) => ApplicationsCubit(getIt())..load(),
-                  child: const MyApplicationsView(),
-                ),
+                builder: (_, _) => const MyApplicationsView(),
               ),
             ],
           ),
@@ -275,10 +277,7 @@ abstract final class AppRouter {
             routes: [
               GoRoute(
                 path: RoutesKeys.messages,
-                builder: (_, _) => BlocProvider(
-                  create: (_) => ConversationsCubit(getIt())..load(),
-                  child: const ConversationsView(),
-                ),
+                builder: (_, _) => const ConversationsView(),
               ),
             ],
           ),
@@ -286,10 +285,7 @@ abstract final class AppRouter {
             routes: [
               GoRoute(
                 path: RoutesKeys.profile,
-                builder: (_, _) => BlocProvider(
-                  create: (_) => ProfileCubit(getIt())..load(),
-                  child: const ProfileView(),
-                ),
+                builder: (_, _) => const ProfileView(),
               ),
             ],
           ),

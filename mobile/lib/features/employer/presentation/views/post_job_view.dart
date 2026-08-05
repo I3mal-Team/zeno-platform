@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/components/app_field.dart';
 import '../../../../core/components/app_select_field.dart';
 import '../../../../core/components/app_toast.dart';
+import '../../../../core/components/map_picker_screen.dart';
 import '../../../../core/motion/motion.dart';
 import '../../../../core/params/job_params.dart';
 import '../../../../core/styles/app_colors.dart';
@@ -149,7 +150,6 @@ class _PostJobFormState extends State<_PostJobForm> {
   String _contact = 'app';
   double? _latitude;
   double? _longitude;
-  bool _locating = false;
 
   @override
   void initState() {
@@ -190,32 +190,16 @@ class _PostJobFormState extends State<_PostJobForm> {
     }
   }
 
-  Future<void> _useCurrentLocation() async {
-    setState(() => _locating = true);
-    try {
-      if (!await Geolocator.isLocationServiceEnabled()) {
-        throw Exception();
-      }
-      var permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-      }
-      if (permission == LocationPermission.denied ||
-          permission == LocationPermission.deniedForever) {
-        throw Exception();
-      }
-      final position = await Geolocator.getCurrentPosition();
-      if (!mounted) return;
+  Future<void> _pickOnMap() async {
+    final initial = (_latitude != null && _longitude != null)
+        ? LatLng(_latitude!, _longitude!)
+        : null;
+    final picked = await MapPickerScreen.show(context, initial: initial);
+    if (picked != null) {
       setState(() {
-        _latitude = position.latitude;
-        _longitude = position.longitude;
+        _latitude = picked.latitude;
+        _longitude = picked.longitude;
       });
-    } catch (_) {
-      if (mounted) {
-        AppToast.error(context, 'تعذّر تحديد موقعك. تأكد من تفعيل الموقع.');
-      }
-    } finally {
-      if (mounted) setState(() => _locating = false);
     }
   }
 
@@ -412,8 +396,8 @@ class _PostJobFormState extends State<_PostJobForm> {
                 const SizedBox(height: 10),
                 _LocationButton(
                   located: _latitude != null,
-                  loading: _locating,
-                  onTap: _useCurrentLocation,
+                  loading: false,
+                  onTap: _pickOnMap,
                 ),
                 const _Label('نموذج التقديم (اختياري)'),
                 Text(
@@ -881,15 +865,13 @@ class _LocationButton extends StatelessWidget {
               )
             else
               Icon(
-                located
-                    ? Icons.check_circle_rounded
-                    : Icons.my_location_rounded,
+                located ? Icons.check_circle_rounded : Icons.map_rounded,
                 size: 20,
                 color: color,
               ),
             const SizedBox(width: 9),
             Text(
-              located ? 'تم تحديد الموقع' : 'استخدم موقعي الحالي',
+              located ? 'تم تحديد الموقع' : 'تحديد الموقع على الخريطة',
               style: AppTextStyles.bodyMd.copyWith(
                 fontWeight: FontWeight.w800,
                 color: color,

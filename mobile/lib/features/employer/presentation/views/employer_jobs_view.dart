@@ -14,19 +14,25 @@ import '../manager/employer_jobs_cubit/employer_jobs_cubit.dart';
 class EmployerJobsView extends StatelessWidget {
   const EmployerJobsView({super.key});
 
+  // The cubit is captured before navigating: reading it back off `context`
+  // after a push/pop can hit a stale element whose `mounted` is false, which
+  // silently skipped the refresh so a new/edited listing never showed up.
   Future<void> _post(BuildContext context) async {
+    final cubit = context.read<EmployerJobsCubit>();
     await context.push(RoutesKeys.employerPostJob);
-    if (context.mounted) context.read<EmployerJobsCubit>().load();
+    cubit.load();
   }
 
   Future<void> _view(BuildContext context, JobModel job) async {
+    final cubit = context.read<EmployerJobsCubit>();
     await context.push(RoutesKeys.employerJobDetail(job.id));
-    if (context.mounted) context.read<EmployerJobsCubit>().load();
+    cubit.load();
   }
 
   Future<void> _edit(BuildContext context, JobModel job) async {
+    final cubit = context.read<EmployerJobsCubit>();
     await context.push(RoutesKeys.employerEditJob(job.id));
-    if (context.mounted) context.read<EmployerJobsCubit>().load();
+    cubit.load();
   }
 
   /// Bottom sheet with the status actions valid for this listing.

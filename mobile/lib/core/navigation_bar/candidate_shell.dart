@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/applications/presentation/manager/applications_cubit/applications_cubit.dart';
+import '../../features/chat/presentation/manager/conversations_cubit/conversations_cubit.dart';
+import '../../features/jobs/presentation/manager/browse_cubit/browse_cubit.dart';
+import '../../features/jobs/presentation/manager/nearby_cubit/nearby_cubit.dart';
+import '../../features/profile/presentation/manager/profile_cubit/profile_cubit.dart';
 import '../motion/motion.dart';
 import '../styles/app_colors.dart';
 import '../styles/app_shadows.dart';
@@ -21,8 +27,23 @@ class CandidateShell extends StatelessWidget {
 
   static const _profileIndex = 4;
 
-  void _go(int index) =>
-      shell.goBranch(index, initialLocation: index == shell.currentIndex);
+  /// Switch tab and refresh that tab's data so returning always shows the
+  /// latest (new nearby jobs, a fresh application status, new messages).
+  void _go(BuildContext context, int index) {
+    shell.goBranch(index, initialLocation: index == shell.currentIndex);
+    switch (index) {
+      case 0:
+        context.read<BrowseCubit>().load();
+      case 1:
+        context.read<NearbyCubit>().load();
+      case 2:
+        context.read<ApplicationsCubit>().load();
+      case 3:
+        context.read<ConversationsCubit>().load();
+      case _profileIndex:
+        context.read<ProfileCubit>().load();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +63,7 @@ class CandidateShell extends StatelessWidget {
                   icon: Icons.person_rounded,
                   label: 'حسابي',
                   active: shell.currentIndex == _profileIndex,
-                  onTap: () => _go(_profileIndex),
+                  onTap: () => _go(context, _profileIndex),
                 ),
               ),
               const SizedBox(width: 9),
@@ -56,7 +77,7 @@ class CandidateShell extends StatelessWidget {
                             icon: item.icon,
                             label: item.label,
                             active: shell.currentIndex == index,
-                            onTap: () => _go(index),
+                            onTap: () => _go(context, index),
                           ),
                         ),
                     ],

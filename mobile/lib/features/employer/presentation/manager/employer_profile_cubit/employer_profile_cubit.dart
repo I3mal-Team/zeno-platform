@@ -49,6 +49,27 @@ class EmployerProfileCubit extends Cubit<EmployerProfileState> {
     safeEmit(result.fold(EmployerProfileFailed.new, EmployerProfileSaved.new));
   }
 
+  /// Saves the organization, then uploads the chosen logo if any. A failed logo
+  /// upload is swallowed — the profile is saved regardless and the logo can be
+  /// set later from the account screen.
+  Future<void> saveWithLogo(SaveOrganizationParam param, File? logo) async {
+    safeEmit(const EmployerProfileSaving());
+
+    final result = await _repo.saveProfile(param);
+
+    await result.fold(
+      (failure) async => safeEmit(EmployerProfileFailed(failure)),
+      (saved) async {
+        if (logo == null) {
+          safeEmit(EmployerProfileSaved(saved));
+          return;
+        }
+        final withLogo = await _repo.uploadLogo(logo);
+        safeEmit(EmployerProfileSaved(withLogo.fold((_) => saved, (o) => o)));
+      },
+    );
+  }
+
   Future<void> uploadLogo(File file) async {
     final result = await _repo.uploadLogo(file);
 

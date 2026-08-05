@@ -2,8 +2,10 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/managers/user_cubit/user_cubit.dart';
 import '../../../../core/routing/routes_keys.dart';
 import '../../../../core/styles/app_colors.dart';
 import '../../../../core/styles/app_dimensions.dart';
@@ -27,20 +29,37 @@ class _SplashViewState extends State<SplashView> with TickerProviderStateMixin {
     duration: const Duration(milliseconds: 1000),
   )..repeat();
 
-  Timer? _timer;
-
   @override
   void initState() {
     super.initState();
-    _timer = Timer(
-      const Duration(milliseconds: 2100),
-      () => mounted ? context.go(RoutesKeys.onboarding) : null,
-    );
+    _decideRoute();
+  }
+
+  /// Hold the splash for its animation, then route on the restored session:
+  /// a signed-in user goes straight to their home instead of being bounced to
+  /// the role picker (which read as being logged out on every cold start).
+  Future<void> _decideRoute() async {
+    // `restore()` runs at app start; wait a little more if it hasn't resolved.
+    final cubit = context.read<UserCubit>();
+
+    await Future<void>.delayed(const Duration(milliseconds: 1600));
+
+    var waited = 0;
+    while (mounted && cubit.state is UserUnknown && waited < 4000) {
+      await Future<void>.delayed(const Duration(milliseconds: 150));
+      waited += 150;
+    }
+    if (!mounted) return;
+
+    context.go(switch (cubit.state) {
+      UserSignedIn(:final user) =>
+        user.isEmployer ? RoutesKeys.employerJobs : RoutesKeys.browse,
+      _ => RoutesKeys.onboarding,
+    });
   }
 
   @override
   void dispose() {
-    _timer?.cancel();
     _breathe.dispose();
     _spin.dispose();
     super.dispose();

@@ -44,6 +44,14 @@ final class JobStatusController extends ApiController
 
     private function respond(Job $job): JsonResponse
     {
-        return $this->successResponse(new JobDetailResource($job->fresh()), __('messages.job_status_updated'));
+        // Load the full relation set so the detail resource is complete — an
+        // unloaded `requirements` would otherwise serialise to [] and break the
+        // client's object parsing.
+        $job->load([
+            'organization', 'category', 'workType', 'salaryUnit', 'city',
+            'district', 'genderRequirement', 'nationalityRequirement',
+        ]);
+
+        return $this->successResponse(new JobDetailResource($job), __('messages.job_status_updated'));
     }
 }

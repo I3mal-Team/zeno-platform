@@ -21,4 +21,13 @@ final class DeviceTokenRepository
     {
         DeviceToken::query()->where('token', $token)->delete();
     }
+
+    /** @return list<string> */
+    public function tokensForUser(int $userId): array
+    {
+        return DeviceToken::query()
+            ->where('user_id', $userId)
+            ->pluck('token')
+            ->all();
+    }
 }

@@ -36,8 +36,14 @@ class JobDetailModel extends Equatable {
 
   factory JobDetailModel.fromJson(Map<String, dynamic> json) {
     final category = json['category'];
-    final requirements = json['requirements'] as Map<String, dynamic>? ?? {};
-    final location = json['location'] as Map<String, dynamic>? ?? {};
+    // A resource with no loaded relations serialises these objects as an empty
+    // list ([]) rather than {}, so guard the cast against a non-map value.
+    final requirements = json['requirements'] is Map<String, dynamic>
+        ? json['requirements'] as Map<String, dynamic>
+        : const <String, dynamic>{};
+    final location = json['location'] is Map<String, dynamic>
+        ? json['location'] as Map<String, dynamic>
+        : const <String, dynamic>{};
     final organization = json['organization'];
 
     return JobDetailModel(

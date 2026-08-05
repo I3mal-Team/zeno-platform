@@ -41,6 +41,8 @@ class SaveCandidateProfileParam {
     this.yearsOfExperience,
     this.skills = const [],
     this.bio,
+    this.latitude,
+    this.longitude,
   });
 
   final String fullName;
@@ -58,6 +60,8 @@ class SaveCandidateProfileParam {
   final int? yearsOfExperience;
   final List<String> skills;
   final String? bio;
+  final double? latitude;
+  final double? longitude;
 
   Map<String, dynamic> toJson() => {
     'full_name': fullName,
@@ -71,5 +75,7 @@ class SaveCandidateProfileParam {
     if (yearsOfExperience != null) 'years_of_experience': yearsOfExperience,
     'skills': skills,
     if (bio != null) 'bio': bio,
+    if (latitude != null) 'latitude': latitude,
+    if (longitude != null) 'longitude': longitude,
   };
 }

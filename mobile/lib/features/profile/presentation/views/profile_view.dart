@@ -259,7 +259,8 @@ class _Header extends StatelessWidget {
                 ),
               ),
               _EditButton(
-                onTap: () => context.push(RoutesKeys.registerCandidate),
+                onTap: () =>
+                    context.push(RoutesKeys.registerCandidate, extra: profile),
               ),
             ],
           ),

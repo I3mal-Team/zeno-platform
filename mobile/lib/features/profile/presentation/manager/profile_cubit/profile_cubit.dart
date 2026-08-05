@@ -61,6 +61,29 @@ class ProfileCubit extends Cubit<ProfileState> {
     safeEmit(result.fold(ProfileFailed.new, ProfileSaved.new));
   }
 
+  /// Saves the profile, then uploads the chosen avatar if any. A failed avatar
+  /// upload is swallowed — the account is already created, so registration
+  /// still succeeds and the photo can be added later.
+  Future<void> saveWithAvatar(
+    SaveCandidateProfileParam param,
+    File? avatar,
+  ) async {
+    safeEmit(const ProfileSaving());
+
+    final result = await _repo.saveCandidateProfile(param);
+
+    await result.fold((failure) async => safeEmit(ProfileFailed(failure)), (
+      saved,
+    ) async {
+      if (avatar == null) {
+        safeEmit(ProfileSaved(saved));
+        return;
+      }
+      final withAvatar = await _repo.uploadAvatar(avatar);
+      safeEmit(ProfileSaved(withAvatar.fold((_) => saved, (p) => p)));
+    });
+  }
+
   Future<void> uploadAvatar(File file) async {
     final result = await _repo.uploadAvatar(file);
 

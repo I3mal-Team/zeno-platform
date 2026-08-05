@@ -312,11 +312,14 @@ final class JobRepository
     public function originForCandidate(int $candidateId): ?object
     {
         /** @var object{lat: float, lng: float}|null $row */
+        // Prefer the candidate's own pinned location; fall back to their city
+        // centre when they never set one.
         $row = DB::selectOne(
-            'SELECT ST_Y(c.center_point::geometry) AS lat, ST_X(c.center_point::geometry) AS lng
+            'SELECT ST_Y(COALESCE(cp.location, c.center_point)::geometry) AS lat,
+                    ST_X(COALESCE(cp.location, c.center_point)::geometry) AS lng
              FROM candidate_profiles cp
-             JOIN cities c ON c.id = cp.city_id
-             WHERE cp.user_id = ? AND c.center_point IS NOT NULL',
+             LEFT JOIN cities c ON c.id = cp.city_id
+             WHERE cp.user_id = ? AND COALESCE(cp.location, c.center_point) IS NOT NULL',
             [$candidateId],
         );
 

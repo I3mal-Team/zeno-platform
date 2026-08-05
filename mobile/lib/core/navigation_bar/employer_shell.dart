@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/employer/presentation/manager/applicants_cubit/applicants_cubit.dart';
+import '../../features/employer/presentation/manager/employer_jobs_cubit/employer_jobs_cubit.dart';
+import '../../features/employer/presentation/manager/employer_profile_cubit/employer_profile_cubit.dart';
+import '../../features/chat/presentation/manager/conversations_cubit/conversations_cubit.dart';
 import '../motion/motion.dart';
 import '../routing/routes_keys.dart';
 import '../styles/app_colors.dart';
@@ -22,8 +27,25 @@ class EmployerShell extends StatelessWidget {
 
   static const _accountIndex = 3;
 
-  void _go(int index) =>
-      shell.goBranch(index, initialLocation: index == shell.currentIndex);
+  /// Switch tab and refresh that tab's data, so returning to a list always
+  /// shows the latest (a new application, a sent message, an edited profile).
+  void _go(BuildContext context, int index) {
+    shell.goBranch(index, initialLocation: index == shell.currentIndex);
+    _reload(context, index);
+  }
+
+  void _reload(BuildContext context, int index) {
+    switch (index) {
+      case 0:
+        context.read<EmployerJobsCubit>().load();
+      case 1:
+        context.read<ApplicantsCubit>().load();
+      case 2:
+        context.read<ConversationsCubit>().load();
+      case _accountIndex:
+        context.read<EmployerProfileCubit>().load();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +65,7 @@ class EmployerShell extends StatelessWidget {
                   icon: Icons.person_rounded,
                   label: 'حسابي',
                   active: shell.currentIndex == _accountIndex,
-                  onTap: () => _go(_accountIndex),
+                  onTap: () => _go(context, _accountIndex),
                 ),
               ),
               const SizedBox(width: 9),
@@ -57,12 +79,19 @@ class EmployerShell extends StatelessWidget {
                             icon: item.icon,
                             label: item.label,
                             active: shell.currentIndex == index,
-                            onTap: () => _go(index),
+                            onTap: () => _go(context, index),
                           ),
                         ),
                       Expanded(
                         child: _PublishItem(
-                          onTap: () => context.push(RoutesKeys.employerPostJob),
+                          onTap: () async {
+                            await context.push(RoutesKeys.employerPostJob);
+                            if (!context.mounted) return;
+                            // Land on "my jobs" and refresh so the new listing
+                            // shows immediately.
+                            shell.goBranch(0);
+                            context.read<EmployerJobsCubit>().load();
+                          },
                         ),
                       ),
                     ],

@@ -158,7 +158,7 @@ class _RoleCard extends StatelessWidget {
               ),
             ),
             const Icon(
-              Icons.chevron_left_rounded,
+              Icons.chevron_right_rounded,
               size: 26,
               color: Color(0xFFBAC4BD),
             ),

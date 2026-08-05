@@ -186,6 +186,14 @@ class Job extends Model
     }
 
     /** @param  Builder<Job>  $query */
+    public function scopeWithAppliedFlag(Builder $query, ?int $candidateId): void
+    {
+        $query->when($candidateId !== null, fn (Builder $q) => $q->withExists([
+            'applications as has_applied' => fn ($a) => $a->where('candidate_id', $candidateId),
+        ]));
+    }
+
+    /** @param  Builder<Job>  $query */
     public function scopePublished(Builder $query): void
     {
         $query->where('status', JobStatus::Active->value)

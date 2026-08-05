@@ -99,7 +99,7 @@ class _DarkHeader extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: const Icon(
-                Icons.chevron_right_rounded,
+                Icons.chevron_left_rounded,
                 size: 23,
                 color: Colors.white,
               ),

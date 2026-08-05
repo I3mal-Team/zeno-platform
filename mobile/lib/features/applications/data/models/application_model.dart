@@ -10,6 +10,7 @@ class ApplicationModel extends Equatable {
     this.jobSlug,
     this.organizationName,
     this.categoryCode = 'other',
+    this.conversationUuid,
   });
 
   factory ApplicationModel.fromJson(Map<String, dynamic> json) {
@@ -21,6 +22,7 @@ class ApplicationModel extends Equatable {
       status: json['status'] as String,
       statusLabel: json['status_label'] as String? ?? '',
       appliedAt: json['applied_at'] as String?,
+      conversationUuid: json['conversation_uuid'] as String?,
       jobTitle: job is Map<String, dynamic> ? job['title'] as String? : null,
       jobSlug: job is Map<String, dynamic> ? job['slug'] as String? : null,
       organizationName: job is Map<String, dynamic>
@@ -41,8 +43,11 @@ class ApplicationModel extends Equatable {
   final String? organizationName;
   final String categoryCode;
 
+  /// Present once accepted — lets "تواصل" open the thread directly.
+  final String? conversationUuid;
+
   bool get isDecidable => status == 'submitted' || status == 'review';
 
   @override
-  List<Object?> get props => [reference, status];
+  List<Object?> get props => [reference, status, conversationUuid];
 }

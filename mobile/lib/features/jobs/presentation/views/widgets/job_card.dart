@@ -156,7 +156,7 @@ class JobCard extends StatelessWidget {
                   ),
                 ),
                 const Icon(
-                  Icons.chevron_left_rounded,
+                  Icons.chevron_right_rounded,
                   size: 18,
                   color: Color(0xFFC9C4B9),
                 ),

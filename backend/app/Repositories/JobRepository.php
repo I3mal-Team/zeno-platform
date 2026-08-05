@@ -62,6 +62,7 @@ final class JobRepository
             ->whereIn('status', $reachable)
             ->with(self::DETAIL_RELATIONS)
             ->withSavedFlag($savedBy)
+            ->withAppliedFlag($savedBy)
             ->where('slug', $slug)
             ->first();
     }

@@ -29,6 +29,7 @@ class JobDetailModel extends Equatable {
     this.organizationVerified = false,
     this.organizationLogo,
     this.isSaved = false,
+    this.hasApplied = false,
     this.publishedAt,
     this.viewsCount,
     this.edit,
@@ -81,6 +82,7 @@ class JobDetailModel extends Equatable {
           ? organization['logo_url'] as String?
           : null,
       isSaved: json['is_saved'] as bool? ?? false,
+      hasApplied: json['has_applied'] as bool? ?? false,
       publishedAt: json['published_at'] as String?,
       viewsCount: json['views_count'] as int?,
       edit: json['edit'] is Map<String, dynamic>
@@ -113,6 +115,7 @@ class JobDetailModel extends Equatable {
   final bool organizationVerified;
   final String? organizationLogo;
   final bool isSaved;
+  final bool hasApplied;
   final String? publishedAt;
   final int? viewsCount;
 

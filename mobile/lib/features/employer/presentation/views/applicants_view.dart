@@ -141,7 +141,7 @@ class _DarkBackBox extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
         ),
         child: const Icon(
-          Icons.chevron_right_rounded,
+          Icons.chevron_left_rounded,
           size: 23,
           color: Colors.white,
         ),
@@ -244,7 +244,7 @@ class _ApplicantCard extends StatelessWidget {
                   ),
                 ),
                 const Icon(
-                  Icons.chevron_left_rounded,
+                  Icons.chevron_right_rounded,
                   size: 21,
                   color: Color(0xFFBAC4BD),
                 ),

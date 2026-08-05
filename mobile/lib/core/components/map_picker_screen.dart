@@ -149,7 +149,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
               child: Row(
                 children: [
                   _RoundButton(
-                    icon: Icons.chevron_right_rounded,
+                    icon: Icons.chevron_left_rounded,
                     onTap: () => Navigator.of(context).pop(),
                   ),
                   const SizedBox(width: 10),

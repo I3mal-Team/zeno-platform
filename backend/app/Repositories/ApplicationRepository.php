@@ -42,7 +42,7 @@ final class ApplicationRepository
     public function forCandidate(int $candidateId): Collection
     {
         return Application::query()
-            ->with(['job.organization', 'job.category', 'job.city'])
+            ->with(['job.organization', 'job.category', 'job.city', 'conversation'])
             ->where('candidate_id', $candidateId)
             ->latest('created_at')
             ->get();

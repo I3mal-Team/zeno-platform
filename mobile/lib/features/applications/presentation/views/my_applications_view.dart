@@ -187,7 +187,19 @@ class _ApplicationCard extends StatelessWidget {
               ),
               const Spacer(),
               if (application.status == 'accepted')
-                _ContactButton(onTap: () => context.go(RoutesKeys.messages))
+                _ContactButton(
+                  onTap: () {
+                    final uuid = application.conversationUuid;
+                    if (uuid != null) {
+                      final title = Uri.encodeComponent(
+                        application.jobTitle ?? 'المحادثة',
+                      );
+                      context.push('${RoutesKeys.chat(uuid)}?title=$title');
+                    } else {
+                      context.go(RoutesKeys.messages);
+                    }
+                  },
+                )
               else if (application.isDecidable)
                 GestureDetector(
                   onTap: () => _confirmWithdraw(context),

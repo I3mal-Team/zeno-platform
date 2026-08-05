@@ -20,6 +20,8 @@ final class ApplicationResource extends JsonResource
             'status_label' => $this->status->candidateLabel(),
             'contact_channel' => $this->contact_channel->value,
             'applied_at' => $this->created_at->toIso8601String(),
+            // Present once accepted so "تواصل" can open the thread directly.
+            'conversation_uuid' => $this->relationLoaded('conversation') ? $this->conversation?->uuid : null,
             'job' => $this->whenLoaded('job', fn () => [
                 'id' => $this->job->uuid,
                 'title' => $this->job->title,

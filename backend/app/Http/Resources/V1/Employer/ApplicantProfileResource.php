@@ -30,6 +30,8 @@ final class ApplicantProfileResource extends JsonResource
             'shortlisted' => $this->shortlisted,
             'note' => $this->employer_note,
             'contact_channel' => $this->contact_channel->value,
+            // Present once accepted so "تواصل" opens the thread directly.
+            'conversation_uuid' => $this->relationLoaded('conversation') ? $this->conversation?->uuid : null,
             'answers' => $this->answerSummary(),
             // The candidate's phone is released only once accepted (D-21).
             'candidate_phone' => $this->status->value === 'accepted' ? $this->candidate->phone_e164 : null,

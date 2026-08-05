@@ -686,7 +686,7 @@ class _ApplicantsButton extends StatelessWidget {
             ),
             const SizedBox(width: 5),
             const Icon(
-              Icons.chevron_left_rounded,
+              Icons.chevron_right_rounded,
               size: 17,
               color: Colors.white,
             ),

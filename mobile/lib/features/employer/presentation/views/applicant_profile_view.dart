@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/components/app_toast.dart';
 import '../../../../core/motion/motion.dart';
+import '../../../../core/routing/routes_keys.dart';
 import '../../../../core/styles/app_colors.dart';
 import '../../../../core/styles/app_text_styles.dart';
 import '../../data/models/applicant_profile_model.dart';
@@ -188,7 +190,7 @@ class _Header extends StatelessWidget {
                 borderRadius: BorderRadius.circular(13),
               ),
               child: const Icon(
-                Icons.chevron_right_rounded,
+                Icons.chevron_left_rounded,
                 size: 24,
                 color: Colors.white,
               ),
@@ -653,6 +655,45 @@ class _ContactCard extends StatelessWidget {
               ],
             ),
           ),
+          if (profile.conversationUuid != null) ...[
+            const SizedBox(width: 10),
+            Pressable(
+              onTap: () {
+                final title = Uri.encodeComponent(profile.name ?? 'المحادثة');
+                context.push(
+                  '${RoutesKeys.chat(profile.conversationUuid!)}?title=$title',
+                );
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 10,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.successFg,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.forum_rounded,
+                      size: 17,
+                      color: Colors.white,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      'محادثة',
+                      style: AppTextStyles.caption.copyWith(
+                        fontWeight: FontWeight.w800,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ],
       ),
     );

@@ -62,6 +62,7 @@ class _JobDetailBody extends StatelessWidget {
             children: [
               _DetailHeader(job: job, isOwner: isOwner),
               if (isOwner) _OwnerStatusBanner(job: job),
+              if (!isOwner && job.hasApplied) const _AppliedBanner(),
               if (!isOwner && !job.isOpenForApplications) const _PausedBanner(),
               _InfoGrid(job: job),
               if (job.description != null && job.description!.isNotEmpty)
@@ -118,7 +119,7 @@ class _DetailHeader extends StatelessWidget {
             Row(
               children: [
                 _RoundIconButton(
-                  icon: Icons.chevron_right_rounded,
+                  icon: Icons.chevron_left_rounded,
                   onTap: () => Navigator.of(context).maybePop(),
                 ),
                 const Spacer(),
@@ -261,6 +262,38 @@ class _PausedBanner extends StatelessWidget {
               style: AppTextStyles.caption.copyWith(
                 fontWeight: FontWeight.w700,
                 color: AppColors.warningFg,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Shown to a candidate who already applied to this listing.
+class _AppliedBanner extends StatelessWidget {
+  const _AppliedBanner();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        color: AppColors.successBg,
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.check_circle_rounded, color: AppColors.successFg),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              'قدّمت على هذه الوظيفة من قبل.',
+              style: AppTextStyles.caption.copyWith(
+                fontWeight: FontWeight.w800,
+                color: AppColors.successFg,
               ),
             ),
           ),
@@ -622,7 +655,8 @@ class _ApplyBar extends StatelessWidget {
                     }
                   },
                   builder: (context, state) {
-                    final applied = state is ApplyDone;
+                    // Applied this session, or already applied before.
+                    final applied = state is ApplyDone || job.hasApplied;
                     final canApply = job.isOpenForApplications && !applied;
 
                     return FilledButton(
@@ -740,7 +774,7 @@ class _DetailError extends StatelessWidget {
               padding: const EdgeInsets.all(12),
               child: IconButton(
                 onPressed: () => Navigator.of(context).maybePop(),
-                icon: const Icon(Icons.chevron_right_rounded),
+                icon: const Icon(Icons.chevron_left_rounded),
               ),
             ),
           ),

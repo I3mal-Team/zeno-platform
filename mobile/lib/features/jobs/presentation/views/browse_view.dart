@@ -482,7 +482,7 @@ class _NearbyCard extends StatelessWidget {
                 ),
               ),
               const Icon(
-                Icons.chevron_left_rounded,
+                Icons.chevron_right_rounded,
                 size: 22,
                 color: AppColors.amber,
               ),

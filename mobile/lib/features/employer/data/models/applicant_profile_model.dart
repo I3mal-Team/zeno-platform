@@ -7,6 +7,7 @@ class ApplicantProfileModel extends Equatable {
     required this.contactChannel,
     this.shortlisted = false,
     this.note,
+    this.conversationUuid,
     this.candidatePhone,
     this.name,
     this.age,
@@ -29,6 +30,7 @@ class ApplicantProfileModel extends Equatable {
       contactChannel: json['contact_channel'] as String? ?? 'app',
       shortlisted: json['shortlisted'] as bool? ?? false,
       note: json['note'] as String?,
+      conversationUuid: json['conversation_uuid'] as String?,
       candidatePhone: json['candidate_phone'] as String?,
       name: profile?['name'] as String?,
       age: profile?['age'] as int?,
@@ -50,6 +52,7 @@ class ApplicantProfileModel extends Equatable {
   final String contactChannel;
   final bool shortlisted;
   final String? note;
+  final String? conversationUuid;
   final String? candidatePhone;
   final String? name;
   final int? age;

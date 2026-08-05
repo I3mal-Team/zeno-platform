@@ -75,9 +75,9 @@ class _BackBox extends StatelessWidget {
           border: Border.all(color: const Color(0xFFE5EAE6)),
           borderRadius: BorderRadius.circular(13),
         ),
-        // chevron_right is the "back" direction in this RTL flow.
+        // chevron_left auto-mirrors in RTL to point right — the back direction.
         child: const Icon(
-          Icons.chevron_right_rounded,
+          Icons.chevron_left_rounded,
           size: 24,
           color: AppColors.textStrong,
         ),

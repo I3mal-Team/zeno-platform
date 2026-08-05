@@ -57,6 +57,7 @@ final class JobDetailResource extends JsonResource
             'status_label' => $this->status->label(),
             'views_count' => $this->views_count,
             'is_saved' => (bool) ($this->is_saved ?? false),
+            'has_applied' => (bool) ($this->has_applied ?? false),
             'is_open_for_applications' => $this->status->acceptsApplications(),
             'contact_channel' => $this->contact_channel->value,
             'published_at' => $this->published_at?->toIso8601String(),

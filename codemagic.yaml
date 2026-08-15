@@ -1,0 +1,90 @@
+# Codemagic CI for the iOS release train.
+#
+# The Flutter app lives in mobile/, not the repo root, so the workflow sets
+# working_directory accordingly.
+#
+# One-time setup in the Codemagic UI before the first run:
+#   1. Teams > Integrations > Developer Portal > Add key
+#      Upload the App Store Connect API .p8 together with its Issuer ID and Key
+#      ID, and name the key `zeno_app_store` (or change `integrations` below).
+#   2. Environment variables > add group `appstore` containing:
+#        APP_STORE_APPLE_ID — the numeric app id from App Store Connect
+#                             (App Information > General > Apple ID),
+#                             not the bundle identifier.
+
+workflows:
+  ios-release:
+    name: iOS Release -> TestFlight
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+    working_directory: mobile
+
+    integrations:
+      app_store_connect: zeno_app_store
+
+    environment:
+      groups:
+        - appstore
+      # Must match .fvmrc and .github/workflows/mobile.yml. Drift here means
+      # the store build uses a different SDK than the one tests ran against.
+      flutter: '3.32.8'
+      xcode: latest
+      cocoapods: default
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: sa.zeno.app
+
+    # Only a `v*` tag ships a build, so pushing to develop never uploads to
+    # TestFlight by accident. Ad-hoc builds still start from the Codemagic UI.
+    triggering:
+      events:
+        - tag
+      tag_patterns:
+        - pattern: 'v*'
+          include: true
+
+    scripts:
+      - name: Fetch packages
+        script: flutter pub get
+
+      - name: Generate localizations
+        script: flutter gen-l10n
+
+      - name: Apply signing profiles to the Xcode project
+        script: xcode-project use-profiles
+
+      - name: Install pods
+        script: |
+          cd ios
+          pod install
+
+      - name: Derive the next build number
+        script: |
+          # First-ever upload has no TestFlight history, so fall back to 1.
+          LATEST=$(app-store-connect get-latest-testflight-build-number "$APP_STORE_APPLE_ID" 2>/dev/null || echo 0)
+          echo "BUILD_NUMBER=$((LATEST + 1))" >> "$CM_ENV"
+
+      - name: Build IPA
+        script: |
+          flutter build ipa --release \
+            --dart-define=APP_ENV=production \
+            --build-number="$BUILD_NUMBER" \
+            --export-options-plist=/Users/builder/export_options.plist
+
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
+        # Kept manual on purpose: review the TestFlight build before it goes to
+        # App Store review. Flip to true once the release train is trusted.
+        submit_to_app_store: false
+      email:
+        recipients:
+          - i3ml.claude@gmail.com
+        notify:
+          success: true
+          failure: true

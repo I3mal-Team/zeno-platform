@@ -1,7 +1,7 @@
 @extends('site.layouts.app')
 
 @section('title', $organization->name)
-@section('description', Str::limit($organization->about ?? ('وظائف ' . $organization->name . ' على AMS'), 150))
+@section('description', Str::limit($organization->about ?? ('وظائف ' . $organization->name . ' على Zeno'), 150))
 
 @section('content')
 <x-site.header/>
@@ -102,7 +102,7 @@
           ['ic' => 'buildings-2', 'k' => 'نوع المنشأة', 'v' => $organization->type->label()],
           $organization->city ? ['ic' => 'location', 'k' => 'المدينة', 'v' => $organization->city->name] : null,
           ['ic' => 'verify', 'k' => 'حالة التوثيق', 'v' => $organization->verification_status->label()],
-          $organization->created_at ? ['ic' => 'calendar-1', 'k' => 'على AMS منذ', 'v' => $organization->created_at->translatedFormat('F Y')] : null,
+          $organization->created_at ? ['ic' => 'calendar-1', 'k' => 'على Zeno منذ', 'v' => $organization->created_at->translatedFormat('F Y')] : null,
         ]))
         @foreach ($info as $item)
           <div style="display:flex;align-items:center;gap:12px">

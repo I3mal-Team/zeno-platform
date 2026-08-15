@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/components/delete_account_sheet.dart';
 import '../../../../core/managers/user_cubit/user_cubit.dart';
 import '../../../../core/motion/motion.dart';
 import '../../../../core/routing/routes_keys.dart';
@@ -134,6 +135,7 @@ class _Body extends StatelessWidget {
             },
           ),
         ),
+        const Center(child: DeleteAccountButton()),
       ],
     );
   }

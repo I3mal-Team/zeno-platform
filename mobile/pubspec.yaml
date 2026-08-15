@@ -80,7 +80,7 @@ dev_dependencies:
   mocktail: ^1.0.5
   flutter_launcher_icons: ^0.14.4
 
-# Launcher icon (run: dart run flutter_launcher_icons). The AMS wordmark in
+# Launcher icon (run: dart run flutter_launcher_icons). The Zeno wordmark in
 # amber on the brand charcoal; Android uses an adaptive foreground + colour.
 flutter_launcher_icons:
   android: true

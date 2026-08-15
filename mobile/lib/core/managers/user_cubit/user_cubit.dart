@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../features/auth/data/models/user_model.dart';
 import '../../../features/auth/data/repos/auth_repo.dart';
 import '../../cubit_extension/safe_cubit.dart';
+import '../../errors/failure.dart';
 import '../../utils/secure_storage_manager.dart';
 
 part 'user_state.dart';
@@ -34,6 +35,18 @@ class UserCubit extends Cubit<UserState> {
   Future<void> signOut() async {
     await _repo.logout();
     safeEmit(const UserSignedOut());
+  }
+
+  /// Closes the account. Returns the failure so the caller can surface it —
+  /// unlike signing out, staying put on an error is the correct outcome here.
+  Future<Failure?> deleteAccount() async {
+    final result = await _repo.deleteAccount();
+
+    return result.fold((failure) => failure, (_) {
+      safeEmit(const UserSignedOut());
+
+      return null;
+    });
   }
 
   /// Called when the API layer sees a globally-handled failure such as an

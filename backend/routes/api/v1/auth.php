@@ -21,5 +21,6 @@ Route::prefix('auth')->name('auth.')->group(function () {
         Route::get('me', [SessionController::class, 'me'])->name('me');
         Route::post('logout', [SessionController::class, 'logout'])->name('logout');
         Route::post('logout-all', [SessionController::class, 'logoutEverywhere'])->name('logout.all');
+        Route::delete('account', [SessionController::class, 'destroy'])->name('account.destroy');
     });
 });

@@ -9,6 +9,12 @@ use App\Data\Auth\VerifyOtpData;
 use App\Enums\UserStatus;
 use App\Exceptions\Domain\AccountSuspendedException;
 use App\Models\User;
+use App\Repositories\ApplicationRepository;
+use App\Repositories\CandidateProfileRepository;
+use App\Repositories\DeviceTokenRepository;
+use App\Repositories\JobAlertRepository;
+use App\Repositories\NotificationRepository;
+use App\Repositories\SavedJobRepository;
 use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\DB;
 
@@ -17,6 +23,12 @@ final class AuthService
     public function __construct(
         private readonly OtpService $otp,
         private readonly UserRepository $users,
+        private readonly CandidateProfileRepository $profiles,
+        private readonly DeviceTokenRepository $devices,
+        private readonly ApplicationRepository $applications,
+        private readonly NotificationRepository $notifications,
+        private readonly SavedJobRepository $savedJobs,
+        private readonly JobAlertRepository $alerts,
     ) {}
 
     public function requestOtp(RequestOtpData $data, ?string $ip, ?string $userAgent): int
@@ -80,5 +92,37 @@ final class AuthService
     public function logoutEverywhere(User $user): void
     {
         $this->users->deleteAllTokens($user);
+    }
+
+    /**
+     * Account closure, required in-app by both stores (App Store guideline
+     * 5.1.1(v) and Play's data-deletion policy).
+     *
+     * Everything the person authored goes for good. Deleting the applications
+     * is what does most of the work: nothing in that chain soft deletes, so the
+     * database cascades on to each conversation, its messages and read
+     * receipts, and any WhatsApp handoff. Note the consequence — those
+     * applications also disappear from the employer's applicant list, which is
+     * the correct reading of a deletion request but is a visible change on the
+     * other side of it.
+     *
+     * The user row itself is soft deleted rather than erased: listings and
+     * verification requests reference it under restrict-on-delete constraints,
+     * so an employer who ever posted cannot be removed at all. The partial
+     * unique index on phone_e164 covers only live rows, so soft deleting
+     * already frees the number and the same person can sign up again at once.
+     */
+    public function deleteAccount(User $user): void
+    {
+        DB::transaction(function () use ($user) {
+            $this->applications->deleteForCandidate($user->getKey());
+            $this->profiles->deleteForUser($user->getKey());
+            $this->alerts->deleteAllForCandidate($user->getKey());
+            $this->savedJobs->removeAll($user);
+            $this->notifications->deleteAllForUser($user);
+            $this->devices->forgetAllForUser($user->getKey());
+            $this->users->deleteAllTokens($user);
+            $this->users->softDeleteAccount($user);
+        });
     }
 }

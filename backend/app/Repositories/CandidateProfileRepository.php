@@ -18,6 +18,25 @@ final class CandidateProfileRepository
             ->first();
     }
 
+    /**
+     * Hard delete: this row holds the national id, birth date and bio, which is
+     * the bulk of the account's personal data. The user row is only soft
+     * deleted, so nothing cascades here and it has to be removed explicitly.
+     *
+     * Loaded and deleted one model at a time rather than in a single statement:
+     * the media library detaches the avatar and the CV in the model's deleting
+     * event, and a query-builder delete fires no events at all — it would drop
+     * the row and leave both files sitting on disk.
+     */
+    public function deleteForUser(int $userId): void
+    {
+        CandidateProfile::query()
+            ->where('user_id', $userId)
+            ->get()
+            ->each
+            ->delete();
+    }
+
     public function upsert(int $userId, CandidateProfileData $data, int $completion): CandidateProfile
     {
         $attributes = [

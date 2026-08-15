@@ -21,6 +21,25 @@ final class ApplicationRepository
     }
 
     /** Pronounceable, DB-unique reference drawn from a Postgres sequence. */
+    /**
+     * Hard delete, on purpose: nothing here soft deletes, so the database
+     * cascades the whole chain hanging off an application — its conversation,
+     * that conversation's messages and read receipts, and any WhatsApp handoff.
+     *
+     * Deleted one model at a time rather than in a single statement, because an
+     * application carries the files answered into the employer's custom form
+     * and the media library only detaches those from the model's deleting
+     * event. A query-builder delete fires no events and would strand them.
+     */
+    public function deleteForCandidate(int $candidateId): void
+    {
+        Application::query()
+            ->where('candidate_id', $candidateId)
+            ->get()
+            ->each
+            ->delete();
+    }
+
     public function nextReference(): string
     {
         /** @var object{n: int} $row */

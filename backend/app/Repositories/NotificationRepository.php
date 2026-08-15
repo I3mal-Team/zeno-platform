@@ -19,6 +19,11 @@ final class NotificationRepository
         return $page;
     }
 
+    public function deleteAllForUser(User $user): void
+    {
+        $user->notifications()->delete();
+    }
+
     public function unreadCount(User $user): int
     {
         return $user->unreadNotifications()->count();

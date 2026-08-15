@@ -31,7 +31,7 @@ final class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->authGuard('admin')
             ->login()
-            ->brandName('AMS — لوحة الإدارة')
+            ->brandName('Zeno — لوحة الإدارة')
             ->font('Tajawal')
             ->colors([
                 'primary' => Color::hex('#284C3D'),

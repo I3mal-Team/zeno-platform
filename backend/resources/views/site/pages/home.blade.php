@@ -19,7 +19,7 @@
 
       <h1 style="font-size:56px;line-height:1.14;font-weight:900;color:#22302A;margin-top:22px;letter-spacing:-.01em;text-wrap:balance">وظيفتك القريبة<br><span style="position:relative;white-space:nowrap">على بُعد خطوة<span style="position:absolute;right:0;left:0;bottom:6px;height:14px;background:#C9A24B;opacity:.9;z-index:-1;border-radius:4px"></span></span></h1>
 
-      <p style="font-size:19px;line-height:1.7;color:#5C6862;font-weight:500;margin-top:20px;max-width:480px">AMS تربط الباحثين عن عمل بالمنشآت القريبة منهم — وظائف الدوام الجزئي والكامل والعمل بالساعة، بخريطة تفاعلية وتواصل مباشر عبر واتساب.</p>
+      <p style="font-size:19px;line-height:1.7;color:#5C6862;font-weight:500;margin-top:20px;max-width:480px">Zeno تربط الباحثين عن عمل بالمنشآت القريبة منهم — وظائف الدوام الجزئي والكامل والعمل بالساعة، بخريطة تفاعلية وتواصل مباشر عبر واتساب.</p>
 
       <div style="display:flex;gap:13px;margin-top:32px;flex-wrap:wrap">
         <a href="#download" class="btn" style="display:flex;align-items:center;gap:11px;background:#284C3D;color:#fff;padding:13px 22px;border-radius:16px;box-shadow:0 16px 30px -16px rgba(40,35,25,.55)">
@@ -104,7 +104,7 @@
 
 {{-- FEATURES --}}
 <section id="features" style="max-width:1180px;margin:0 auto;padding:84px 26px 20px">
-  <x-site.section-heading eyebrow="المميزات" title="لماذا AMS؟"/>
+  <x-site.section-heading eyebrow="المميزات" title="لماذا Zeno؟"/>
 
   <div class="g-map" style="background:#fff;border:1px solid #E5EAE6;border-radius:26px;padding:12px;margin-top:40px;display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:stretch;overflow:hidden">
     <div style="padding:32px 30px;display:flex;flex-direction:column;justify-content:center">
@@ -188,7 +188,7 @@
   <div class="g-2" style="background:#C9A24B;border-radius:30px;padding:56px 48px;position:relative;overflow:hidden;display:grid;grid-template-columns:1.1fr .9fr;gap:30px;align-items:center">
     <div style="position:absolute;bottom:-90px;left:-50px;width:300px;height:300px;border-radius:50%;background:rgba(255,255,255,.16)"></div>
     <div style="position:relative">
-      <h2 style="font-size:40px;font-weight:900;color:#284C3D;line-height:1.25;letter-spacing:-.01em">حمّل AMS وابدأ<br>رحلتك المهنية اليوم</h2>
+      <h2 style="font-size:40px;font-weight:900;color:#284C3D;line-height:1.25;letter-spacing:-.01em">حمّل Zeno وابدأ<br>رحلتك المهنية اليوم</h2>
       <p style="font-size:17px;color:#5A4A16;font-weight:600;line-height:1.6;margin-top:14px">متاح على iOS و Android — مجانًا بالكامل للباحثين عن عمل.</p>
       <div style="display:flex;gap:13px;margin-top:28px;flex-wrap:wrap">
         @foreach ([['mobile', 'App Store'], ['play', 'Google Play']] as [$icon, $store])

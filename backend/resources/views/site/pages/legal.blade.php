@@ -1,15 +1,16 @@
+{{-- Shared by the terms and the privacy policy: same shape, different copy. --}}
 @extends('site.layouts.app')
 
-@section('title', 'الشروط والخصوصية')
+@section('title', $heading)
 
 @section('content')
 <x-site.header/>
 
 <section style="max-width:1180px;margin:0 auto;padding:44px 26px 20px">
   <div style="font-size:13.5px;font-weight:700;color:#869089">
-    <a href="{{ route('site.home') }}" class="lnk">الرئيسية</a> › <span style="color:#284C3D">الشروط والخصوصية</span>
+    <a href="{{ route('site.home') }}" class="lnk">الرئيسية</a> › <span style="color:#284C3D">{{ $heading }}</span>
   </div>
-  <h1 style="font-size:40px;font-weight:900;color:#22302A;margin-top:14px;letter-spacing:-.01em">الشروط والخصوصية</h1>
+  <h1 style="font-size:40px;font-weight:900;color:#22302A;margin-top:14px;letter-spacing:-.01em">{{ $heading }}</h1>
   <div style="font-size:14px;color:#7E8B84;font-weight:600;margin-top:8px">آخر تحديث: {{ $lastUpdated }}</div>
 </section>
 

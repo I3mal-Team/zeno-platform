@@ -18,6 +18,8 @@ import '../realtime/reverb_realtime_service.dart';
 import '../utils/secure_storage_manager.dart';
 import '../../features/auth/data/repos/auth_repo.dart';
 import '../../features/auth/data/repos/auth_repo_impl.dart';
+import '../../features/billing/data/repos/billing_repo.dart';
+import '../../features/billing/data/repos/billing_repo_impl.dart';
 import '../../features/applications/data/repos/applications_repo.dart';
 import '../../features/applications/data/repos/applications_repo_impl.dart';
 import '../../features/chat/data/repos/chat_repo.dart';
@@ -113,4 +115,8 @@ void _registerFeatures() {
   );
 
   getIt.registerLazySingleton<ChatRepo>(() => ChatRepoImpl(getIt(), getIt()));
+
+  getIt.registerLazySingleton<BillingRepo>(
+    () => BillingRepoImpl(getIt(), getIt()),
+  );
 }

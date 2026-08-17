@@ -37,6 +37,7 @@ it('approving an unverified listing publishes it and grants the org auto-publish
 
 it('lets a trusted org publish its next listing without review', function () {
     [$user] = makeEmployerWithOrg(verified: false);
+    subscribeEmployer($user); // a plan that allows more than one listing
     $first = test()->actingAs($user, 'sanctum')
         ->postJson('/api/v1/employer/jobs', jobPayload())->json('data.id');
     app(JobModerationService::class)->approve(makeAdmin()->id, Job::query()->where('uuid', $first)->firstOrFail());

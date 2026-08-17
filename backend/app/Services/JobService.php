@@ -12,6 +12,7 @@ use App\Events\JobPublished;
 use App\Exceptions\Domain\InvalidJobTransitionException;
 use App\Exceptions\Domain\JobNotEditableException;
 use App\Exceptions\Domain\OrganizationMissingException;
+use App\Exceptions\Domain\PlanLimitReachedException;
 use App\Models\Job;
 use App\Models\Organization;
 use App\Models\User;
@@ -27,6 +28,7 @@ final class JobService
         private readonly JobRepository $jobs,
         private readonly OrganizationRepository $organizations,
         private readonly JobViewRepository $views,
+        private readonly PlanService $plans,
     ) {}
 
     /**
@@ -105,6 +107,12 @@ final class JobService
     public function publish(User $user, JobData $data): Job
     {
         $organization = $this->organizationFor($user);
+
+        // Enforce the plan's live-listing limit (null = unlimited / no plan set).
+        $limit = $this->plans->activeListingsLimit($user);
+        if ($limit !== null && $this->jobs->countLiveListingsForOrganization($organization->id) >= $limit) {
+            throw new PlanLimitReachedException($limit);
+        }
 
         // TEMPORARY (integrations.jobs.auto_publish_all): force every listing
         // live, bypassing the first-listing review gate (D-15).

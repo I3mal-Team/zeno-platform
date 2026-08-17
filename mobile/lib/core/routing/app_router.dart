@@ -40,6 +40,8 @@ import '../../features/jobs/presentation/views/nearby_view.dart';
 import '../../features/jobs/presentation/views/saved_jobs_view.dart';
 import '../../features/jobs/presentation/views/search_view.dart';
 import '../../features/jobs/presentation/views/job_detail_view.dart';
+import '../../features/billing/presentation/manager/plans_cubit/plans_cubit.dart';
+import '../../features/billing/presentation/views/plans_view.dart';
 import '../../features/notifications/presentation/manager/notifications_cubit/notifications_cubit.dart';
 import '../../features/notifications/presentation/views/notifications_view.dart';
 import '../../features/profile/data/models/candidate_profile_model.dart';
@@ -332,6 +334,14 @@ abstract final class AppRouter {
         builder: (_, _) => BlocProvider(
           create: (_) => NotificationsCubit(getIt())..load(),
           child: const NotificationsView(),
+        ),
+      ),
+      GoRoute(
+        path: RoutesKeys.plans,
+        parentNavigatorKey: parentKey,
+        builder: (_, _) => BlocProvider(
+          create: (_) => PlansCubit(getIt())..load(),
+          child: const PlansView(),
         ),
       ),
     ],

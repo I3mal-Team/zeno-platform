@@ -18,6 +18,7 @@ abstract final class RoutesKeys {
   static const messages = '/messages';
   static const chatPath = '/chat/:uuid';
   static const profile = '/profile';
+  static const plans = '/plans';
   static const notifications = '/notifications';
   static const jobDetail = '/jobs/:id';
 

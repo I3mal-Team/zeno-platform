@@ -150,6 +150,19 @@ final class JobRepository
         return (int) Job::query()->forOrganization($organizationId)->sum('views_count');
     }
 
+    /** Listings that occupy a plan slot: live or awaiting review, not closed. */
+    public function countLiveListingsForOrganization(int $organizationId): int
+    {
+        return Job::query()
+            ->forOrganization($organizationId)
+            ->whereIn('status', [
+                JobStatus::Active->value,
+                JobStatus::Paused->value,
+                JobStatus::PendingReview->value,
+            ])
+            ->count();
+    }
+
     public function create(JobData $data, JobStatus $status, int $organizationId, int $userId): Job
     {
         $job = new Job([

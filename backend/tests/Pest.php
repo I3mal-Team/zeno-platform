@@ -8,6 +8,8 @@ use App\Enums\VerificationStatus;
 use App\Models\City;
 use App\Models\Job;
 use App\Models\Organization;
+use App\Models\Subscription;
+use App\Models\SubscriptionPlan;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -94,6 +96,20 @@ function activeJobFor(Organization $org, User $creator, array $overrides = []): 
         'status' => JobStatus::Active->value,
         'published_at' => now(),
     ], $overrides));
+}
+
+/** Gives a user an active subscription to a plan by code (default: employer pro). */
+function subscribeEmployer(User $user, string $code = 'employer_pro'): void
+{
+    $plan = SubscriptionPlan::query()->where('code', $code)->firstOrFail();
+
+    Subscription::query()->create([
+        'user_id' => $user->id,
+        'subscription_plan_id' => $plan->id,
+        'status' => 'active',
+        'started_at' => now(),
+        'expires_at' => now()->addMonth(),
+    ]);
 }
 
 /** @return array<string, mixed> */

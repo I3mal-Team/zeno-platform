@@ -17,6 +17,7 @@ final class DatabaseSeeder extends Seeder
             CountrySeeder::class,
             AdminRoleSeeder::class,
             AdminUserSeeder::class,
+            PlanSeeder::class,
         ]);
     }
 }

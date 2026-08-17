@@ -128,6 +128,15 @@ class _Body extends StatelessWidget {
         const SizedBox(height: 18),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: _NavRow(
+            icon: Icons.workspace_premium_rounded,
+            label: 'الباقات والاشتراك',
+            onTap: () => context.push(RoutesKeys.plans),
+          ),
+        ),
+        const SizedBox(height: 12),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: _LogoutButton(
             onTap: () async {
               await context.read<UserCubit>().signOut();
@@ -351,6 +360,50 @@ class _SectionTitle extends StatelessWidget {
     return Text(
       title,
       style: AppTextStyles.titleSm.copyWith(fontWeight: FontWeight.w800),
+    );
+  }
+}
+
+class _NavRow extends StatelessWidget {
+  const _NavRow({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Pressable(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          border: Border.all(color: AppColors.border),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, size: 21, color: AppColors.amberDeep),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                label,
+                style: AppTextStyles.button.copyWith(fontSize: 15),
+              ),
+            ),
+            const Icon(
+              Icons.chevron_left_rounded,
+              size: 22,
+              color: AppColors.textMuted,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

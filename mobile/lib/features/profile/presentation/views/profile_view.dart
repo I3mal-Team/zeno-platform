@@ -7,7 +7,6 @@ import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/components/app_button.dart';
-import '../../../../core/components/delete_account_sheet.dart';
 import '../../../../core/managers/user_cubit/user_cubit.dart';
 import '../../../../core/motion/motion.dart';
 import '../../../../core/routing/routes_keys.dart';
@@ -237,7 +236,6 @@ class _ProfileBody extends StatelessWidget {
             },
           ),
         ),
-        const Center(child: DeleteAccountButton()),
       ],
     );
   }

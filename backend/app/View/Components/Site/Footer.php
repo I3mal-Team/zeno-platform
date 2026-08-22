@@ -30,11 +30,7 @@ final class Footer extends Component
                 'الأسئلة الشائعة' => $home.'#faq',
                 'من نحن' => route('site.about'),
                 'تواصل معنا' => route('site.contact'),
-                'الشروط والأحكام' => route('site.terms'),
-                'سياسة الخصوصية' => route('site.privacy'),
-                // Linked from the footer so the deletion page is reachable from
-                // anywhere on the site, which is what Play's policy asks for.
-                'حذف الحساب' => route('site.account.delete'),
+                'الشروط والخصوصية' => route('site.terms'),
             ],
         ];
     }

@@ -6,7 +6,6 @@ import 'generated/l10n/app_localizations.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'core/databases/api/end_points.dart';
 import 'core/managers/user_cubit/user_cubit.dart';
 import 'core/notifications/push_notifications.dart';
 import 'core/routing/app_router.dart';
@@ -14,21 +13,8 @@ import 'core/services/service_locator.dart';
 import 'core/styles/app_colors.dart';
 import 'core/styles/app_text_styles.dart';
 
-/// Which backend the build talks to. Store builds MUST pass
-/// `--dart-define=APP_ENV=production`; anything else keeps the dev host, which
-/// is unreachable off the emulator. This also gates dev-only UI such as the OTP
-/// autofill button.
-const _appEnv = String.fromEnvironment('APP_ENV', defaultValue: 'dev');
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // Before the service locator, so anything resolving a base URL at
-  // construction time already sees the right environment.
-  AppEnvironment.current = switch (_appEnv) {
-    'production' => AppEnvironment.production,
-    'staging' => AppEnvironment.staging,
-    _ => AppEnvironment.dev,
-  };
   await setupServiceLocator();
   runApp(const ZenoApp());
   // Fire-and-forget and fully guarded: never blocks or breaks startup, and is a
@@ -49,7 +35,7 @@ class ZenoApp extends StatelessWidget {
 
   Widget _buildApp() {
     return MaterialApp.router(
-      title: 'Zeno',
+      title: 'AMS',
       debugShowCheckedModeBanner: false,
       routerConfig: AppRouter.router,
       locale: const Locale('ar'),

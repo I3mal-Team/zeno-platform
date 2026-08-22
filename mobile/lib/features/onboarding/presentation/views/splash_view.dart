@@ -121,7 +121,7 @@ class _SplashViewState extends State<SplashView> with TickerProviderStateMixin {
               ),
               const SizedBox(height: AppDimensions.space22),
               Text(
-                'Zeno',
+                'AMS',
                 textDirection: TextDirection.ltr,
                 style: AppTextStyles.displayLg.copyWith(
                   fontSize: 32,

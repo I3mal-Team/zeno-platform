@@ -1,14 +1,11 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/components/app_button.dart';
 import '../../../../core/components/app_toast.dart';
 import '../../../../core/components/screen_background.dart';
-import '../../../../core/databases/api/end_points.dart';
 import '../../../../core/routing/routes_keys.dart';
 import '../../../../core/styles/app_colors.dart';
 import '../../../../core/styles/app_dimensions.dart';
@@ -84,7 +81,16 @@ class PhoneView extends StatelessWidget {
                       onPressed: cubit.requestCode,
                     ),
                     const SizedBox(height: AppDimensions.space16),
-                    const _LegalNotice(),
+                    Text(
+                      'بالمتابعة فإنك توافق على الشروط والأحكام وسياسة الخصوصية',
+                      textAlign: TextAlign.center,
+                      style: AppTextStyles.caption.copyWith(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: const Color(0xFFA8A296),
+                        height: 1.6,
+                      ),
+                    ),
                   ],
                 ),
               );
@@ -105,80 +111,6 @@ class PhoneView extends StatelessWidget {
     );
 
     if (picked != null) cubit.onCountryChanged(picked);
-  }
-}
-
-/// The consent line under the continue button. Both stores expect the legal
-/// pages to be reachable from the app, so the two phrases are real links rather
-/// than the plain sentence this used to be.
-class _LegalNotice extends StatefulWidget {
-  const _LegalNotice();
-
-  @override
-  State<_LegalNotice> createState() => _LegalNoticeState();
-}
-
-class _LegalNoticeState extends State<_LegalNotice> {
-  // Recognizers hold a subscription each and must outlive a rebuild, so they
-  // are owned by the state and disposed with it.
-  final _terms = TapGestureRecognizer();
-  final _privacy = TapGestureRecognizer();
-
-  @override
-  void initState() {
-    super.initState();
-    _terms.onTap = () => _open(EndPoints.terms);
-    _privacy.onTap = () => _open(EndPoints.privacy);
-  }
-
-  @override
-  void dispose() {
-    _terms.dispose();
-    _privacy.dispose();
-    super.dispose();
-  }
-
-  Future<void> _open(String url) async {
-    final opened = await launchUrl(
-      Uri.parse(url),
-      mode: LaunchMode.externalApplication,
-    );
-
-    if (!mounted) return;
-
-    if (!opened) {
-      AppToast.error(context, 'تعذّر فتح الصفحة.');
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final base = AppTextStyles.caption.copyWith(
-      fontSize: 12,
-      fontWeight: FontWeight.w500,
-      color: const Color(0xFFA8A296),
-      height: 1.6,
-    );
-
-    final link = base.copyWith(
-      fontWeight: FontWeight.w800,
-      color: AppColors.charcoalSoft,
-      decoration: TextDecoration.underline,
-      decorationColor: AppColors.charcoalSoft,
-    );
-
-    return Text.rich(
-      TextSpan(
-        style: base,
-        children: [
-          const TextSpan(text: 'بالمتابعة فإنك توافق على '),
-          TextSpan(text: 'الشروط والأحكام', style: link, recognizer: _terms),
-          const TextSpan(text: ' و'),
-          TextSpan(text: 'سياسة الخصوصية', style: link, recognizer: _privacy),
-        ],
-      ),
-      textAlign: TextAlign.center,
-    );
   }
 }
 

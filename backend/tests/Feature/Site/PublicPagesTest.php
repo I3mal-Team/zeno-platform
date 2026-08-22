@@ -59,7 +59,7 @@ it('renders the about page with the design content', function () {
         ->assertOk()
         ->assertSee('نقرّب المسافة بين', false)
         ->assertSee('ما نؤمن به', false)
-        ->assertSee('محطات Zeno', false)
+        ->assertSee('محطات AMS', false)
         ->assertSee('أحمد الشمري', false);
 });
 
@@ -84,48 +84,9 @@ it('switches the pricing cycle to yearly', function () {
 it('renders the terms page with every clause', function () {
     $response = test()->get('/terms')->assertOk();
 
-    foreach ([
-        'مقدّمة', 'دورنا في العلاقة', 'الأهلية والحسابات', 'التزامات أصحاب العمل',
-        'الاستخدامات المحظورة', 'الرسوم والاشتراكات', 'التواصل عبر واتساب',
-        'المحتوى والملكية الفكرية', 'إيقاف الحساب وإنهاء الخدمة',
-        'إخلاء المسؤولية وحدودها', 'النظام الواجب التطبيق',
-    ] as $clause) {
+    foreach (['مقدّمة', 'الحسابات والاستخدام', 'التزامات أصحاب العمل', 'الخصوصية والبيانات', 'التواصل عبر واتساب', 'حدود المسؤولية'] as $clause) {
         $response->assertSee($clause, false);
     }
-});
-
-/**
- * This URL is what gets submitted to both stores, so it has to answer on its
- * own rather than as an anchor inside the terms, and it has to carry the
- * disclosures the Data Safety form and the privacy labels are filled in from.
- */
-it('serves the privacy policy at its own url', function () {
-    $response = test()->get('/privacy')->assertOk();
-
-    foreach ([
-        'البيانات التي نجمعها', 'كيف نتعامل مع موقعك تحديدًا', 'مع من نشارك بياناتك',
-        'مدة الاحتفاظ', 'حذف حسابك', 'حقوقك', 'أمن البيانات', 'الأطفال',
-    ] as $clause) {
-        $response->assertSee($clause, false);
-    }
-});
-
-it('names the third parties that receive data', function () {
-    // A policy that says "we may share with partners" satisfies nobody; the
-    // stores' forms ask which ones, so the page has to name them.
-    $response = test()->get('/privacy')->assertOk();
-
-    foreach (['Firebase', 'واتساب', 'OpenStreetMap'] as $processor) {
-        $response->assertSee($processor, false);
-    }
-});
-
-it('links both legal pages and the deletion page from the footer', function () {
-    test()->get('/')
-        ->assertOk()
-        ->assertSee(route('site.terms'))
-        ->assertSee(route('site.privacy'))
-        ->assertSee(route('site.account.delete'));
 });
 
 it('renders the contact page with reachable channels', function () {

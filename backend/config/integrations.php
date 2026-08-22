@@ -39,20 +39,6 @@ return [
         'length' => 4,
 
         'fixed_code' => env('OTP_FIXED_CODE', '4829'),
-
-        // One allow-listed number that signs in with a constant code and is
-        // never sent an SMS, because App Store and Play reviewers test from a
-        // device that cannot receive one — the single most common cause of a
-        // phone-OTP app being rejected.
-        //
-        // Unlike 'generator' => 'fixed', this affects exactly one number, so
-        // every real account keeps a random code. It is meant to be ON in
-        // production; leave both blank to disable. Never point it at a number
-        // a real person uses.
-        'review_account' => [
-            'phone_e164' => env('AUTH_REVIEW_PHONE'),
-            'code' => env('AUTH_REVIEW_OTP'),
-        ],
     ],
 
 ];

@@ -54,24 +54,6 @@ final class UserRepository
         ])->save();
     }
 
-    /**
-     * Closes the account without removing the row. Two constraints force this
-     * shape: jobs.created_by_user_id and the verification requests restrict on
-     * delete, so an employer who ever posted cannot be erased; and the unique
-     * index on phone_e164 is partial on deleted_at IS NULL, so soft deleting
-     * already frees the number to register again.
-     */
-    public function softDeleteAccount(User $user): void
-    {
-        $user->forceFill([
-            'status' => UserStatus::Deleted->value,
-            'email' => null,
-            'last_active_at' => null,
-        ])->save();
-
-        $user->delete();
-    }
-
     public function deleteAllTokens(User $user): void
     {
         $user->tokens()->delete();

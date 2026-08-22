@@ -84,20 +84,4 @@ class AuthRepoImpl implements AuthRepo {
 
     return result;
   }
-
-  @override
-  Future<Either<Failure, Unit>> deleteAccount() async {
-    final result = await _handle(
-      () => _api.delete(EndPoints.deleteAccount),
-      (_) => unit,
-    );
-
-    // Only on success: a failed deletion leaves the account alive, so dropping
-    // the token here would sign the user out of an account that still exists.
-    if (result.isRight()) {
-      await _storage.clear();
-    }
-
-    return result;
-  }
 }

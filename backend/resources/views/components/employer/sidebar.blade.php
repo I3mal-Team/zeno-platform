@@ -2,7 +2,7 @@
 
 <aside class="emp-sidebar" style="width:262px;flex:0 0 auto;background:linear-gradient(180deg,#2E2A25,#241F1C);color:#B8C4BC;display:flex;flex-direction:column;position:sticky;top:0;height:100vh">
   <div style="padding:24px 22px 18px;display:flex;align-items:center;justify-content:space-between">
-    <img src="{{ asset('assets/zeno-logo.png') }}" alt="Zeno" style="height:30px;width:auto;filter:brightness(0) invert(1)">
+    <img src="{{ asset('assets/zeno-logo.png') }}" alt="AMS" style="height:30px;width:auto;filter:brightness(0) invert(1)">
     <a href="{{ route('site.home') }}" class="btn" title="الرئيسية" style="width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;color:#EDE9E0"><i class="iconsax" style="font-size:17px" icon-name="home-2"></i></a>
   </div>
 

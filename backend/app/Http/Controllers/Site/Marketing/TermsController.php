@@ -12,8 +12,7 @@ final class TermsController extends SiteController
 {
     public function __invoke(TermsViewModel $viewModel): View
     {
-        return view('site.pages.legal', [
-            'heading' => 'الشروط والأحكام',
+        return view('site.pages.terms', [
             'lastUpdated' => $viewModel->lastUpdated(),
             'sections' => $viewModel->sections(),
         ]);

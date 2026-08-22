@@ -1,6 +1,6 @@
 <header style="position:sticky;top:0;z-index:60;background:rgba(250,248,243,.82);backdrop-filter:blur(14px);border-bottom:1px solid #EEEBE3">
   <div style="max-width:1180px;margin:0 auto;padding:14px 26px;display:flex;align-items:center;justify-content:space-between;gap:20px">
-    <a href="{{ route('site.home') }}" style="display:flex;align-items:center"><img src="{{ asset('assets/zeno-logo.png') }}" alt="Zeno" style="height:34px;width:auto"></a>
+    <a href="{{ route('site.home') }}" style="display:flex;align-items:center"><img src="{{ asset('assets/zeno-logo.png') }}" alt="AMS" style="height:34px;width:auto"></a>
 
     <nav class="hide-sm" style="display:flex;align-items:center;gap:30px;font-size:15px;font-weight:700;color:#5C6862">
       <a href="{{ route('site.home') }}#features" class="lnk">المميزات</a>

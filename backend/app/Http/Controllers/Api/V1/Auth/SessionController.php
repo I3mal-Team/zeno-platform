@@ -43,18 +43,4 @@ final class SessionController extends ApiController
 
         return $this->noContentResponse(__('messages.signed_out_everywhere'));
     }
-
-    /**
-     * In-app account closure. Both stores require the path to exist and to be
-     * reachable without contacting support.
-     */
-    public function destroy(Request $request): JsonResponse
-    {
-        /** @var User $user */
-        $user = $request->user();
-
-        $this->auth->deleteAccount($user);
-
-        return $this->noContentResponse(__('messages.account_deleted'));
-    }
 }

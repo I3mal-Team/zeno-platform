@@ -36,11 +36,6 @@ final class JobAlertRepository
             ->delete();
     }
 
-    public function deleteAllForCandidate(int $candidateId): void
-    {
-        JobAlert::query()->where('candidate_id', $candidateId)->delete();
-    }
-
     /**
      * Alerts a freshly published job satisfies — a null facet matches anything,
      * and the keyword (if set) must appear in the title.

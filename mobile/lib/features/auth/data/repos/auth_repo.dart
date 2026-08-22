@@ -20,9 +20,4 @@ abstract interface class AuthRepo {
   Future<Either<Failure, Unit>> logout();
 
   Future<Either<Failure, Unit>> logoutEverywhere();
-
-  /// Closes the account for good. Unlike [logout], the stored session survives
-  /// a failure: the account is still there, so the user stays signed in and can
-  /// retry rather than being stranded on the sign-in screen.
-  Future<Either<Failure, Unit>> deleteAccount();
 }

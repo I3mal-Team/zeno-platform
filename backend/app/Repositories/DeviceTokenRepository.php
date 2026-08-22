@@ -22,12 +22,6 @@ final class DeviceTokenRepository
         DeviceToken::query()->where('token', $token)->delete();
     }
 
-    /** Stops every push to a closed account, on every device it registered. */
-    public function forgetAllForUser(int $userId): void
-    {
-        DeviceToken::query()->where('user_id', $userId)->delete();
-    }
-
     /** @return list<string> */
     public function tokensForUser(int $userId): array
     {

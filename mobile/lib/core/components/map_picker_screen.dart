@@ -58,7 +58,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
           'accept-language': 'ar',
         },
         options: Options(
-          headers: {'User-Agent': 'Zeno/1.0 (sa.zeno.app)'},
+          headers: {'User-Agent': 'AMS/1.0 (sa.zeno.app)'},
           responseType: ResponseType.json,
         ),
       );

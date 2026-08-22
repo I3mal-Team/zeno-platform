@@ -25,11 +25,6 @@ final class SavedJobRepository
         $candidate->savedJobs()->detach($job->id);
     }
 
-    public function removeAll(User $candidate): void
-    {
-        $candidate->savedJobs()->detach();
-    }
-
     public function exists(User $candidate, Job $job): bool
     {
         return $candidate->savedJobs()->whereKey($job->id)->exists();

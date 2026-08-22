@@ -17,37 +17,12 @@ abstract final class EndPoints {
     AppEnvironment.production => _production,
   };
 
-  // ── Public web pages ───────────────────────────────────────────────────
-  // The marketing site, which answers on its own host separate from the API.
-  // The legal pages live here because both stores require them to be readable
-  // without installing the app.
-  static const _siteDev = String.fromEnvironment(
-    'SITE_BASE_URL',
-    defaultValue: 'http://10.0.2.2:8000',
-  );
-
-  static String get siteUrl => switch (AppEnvironment.current) {
-    AppEnvironment.dev => _siteDev,
-    AppEnvironment.staging => 'https://staging.zeno.sa',
-    AppEnvironment.production => 'https://zeno.sa',
-  };
-
-  static String get terms => '$siteUrl/terms';
-
-  /// Its own page, not a section of the terms: this is the URL submitted to
-  /// both stores, and they want it to be the privacy policy and nothing else.
-  static String get privacy => '$siteUrl/privacy';
-
   static const requestOtp = '/auth/otp/request';
   static const verifyOtp = '/auth/otp/verify';
   static const refreshSession = '/auth/refresh';
   static const logout = '/auth/logout';
   static const logoutAll = '/auth/logout-all';
   static const currentUser = '/auth/me';
-
-  /// In-app account closure. Both stores require this path to exist and to be
-  /// reachable without contacting support.
-  static const deleteAccount = '/auth/account';
 
   static const candidateProfile = '/profile/candidate';
   static const candidateAvatar = '/profile/candidate/avatar';

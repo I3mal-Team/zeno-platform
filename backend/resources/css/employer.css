@@ -1,0 +1,27 @@
+/* Transcribed from the employer dashboard design. */
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+body { font-family: 'Tajawal', sans-serif; background: #EEF2EE; color: #284C3D; }
+a { text-decoration: none; color: inherit; }
+
+.iconsax {
+    display: inline-flex; align-items: center; justify-content: center;
+    line-height: 1; font-style: normal; direction: ltr;
+}
+
+.btn { transition: transform .16s ease, box-shadow .24s ease, background .2s ease; }
+.btn:hover { transform: translateY(-2px); }
+.btn:active { transform: translateY(0) scale(.98); }
+
+.cardh { transition: transform .2s ease, box-shadow .28s ease, border-color .2s ease; }
+.cardh:hover { transform: translateY(-3px); box-shadow: 0 22px 40px -26px rgba(40, 35, 25, .3); }
+
+.navi { transition: background .18s ease, color .18s ease; }
+
+@keyframes fadeUp { from { transform: translateY(10px) } to { transform: translateY(0) } }
+.view { animation: fadeUp .28s ease; }
+
+@media (max-width: 1000px) {
+    .emp-sidebar { display: none !important; }
+    .g-4 { grid-template-columns: repeat(2, 1fr) !important; }
+    .g-2, .g-split { grid-template-columns: 1fr !important; }
+}

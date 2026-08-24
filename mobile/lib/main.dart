@@ -1,13 +1,25 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
+import 'generated/l10n/app_localizations.dart';
+
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'core/managers/user_cubit/user_cubit.dart';
+import 'core/notifications/push_notifications.dart';
+import 'core/routing/app_router.dart';
+import 'core/services/service_locator.dart';
 import 'core/styles/app_colors.dart';
 import 'core/styles/app_text_styles.dart';
 
-/// جذر التركيب. الترتيب الإلزامي للتهيئة موثّق في `CLAUDE.md §11`
-/// ويُضاف إليه في موضعه الصحيح — لا في آخر الدالة.
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await setupServiceLocator();
   runApp(const ZenoApp());
+  // Fire-and-forget and fully guarded: never blocks or breaks startup, and is a
+  // no-op until the Firebase config files are added.
+  unawaited(PushNotifications.init());
 }
 
 class ZenoApp extends StatelessWidget {
@@ -15,38 +27,39 @@ class ZenoApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'zeno',
+    return BlocProvider(
+      create: (_) => getIt<UserCubit>()..restore(),
+      child: _buildApp(),
+    );
+  }
+
+  Widget _buildApp() {
+    return MaterialApp.router(
+      title: 'AMS',
       debugShowCheckedModeBanner: false,
-      // التطبيق عربي RTL بالكامل (D-36).
+      routerConfig: AppRouter.router,
       locale: const Locale('ar'),
-      supportedLocales: const [Locale('ar')],
-      theme: ThemeData(
-        fontFamily: AppTextStyles.fontFamily,
-        scaffoldBackgroundColor: AppColors.paper,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: AppColors.amber,
-          primary: AppColors.amber,
-          surface: AppColors.surface,
-        ),
-        useMaterial3: true,
-      ),
-      builder: (context, child) => Directionality(
-        textDirection: TextDirection.rtl,
-        child: child!,
-      ),
-      home: const _Placeholder(),
+      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      theme: _theme,
+      builder: (context, child) =>
+          Directionality(textDirection: TextDirection.rtl, child: child!),
     );
   }
-}
 
-class _Placeholder extends StatelessWidget {
-  const _Placeholder();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(child: Text('zeno', style: AppTextStyles.displayLg)),
-    );
-  }
+  ThemeData get _theme => ThemeData(
+    fontFamily: AppTextStyles.fontFamily,
+    scaffoldBackgroundColor: AppColors.paper,
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: AppColors.amber,
+      primary: AppColors.amber,
+      surface: AppColors.surface,
+    ),
+    appBarTheme: const AppBarTheme(
+      backgroundColor: AppColors.surface,
+      surfaceTintColor: Colors.transparent,
+      elevation: 0,
+    ),
+    useMaterial3: true,
+  );
 }

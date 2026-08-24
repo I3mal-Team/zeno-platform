@@ -4,4 +4,9 @@
          to allow setting breakpoints, to provide hot reload, etc.
     -->
     <uses-permission android:name="android.permission.INTERNET"/>
+
+    <!-- Debug builds talk to the local dev stack over cleartext http:// and
+         ws:// (the API and Reverb). Scoped to the debug manifest so release
+         builds keep Android's default cleartext block. -->
+    <application android:usesCleartextTraffic="true"/>
 </manifest>

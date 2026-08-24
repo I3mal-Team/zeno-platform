@@ -2,28 +2,38 @@
 
 declare(strict_types=1);
 
-/**
- * تفرض معيار الطبقات آلياً.
- *
- * قاعدة لا تُفرض آلياً تُخالَف خلال شهر. هذه الاختبارات تحجب الدمج،
- * فلا تعتمد المراجعة البشرية على تذكّر القواعد.
- */
-
-// ── §3 · §15 — لا Data Access في الـ Services ──────────────
-// المستهدف هو آليات الاستعلام. `Eloquent\Collection` مستثناة عمداً: هي نوع
-// حاوية يظهر في توقيع الإرجاع، لا وسيلة وصول لقاعدة البيانات.
-arch('services do not access the database')
+// The DB facade is permitted for transactions, which belong to the use case and
+// therefore to the service. Query builders are not.
+arch('services do not query the database')
     ->expect('App\Services')
     ->not->toUse([
-        'Illuminate\Support\Facades\DB',
         'Illuminate\Database\Eloquent\Builder',
         'Illuminate\Database\Query\Builder',
         'Illuminate\Database\Connection',
     ]);
 
-// ── §3 — الـ Service لا تعرف من ناداها ────────────────────
-// أهم اختبار في الملف: يجعل تفريع منطق الأعمال حسب السطح مستحيلاً بنيوياً،
-// وهو ما أنتج ثلاث سكيمات متناقضة في البروتوتايب الأصلي.
+test('services use the DB facade only for transactions', function () {
+    $offenders = [];
+
+    foreach (glob(dirname(__DIR__, 2).'/app/Services/*.php') ?: [] as $file) {
+        $source = (string) file_get_contents($file);
+
+        preg_match_all('/DB::(\w+)/', $source, $matches);
+
+        foreach ($matches[1] as $method) {
+            if ($method !== 'transaction') {
+                $offenders[] = basename($file).' calls DB::'.$method;
+            }
+        }
+    }
+
+    expect($offenders)->toBeEmpty(
+        'Data access belongs in a repository: '.implode(', ', $offenders)
+    );
+});
+
+// The load-bearing rule: with this in place, business logic cannot fork per
+// surface, because a service can never know which surface called it.
 arch('services are transport agnostic')
     ->expect('App\Services')
     ->not->toUse([
@@ -33,7 +43,6 @@ arch('services are transport agnostic')
         'Illuminate\Http\JsonResponse',
     ]);
 
-// ── §2 — لا Data Access ولا Models في الـ Controllers ─────
 arch('controllers do not access the database')
     ->expect('App\Http\Controllers')
     ->not->toUse([
@@ -41,22 +50,18 @@ arch('controllers do not access the database')
         'Illuminate\Database\Eloquent\Builder',
     ]);
 
-// ── §2 — الـ Controller يتعامل مع Service فقط ─────────────
 arch('controllers do not call repositories directly')
     ->expect('App\Http\Controllers')
     ->not->toUse('App\Repositories');
 
-// ── §4 — الـ Repository لا تحتوي Business Logic ───────────
 arch('repositories are transport agnostic')
     ->expect('App\Repositories')
     ->not->toUse(['App\Http', 'App\Services']);
 
-// ── §5 — الـ Models نظيفة ─────────────────────────────────
 arch('models stay clean')
     ->expect('App\Models')
     ->not->toUse(['App\Services', 'App\Repositories', 'App\Http']);
 
-// ── الفصل بين الأسطح ──────────────────────────────────────
 arch('api controllers do not render views')
     ->expect('App\Http\Controllers\Api')
     ->not->toUse(['Illuminate\View', 'Illuminate\Contracts\View\View']);
@@ -65,7 +70,6 @@ arch('site controllers do not use api resources')
     ->expect('App\Http\Controllers\Site')
     ->not->toUse('App\Http\Resources');
 
-// ── §14 — ممنوع تفريع الدومين حسب السطح ───────────────────
 test('the domain layer is not split by surface', function () {
     $appPath = dirname(__DIR__, 2).'/app';
     $forbidden = [];
@@ -79,16 +83,14 @@ test('the domain layer is not split by surface', function () {
     }
 
     expect($forbidden)->toBeEmpty(
-        'الدومين مشترك ولا يُفرَّع حسب السطح. مخالف: '.implode(', ', $forbidden)
+        'The domain is shared and must not fork per surface: '.implode(', ', $forbidden)
     );
 });
 
-// ── §12 — لا كود معطّل متروك ──────────────────────────────
 arch('no debugging statements are committed')
     ->expect(['dd', 'dump', 'ray', 'var_dump', 'print_r', 'die'])
     ->not->toBeUsed();
 
-// ── انضباط عام ────────────────────────────────────────────
 arch('strict types are declared')
     ->expect('App')
     ->toUseStrictTypes();

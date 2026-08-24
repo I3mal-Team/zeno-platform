@@ -8,9 +8,8 @@ use App\Models\Category;
 use Illuminate\Database\Seeder;
 
 /**
- * التصنيفات العشرة من وصف المشروع ص3 (القرار D-04).
- *
- * `seasonal_work` وليس `season` — الأخير يتصادم مع نوع الدوام `seasonal`.
+ * `seasonal_work` rather than `season`, which would collide with the work type
+ * of the same name.
  */
 final class CategorySeeder extends Seeder
 {

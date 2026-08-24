@@ -2,10 +2,50 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>يتصل التطبيق بخادم AMS على شبكتك المحلية لعرض الوظائف والبيانات.</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+		<key>NSExceptionDomains</key>
+		<dict>
+			<key>192.168.1.145</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+				<key>NSIncludesSubdomains</key>
+				<true/>
+			</dict>
+		</dict>
+	</dict>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>نستخدم موقعك لعرض الوظائف القريبة منك.</string>
+	<!-- Not requested anywhere in the app — Geolocator.requestPermission() only ever asks
+	     for when-in-use access (see lib/core/components/map_picker_screen.dart and
+	     lib/features/jobs/presentation/manager/nearby_cubit). Required anyway because the
+	     geolocator_apple plugin links the always-authorization API surface, and App Store
+	     binary analysis flags that regardless of whether the app calls it (ITMS-90683). -->
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>لا يستخدم AMS موقعك في الخلفية. يُطلب الموقع فقط أثناء استخدامك التطبيق، لعرض الوظائف القريبة منك أو تحديد موقع إعلان على الخريطة.</string>
+	<!-- FileType.image via file_picker, used for the profile photo, employer logo, and
+	     image-type application-form fields (see profile_view.dart, register_employer_view.dart,
+	     employer_account_view.dart, register_candidate_view.dart, apply_form_sheet.dart). -->
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>نحتاج الوصول إلى مكتبة صورك لاختيار صورتك الشخصية أو شعار منشأتك أو مرفقات طلب التوظيف.</string>
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>ar</string>
+	</array>
+	<!-- The app only talks to its own API over standard HTTPS/TLS — no custom or
+	     proprietary encryption — so it is exempt and this answers the export-compliance
+	     question on every upload instead of App Store Connect asking each time. -->
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Zeno</string>
+	<string>AMS</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -13,7 +53,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>zeno</string>
+	<string>AMS</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>

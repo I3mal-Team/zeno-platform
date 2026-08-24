@@ -10,5 +10,8 @@ ios/Flutter/ephemeral/
 android/.gradle/
 android/local.properties
 android/key.properties
-.fvm/versions
 # pubspec.lock مُتتبَّع عمداً (CLAUDE.md §1)
+lib/generated/
+
+# FVM Version Cache
+.fvm/

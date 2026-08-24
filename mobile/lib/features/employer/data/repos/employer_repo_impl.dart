@@ -1,0 +1,196 @@
+import 'dart:io';
+
+import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
+
+import '../../../../core/databases/api/api_consumer.dart';
+import '../../../../core/databases/api/end_points.dart';
+import '../../../../core/databases/api/handle_request.dart';
+import '../../../../core/errors/failure.dart';
+import '../../../../core/params/job_params.dart';
+import '../../../../core/params/profile_params.dart';
+import '../../../jobs/data/models/job_detail_model.dart';
+import '../../../jobs/data/models/job_model.dart';
+import '../../../profile/data/models/city_model.dart';
+import '../models/applicant_model.dart';
+import '../models/applicant_profile_model.dart';
+import '../models/job_form_options.dart';
+import '../models/organization_model.dart';
+import 'employer_repo.dart';
+
+class EmployerRepoImpl implements EmployerRepo {
+  const EmployerRepoImpl(this._api, this._handle);
+
+  final ApiConsumer _api;
+  final RequestHandler _handle;
+
+  @override
+  Future<Either<Failure, OrganizationModel>> fetchProfile() {
+    return _handle(
+      () => _api.get(EndPoints.employerProfile),
+      (data) => OrganizationModel.fromJson(data as Map<String, dynamic>),
+    );
+  }
+
+  @override
+  Future<Either<Failure, OrganizationModel>> saveProfile(
+    SaveOrganizationParam param,
+  ) {
+    return _handle(
+      () => _api.put(EndPoints.employerProfile, body: param.toJson()),
+      (data) => OrganizationModel.fromJson(data as Map<String, dynamic>),
+    );
+  }
+
+  @override
+  Future<Either<Failure, OrganizationModel>> uploadLogo(File file) {
+    return _handle(
+      () async => _api.post(
+        EndPoints.employerLogo,
+        body: FormData.fromMap({
+          'logo': await MultipartFile.fromFile(file.path),
+        }),
+      ),
+      (data) => OrganizationModel.fromJson(data as Map<String, dynamic>),
+    );
+  }
+
+  @override
+  Future<Either<Failure, List<CityModel>>> fetchCities() {
+    return _handle(
+      () => _api.get(EndPoints.cities),
+      (data) => (data as List<dynamic>)
+          .map((e) => CityModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+  }
+
+  @override
+  Future<Either<Failure, JobFormOptions>> fetchJobForm() {
+    return _handle(
+      () => _api.get(EndPoints.jobForm),
+      (data) => JobFormOptions.fromJson(data as Map<String, dynamic>),
+    );
+  }
+
+  @override
+  Future<Either<Failure, List<JobModel>>> listJobs() {
+    return _handle(
+      () => _api.get(EndPoints.employerJobs),
+      (data) => (data as List<dynamic>)
+          .map((e) => JobModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+  }
+
+  @override
+  Future<Either<Failure, JobDetailModel>> publishJob(PublishJobParam param) {
+    return _handle(
+      () => _api.post(EndPoints.employerJobs, body: param.toJson()),
+      (data) => JobDetailModel.fromJson(data as Map<String, dynamic>),
+    );
+  }
+
+  @override
+  Future<Either<Failure, JobDetailModel>> fetchJob(String uuid) {
+    return _handle(
+      () => _api.get(EndPoints.employerJob(uuid)),
+      (data) => JobDetailModel.fromJson(data as Map<String, dynamic>),
+    );
+  }
+
+  @override
+  Future<Either<Failure, JobDetailModel>> updateJob(
+    String uuid,
+    PublishJobParam param,
+  ) {
+    return _handle(
+      () => _api.put(EndPoints.employerJob(uuid), body: param.toJson()),
+      (data) => JobDetailModel.fromJson(data as Map<String, dynamic>),
+    );
+  }
+
+  @override
+  Future<Either<Failure, JobDetailModel>> pauseJob(String uuid) {
+    return _handle(
+      () => _api.post(EndPoints.employerJobPause(uuid)),
+      (data) => JobDetailModel.fromJson(data as Map<String, dynamic>),
+    );
+  }
+
+  @override
+  Future<Either<Failure, JobDetailModel>> resumeJob(String uuid) {
+    return _handle(
+      () => _api.post(EndPoints.employerJobResume(uuid)),
+      (data) => JobDetailModel.fromJson(data as Map<String, dynamic>),
+    );
+  }
+
+  @override
+  Future<Either<Failure, JobDetailModel>> closeJob(String uuid) {
+    return _handle(
+      () => _api.post(EndPoints.employerJobClose(uuid)),
+      (data) => JobDetailModel.fromJson(data as Map<String, dynamic>),
+    );
+  }
+
+  @override
+  Future<Either<Failure, List<ApplicantModel>>> listApplicants(String jobUuid) {
+    return _handle(
+      () => _api.get(EndPoints.employerJobApplicants(jobUuid)),
+      (data) => (data as List<dynamic>)
+          .map((e) => ApplicantModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+  }
+
+  @override
+  Future<Either<Failure, List<ApplicantModel>>> listOrganizationApplicants() {
+    return _handle(
+      () => _api.get(EndPoints.employerApplications),
+      (data) => (data as List<dynamic>)
+          .map((e) => ApplicantModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+  }
+
+  @override
+  Future<Either<Failure, ApplicantProfileModel>> viewApplicant(int id) {
+    return _handle(
+      () => _api.get(EndPoints.employerApplicant(id)),
+      (data) => ApplicantProfileModel.fromJson(data as Map<String, dynamic>),
+    );
+  }
+
+  @override
+  Future<Either<Failure, Unit>> acceptApplicant(int id) {
+    return _handle(
+      () => _api.post(EndPoints.employerApplicantAccept(id)),
+      (_) => unit,
+    );
+  }
+
+  @override
+  Future<Either<Failure, Unit>> rejectApplicant(int id) {
+    return _handle(
+      () => _api.post(EndPoints.employerApplicantReject(id)),
+      (_) => unit,
+    );
+  }
+
+  @override
+  Future<Either<Failure, Unit>> shortlistApplicant(int id) {
+    return _handle(
+      () => _api.post(EndPoints.employerApplicantShortlist(id)),
+      (_) => unit,
+    );
+  }
+
+  @override
+  Future<Either<Failure, Unit>> saveApplicantNote(int id, String? note) {
+    return _handle(
+      () => _api.put(EndPoints.employerApplicantNote(id), body: {'note': note}),
+      (_) => unit,
+    );
+  }
+}

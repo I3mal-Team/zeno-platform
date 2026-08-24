@@ -1,0 +1,82 @@
+@extends('site.layouts.app')
+
+@section('title', 'الرسائل')
+
+@section('content')
+<x-site.header/>
+
+<div style="max-width:1180px;margin:0 auto;padding:28px 26px 48px">
+  <h1 style="font-size:24px;font-weight:900;color:#22302A;margin-bottom:6px">الرسائل</h1>
+  <p style="font-size:14.5px;color:#7E8B84;font-weight:600;margin-bottom:20px">تواصل مع أصحاب العمل بعد قبول تقديمك</p>
+
+  <div style="display:flex;gap:16px;align-items:stretch;height:560px">
+
+    {{-- Conversation list --}}
+    <div style="width:320px;flex:0 0 auto;background:#fff;border:1px solid #E5EAE6;border-radius:20px;overflow-y:auto">
+      @forelse ($conversations as $conversation)
+        @php($name = $conversation->organization->name)
+        @php($on = $activeConversation && $activeConversation->uuid === $conversation->uuid)
+        <a href="{{ route('messages.show', $conversation->uuid) }}" style="display:flex;align-items:center;gap:12px;padding:14px 16px;text-decoration:none;border-bottom:1px solid #E9EDE9;background:{{ $on ? '#F1EFE4' : 'transparent' }}">
+          <div style="width:46px;height:46px;border-radius:14px;background:#284C3D;color:#C9A24B;display:flex;align-items:center;justify-content:center;flex:0 0 auto;font-size:17px;font-weight:900">{{ mb_substr($name, 0, 1) }}</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:15px;font-weight:800;color:#22302A;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ $name }}</div>
+            <div style="font-size:12px;color:#7E8B84;font-weight:600;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ optional($conversation->application->job)->title ?? '' }}</div>
+          </div>
+        </a>
+      @empty
+        <div style="padding:40px 22px;text-align:center;color:#7E8B84;font-size:14px;font-weight:600;line-height:1.7">لا توجد محادثات بعد.<br>تُفتح المحادثة تلقائياً بمجرد قبول تقديمك.</div>
+      @endforelse
+    </div>
+
+    {{-- Thread --}}
+    <div style="flex:1;min-width:0;background:#fff;border:1px solid #E5EAE6;border-radius:20px;display:flex;flex-direction:column;overflow:hidden">
+      @if ($activeConversation)
+        @php($name = $activeConversation->organization->name)
+
+        <div style="padding:16px 20px;border-bottom:1px solid #E7EBE7;display:flex;align-items:center;gap:12px">
+          <div style="width:44px;height:44px;border-radius:13px;background:#284C3D;color:#C9A24B;display:flex;align-items:center;justify-content:center;flex:0 0 auto;font-size:17px;font-weight:900">{{ mb_substr($name, 0, 1) }}</div>
+          <div>
+            <div style="font-size:16px;font-weight:800;color:#22302A">{{ $name }}</div>
+            <div style="font-size:12.5px;color:#7E8B84;font-weight:700;margin-top:1px">{{ optional($activeConversation->application->job)->title ?? '' }}</div>
+          </div>
+        </div>
+
+        <div data-thread data-conversation="{{ $activeConversation->uuid }}" data-me="{{ auth()->user()->uuid }}" style="flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:10px;background:#F4F6F3">
+          <div style="align-self:center;background:rgba(33,31,32,.06);color:#7E8B84;font-size:11.5px;font-weight:700;padding:6px 13px;border-radius:10px">تم فتح التواصل بعد القبول</div>
+          @foreach ($messages as $message)
+            @php($mine = $message->sender_id === auth()->id())
+            <div data-uuid="{{ $message->uuid }}" style="display:flex;justify-content:{{ $mine ? 'flex-start' : 'flex-end' }}">
+              <div style="max-width:72%;background:{{ $mine ? '#C9A24B' : '#fff' }};border:1px solid {{ $mine ? '#C9A24B' : '#E5EAE6' }};border-radius:16px;padding:11px 14px">
+                <div style="font-size:14.5px;font-weight:500;line-height:1.6;color:#22302A">{{ $message->body }}</div>
+                <div style="font-size:10px;font-weight:600;color:rgba(33,31,32,.5);margin-top:4px;text-align:left">{{ $message->created_at?->timezone('Asia/Riyadh')->format('H:i') }}</div>
+              </div>
+            </div>
+          @endforeach
+        </div>
+
+        {{-- Cloned by resources/js/chat.js to render a live message with the same styling. --}}
+        <template data-msg="mine"><div style="display:flex;justify-content:flex-start"><div style="max-width:72%;background:#C9A24B;border:1px solid #C9A24B;border-radius:16px;padding:11px 14px"><div data-slot="body" style="font-size:14.5px;font-weight:500;line-height:1.6;color:#22302A"></div><div data-slot="time" style="font-size:10px;font-weight:600;color:rgba(33,31,32,.5);margin-top:4px;text-align:left"></div></div></div></template>
+        <template data-msg="them"><div style="display:flex;justify-content:flex-end"><div style="max-width:72%;background:#fff;border:1px solid #E5EAE6;border-radius:16px;padding:11px 14px"><div data-slot="body" style="font-size:14.5px;font-weight:500;line-height:1.6;color:#22302A"></div><div data-slot="time" style="font-size:10px;font-weight:600;color:rgba(33,31,32,.5);margin-top:4px;text-align:left"></div></div></div></template>
+
+        <form method="POST" action="{{ route('messages.send', $activeConversation->uuid) }}" data-composer style="border-top:1px solid #E7EBE7;padding:12px 16px;display:flex;gap:10px;align-items:center">
+          @csrf
+          <input name="body" required maxlength="2000" autocomplete="off" placeholder="اكتب رسالة..." style="flex:1;height:46px;border:1.5px solid #E5EAE6;border-radius:14px;background:#F4F6F3;padding:0 15px;font-family:inherit;font-size:15px;font-weight:600;color:#22302A;outline:none">
+          <button type="submit" style="width:46px;height:46px;border-radius:14px;border:none;background:#C9A24B;color:#284C3D;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:0 0 auto"><i class="iconsax" style="font-size:22px" icon-name="send-2"></i></button>
+        </form>
+      @else
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#7E8B84;gap:12px">
+          <i class="iconsax" style="font-size:44px;color:#BAC4BD" icon-name="messages-2"></i>
+          <div style="font-size:15px;font-weight:700">اختر محادثة لعرضها</div>
+        </div>
+      @endif
+    </div>
+
+  </div>
+</div>
+
+@if ($activeConversation)
+  @push('scripts')
+    @vite('resources/js/chat.js')
+  @endpush
+@endif
+@endsection

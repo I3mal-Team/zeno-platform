@@ -1,9 +1,44 @@
 @import 'tailwindcss';
 
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../storage/framework/views/*.php';
+@source '../views';
 
+/* Design tokens. Nothing outside this block defines a brand colour or radius. */
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans: 'Tajawal', ui-sans-serif, system-ui, sans-serif;
+
+    /* Brand: deep green primary with a refined gold accent. */
+    --color-amber: #c9a24b;
+    --color-amber-deep: #b88a2e;
+
+    --color-charcoal: #22302a;
+    --color-charcoal-soft: #284c3d;
+
+    --color-paper: #f4f6f3;
+    --color-paper-app: #f4f6f3;
+    --color-paper-web: #eef2ee;
+
+    --color-ink: #22302a;
+    --color-body: #566159;
+    --color-muted: #7e8b84;
+    --color-line: #e5eae6;
+
+    --color-success: #1f7a3d;
+    --color-success-bg: #e3f3e8;
+    --color-warning: #8a6d12;
+    --color-warning-bg: #f3ecd6;
+    --color-danger: #b23232;
+    --color-danger-bg: #fbe6e6;
+    --color-info: #2e6e8a;
+    --color-info-bg: #e2eef4;
+    --color-whatsapp: #25d366;
+    --color-verified: #2e86c1;
+
+    --radius-chip: 10px;
+    --radius-control: 14px;
+    --radius-card: 20px;
+    --radius-sheet: 26px;
+}
+
+html {
+    scroll-behavior: smooth;
 }

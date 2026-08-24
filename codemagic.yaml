@@ -1,0 +1,149 @@
+# Codemagic CI for the AMS (sa.zeno.app) mobile app.
+#
+# The Flutter project is NOT at the repository root — this repo also carries the Laravel
+# backend, contracts, and docs — so every workflow sets working_directory.
+#
+# Before the first run, two things must exist and cannot be committed here, or the build
+# fails:
+#
+#   1. An App Store Connect integration named exactly `ams-asc` (Teams > Integrations >
+#      Developer Portal), holding the .p8 key, the Issuer ID and the Key ID. `ios_signing`
+#      below fetches or creates the certificate and provisioning profile through it. Rename
+#      it below if you create it under a different name.
+#
+#   2. APP_STORE_APPLE_ID set to this app's numeric Apple ID (visible in the App Store
+#      Connect console URL — /apps/<this>/distribution — or under App Information > Apple
+#      ID; it is not the bundle id, sa.zeno.app, and not a secret). Left blank below on
+#      purpose: nobody has typed it in yet. Without it the build number script falls back
+#      to 1 every run, which will collide on the second upload.
+#
+# Everything else the build needs is in this file.
+
+definitions:
+  flutter_project: &flutter_project
+    working_directory: mobile
+
+workflows:
+  ios-testflight:
+    name: iOS — build and upload to TestFlight
+    <<: *flutter_project
+    max_build_duration: 90
+    instance_type: mac_mini_m2
+
+    integrations:
+      # Must match the integration name configured in the Codemagic UI.
+      app_store_connect: ams-asc
+
+    environment:
+      vars:
+        # See note 2 above — fill in from App Store Connect before the first real run.
+        APP_STORE_APPLE_ID: ""
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: sa.zeno.app
+      # Flutter is pinned to match .fvmrc (3.32.8) — a floating version would eventually
+      # pull a Dart that breaks the `sdk: ^3.8.1` constraint in pubspec.yaml. Xcode is
+      # deliberately left at latest: Apple raises its minimum-SDK floor over time, and a
+      # pinned older Xcode becomes a time bomb that goes off as an upload rejection after
+      # a full build has already run.
+      flutter: 3.32.8
+      xcode: latest
+      cocoapods: default
+
+    triggering:
+      events:
+        - tag
+      tag_patterns:
+        - pattern: 'ios-v*'
+          include: true
+      # Deliberately tag-driven rather than push-driven: every run that reaches TestFlight
+      # consumes a build number and notifies testers, so it should be an explicit act.
+
+    scripts:
+      - name: Fetch dependencies
+        script: flutter pub get
+
+      - name: Pick a build number that cannot collide
+        script: |
+          set -e
+          # App Store Connect rejects a build whose number is not higher than the last one
+          # it saw, and it remembers numbers from builds that were later deleted. Deriving
+          # from TestFlight rather than from pubspec is what makes a re-run safe.
+          if [ -n "${APP_STORE_APPLE_ID:-}" ]; then
+            LATEST=$(app-store-connect get-latest-testflight-build-number "$APP_STORE_APPLE_ID" 2>/dev/null || echo "")
+          else
+            LATEST=""
+          fi
+          if [ -z "$LATEST" ]; then
+            # First ever upload, or the app record does not exist yet.
+            echo "No TestFlight history found — starting at 1."
+            LATEST=0
+          fi
+          echo "BUILD_NUMBER=$((LATEST + 1))" >> "$CM_ENV"
+
+      - name: Install pods
+        script: |
+          set -e
+          find . -name "Podfile" -execdir pod install \;
+
+      - name: Apply the signing profiles to the Xcode project
+        script: xcode-project use-profiles
+
+      - name: Build the IPA
+        script: |
+          set -e
+          # AppEnvironment already resolves to production by default in a release build
+          # (see mobile/lib/core/databases/api/end_points.dart) — APP_ENV=production is
+          # passed explicitly anyway so this file states which server the artifact talks
+          # to rather than leaving it to a default somebody may later change.
+          flutter build ipa --release \
+            --build-number="$BUILD_NUMBER" \
+            --dart-define=APP_ENV=production \
+            --export-options-plist=/Users/builder/export_options.plist
+
+    artifacts:
+      # Both forms on purpose. Artifact patterns are matched relative to
+      # working_directory, not to the repository root — the repo-root form alone found
+      # nothing on a sibling project that made this same mistake, and an unmatched
+      # pattern is not an error, so `Publishing` completed in under a second having
+      # uploaded nothing while the build still went green. That is the worst possible
+      # failure mode: you wait for a TestFlight build that was never sent. Codemagic
+      # ignores patterns that match nothing, so listing both costs nothing and survives
+      # either interpretation.
+      - build/ios/ipa/*.ipa
+      - mobile/build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
+        # Left off deliberately. Promotion to App Store review should be a human decision
+        # made in the console after the build has actually been installed and opened.
+        submit_to_app_store: false
+
+  ios-archive-only:
+    name: iOS — build an IPA without uploading
+    <<: *flutter_project
+    max_build_duration: 90
+    instance_type: mac_mini_m2
+    # For checking that the project archives at all, before any Apple account work is
+    # done (no App Store Connect integration required). Produces an unsigned-for-
+    # distribution artifact and touches nothing remote.
+    environment:
+      # Kept in step with ios-testflight above; a smoke test on a different toolchain
+      # than the real build stops being a smoke test.
+      flutter: 3.32.8
+      xcode: latest
+      cocoapods: default
+    scripts:
+      - name: Fetch dependencies
+        script: flutter pub get
+      - name: Install pods
+        script: find . -name "Podfile" -execdir pod install \;
+      - name: Build without code signing
+        script: |
+          flutter build ios --release --no-codesign \
+            --dart-define=APP_ENV=production
+    artifacts:
+      - /tmp/xcodebuild_logs/*.log

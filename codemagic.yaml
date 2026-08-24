@@ -6,10 +6,12 @@
 # Before the first run, two things must exist and cannot be committed here, or the build
 # fails:
 #
-#   1. An App Store Connect integration named exactly `ams-asc` (Teams > Integrations >
-#      Developer Portal), holding the .p8 key, the Issuer ID and the Key ID. `ios_signing`
-#      below fetches or creates the certificate and provisioning profile through it. Rename
-#      it below if you create it under a different name.
+#   1. An App Store Connect integration named `mawared-asc` (Teams > Integrations >
+#      Developer Portal), holding the .p8 key, the Issuer ID and the Key ID. Reused from
+#      the MawaredHR project rather than a fresh one — both apps share Apple Developer
+#      Team 5W983843V2, and an App Store Connect API key is scoped to the team, not to a
+#      single app, so the same integration manages both. `ios_signing` below fetches or
+#      creates the certificate and provisioning profile through it.
 #
 #   2. APP_STORE_APPLE_ID set to this app's numeric Apple ID (visible in the App Store
 #      Connect console URL — /apps/<this>/distribution — or under App Information > Apple
@@ -32,7 +34,7 @@ workflows:
 
     integrations:
       # Must match the integration name configured in the Codemagic UI.
-      app_store_connect: ams-asc
+      app_store_connect: mawared-asc
 
     environment:
       vars:

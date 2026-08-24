@@ -125,3 +125,40 @@ it('rejects an invalid contact request', function (array $payload) {
     'short message' => [['message' => 'قصير']],
     'unknown topic' => [['topic' => 'nope']],
 ]);
+
+it('renders the privacy policy with every section', function () {
+    $response = test()->get('/privacy')->assertOk();
+
+    foreach ([
+        'من نحن',
+        'البيانات التي نجمعها',
+        'لماذا نستخدم بياناتك',
+        'مع من نشارك بياناتك',
+        'الموقع الجغرافي',
+        'مدة الاحتفاظ',
+        'حقوقك',
+        'أمن البيانات',
+        'أعمار المستخدمين',
+        'تحديثات السياسة',
+    ] as $section) {
+        $response->assertSee($section, false);
+    }
+});
+
+it('renders the account deletion page with what is deleted and what is kept', function () {
+    test()->get('/delete-account')
+        ->assertOk()
+        ->assertSee('كيف تطلب الحذف', false)
+        ->assertSee('ما الذي يُحذف', false)
+        ->assertSee('ما الذي نحتفظ به ولماذا', false)
+        ->assertSee('sa.zeno.app', false)
+        ->assertSee('mailto:hello@zeno.sa', false);
+});
+
+// Play fetches both URLs signed out, and an auth redirect on either one is a
+// rejection. Pin it so no future middleware change can gate them silently.
+it('keeps the store-required legal pages reachable without a session', function (string $path) {
+    test()->get($path)
+        ->assertOk()
+        ->assertHeaderMissing('Location');
+})->with(['/privacy', '/delete-account', '/terms']);

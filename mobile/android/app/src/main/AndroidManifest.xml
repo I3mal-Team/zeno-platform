@@ -1,4 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- The app is API-backed: every screen needs the network. Declared here
+         rather than relying on a plugin manifest to inject it, so release
+         builds cannot silently ship without it. -->
+    <uses-permission android:name="android.permission.INTERNET"/>
     <!-- Location for the "nearby jobs" feed and pinning a listing's place. -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>

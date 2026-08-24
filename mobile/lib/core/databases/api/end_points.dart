@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 /// Every path and base URL. Features must never hardcode a URL.
 abstract final class EndPoints {
   // 10.0.2.2 reaches the host from the Android emulator. Override for a real
@@ -7,7 +9,7 @@ abstract final class EndPoints {
     defaultValue: 'http://10.0.2.2:8000/api/v1',
   );
   static const _staging = 'https://staging.zeno.sa/api/v1';
-  static const _production = 'https://api.zeno.sa/api/v1';
+  static const _production = 'https://ams.torido.co/api/v1';
 
   /// Resolved per access so switching environment at runtime takes effect
   /// without a restart.
@@ -86,7 +88,7 @@ abstract final class EndPoints {
   static String get reverbHost => switch (AppEnvironment.current) {
     AppEnvironment.dev => _reverbHostDev,
     AppEnvironment.staging => 'staging.zeno.sa',
-    AppEnvironment.production => 'api.zeno.sa',
+    AppEnvironment.production => 'ams.torido.co',
   };
 
   static int get reverbPort => switch (AppEnvironment.current) {
@@ -123,5 +125,17 @@ enum AppEnvironment {
   staging,
   production;
 
-  static AppEnvironment current = AppEnvironment.dev;
+  /// Explicit override: --dart-define=APP_ENV=staging (or dev / production).
+  static const _override = String.fromEnvironment('APP_ENV');
+
+  /// Defaults by build mode rather than to a constant, because the previous
+  /// constant `dev` was never reassigned anywhere — so release builds shipped
+  /// pointing at the emulator host (10.0.2.2) over cleartext and every request
+  /// failed. A release build now resolves to production unless told otherwise.
+  static AppEnvironment current = switch (_override) {
+    'dev' => AppEnvironment.dev,
+    'staging' => AppEnvironment.staging,
+    'production' => AppEnvironment.production,
+    _ => kReleaseMode ? AppEnvironment.production : AppEnvironment.dev,
+  };
 }

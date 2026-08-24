@@ -39,6 +39,11 @@ return [
         'length' => 4,
 
         'fixed_code' => env('OTP_FIXED_CODE', '4829'),
+
+        // Store-reviewer sign-in. Format: "+966500000001:1234,+966500000002:5678".
+        // Listed numbers get that code and no SMS; every other number is
+        // untouched. Empty by default — nothing is bypassed unless set.
+        'review_accounts' => env('OTP_REVIEW_ACCOUNTS', ''),
     ],
 
 ];

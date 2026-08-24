@@ -7,6 +7,7 @@ namespace App\Providers;
 use App\Support\Integrations\IntegrationGuard;
 use App\Support\Otp\FixedOtpCodeGenerator;
 use App\Support\Otp\OtpCodeGenerator;
+use App\Support\Otp\ReviewAccounts;
 use App\Support\Sms\SmsGateway;
 use Illuminate\Support\ServiceProvider;
 use InvalidArgumentException;
@@ -32,6 +33,11 @@ final class IntegrationServiceProvider extends ServiceProvider
                 ? new FixedOtpCodeGenerator(config('integrations.otp.fixed_code'))
                 : $this->app->make($class);
         });
+
+        $this->app->singleton(
+            ReviewAccounts::class,
+            fn () => ReviewAccounts::fromString(config('integrations.otp.review_accounts')),
+        );
     }
 
     public function boot(): void

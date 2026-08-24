@@ -12,6 +12,7 @@ use App\Exceptions\Domain\OtpResendCooldownException;
 use App\Repositories\OtpChallengeRepository;
 use App\Settings\OtpSettings;
 use App\Support\Otp\OtpCodeGenerator;
+use App\Support\Otp\ReviewAccounts;
 use App\Support\Sms\SmsGateway;
 use Illuminate\Support\Facades\Hash;
 
@@ -21,6 +22,7 @@ final class OtpService
         private readonly OtpChallengeRepository $challenges,
         private readonly OtpCodeGenerator $generator,
         private readonly SmsGateway $sms,
+        private readonly ReviewAccounts $reviewAccounts,
         private readonly OtpSettings $settings,
     ) {}
 
@@ -34,9 +36,18 @@ final class OtpService
         ?string $userAgent,
     ): int {
         $this->assertNotCoolingDown($phoneE164, $purpose);
-        $this->assertWithinWindow($phoneE164);
 
-        $code = $this->generator->generate(config('integrations.otp.length'));
+        // A store reviewer signs in repeatedly while working through the app.
+        // The per-number window cap would lock them out partway with a generic
+        // error that reads as a broken app, so it is skipped for these numbers.
+        // The resend cooldown above still applies.
+        $reviewCode = $this->reviewAccounts->codeFor($phoneE164);
+
+        if ($reviewCode === null) {
+            $this->assertWithinWindow($phoneE164);
+        }
+
+        $code = $reviewCode ?? $this->generator->generate(config('integrations.otp.length'));
         $expiresAt = now()->addMinutes($this->settings->expiry_minutes);
 
         $this->challenges->create(
@@ -48,7 +59,11 @@ final class OtpService
             $userAgent,
         );
 
-        $this->sms->send($phoneE164, __('sms.otp_code', ['code' => $code]));
+        // Review numbers need not be reachable by SMS, and sending to one would
+        // bill for a message nobody reads.
+        if ($reviewCode === null) {
+            $this->sms->send($phoneE164, __('sms.otp_code', ['code' => $code]));
+        }
 
         return (int) now()->diffInSeconds($expiresAt);
     }

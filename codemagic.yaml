@@ -3,21 +3,15 @@
 # The Flutter project is NOT at the repository root — this repo also carries the Laravel
 # backend, contracts, and docs — so every workflow sets working_directory.
 #
-# Before the first run, two things must exist and cannot be committed here, or the build
+# Before the first run, one thing must exist and cannot be committed here, or the build
 # fails:
 #
-#   1. An App Store Connect integration named `mawared-asc` (Teams > Integrations >
-#      Developer Portal), holding the .p8 key, the Issuer ID and the Key ID. Reused from
-#      the MawaredHR project rather than a fresh one — both apps share Apple Developer
-#      Team 5W983843V2, and an App Store Connect API key is scoped to the team, not to a
-#      single app, so the same integration manages both. `ios_signing` below fetches or
-#      creates the certificate and provisioning profile through it.
-#
-#   2. APP_STORE_APPLE_ID set to this app's numeric Apple ID (visible in the App Store
-#      Connect console URL — /apps/<this>/distribution — or under App Information > Apple
-#      ID; it is not the bundle id, sa.zeno.app, and not a secret). Left blank below on
-#      purpose: nobody has typed it in yet. Without it the build number script falls back
-#      to 1 every run, which will collide on the second upload.
+#   An App Store Connect integration named `mawared-asc` (Teams > Integrations >
+#   Developer Portal), holding the .p8 key, the Issuer ID and the Key ID. Reused from
+#   the MawaredHR project rather than a fresh one — both apps share Apple Developer
+#   Team 5W983843V2, and an App Store Connect API key is scoped to the team, not to a
+#   single app, so the same integration manages both. `ios_signing` below fetches or
+#   creates the certificate and provisioning profile through it.
 #
 # Everything else the build needs is in this file.
 
@@ -38,8 +32,11 @@ workflows:
 
     environment:
       vars:
-        # See note 2 above — fill in from App Store Connect before the first real run.
-        APP_STORE_APPLE_ID: ""
+        # The numeric id App Store Connect assigns the app — visible in the console URL
+        # (/apps/<this>/distribution) and under App Information > Apple ID. Not the bundle
+        # id (sa.zeno.app), and not a secret, which is why it sits here rather than in a
+        # variable group.
+        APP_STORE_APPLE_ID: "6801990882"
       ios_signing:
         distribution_type: app_store
         bundle_identifier: sa.zeno.app

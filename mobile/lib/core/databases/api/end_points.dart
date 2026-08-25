@@ -9,7 +9,7 @@ abstract final class EndPoints {
     defaultValue: 'http://10.0.2.2:8000/api/v1',
   );
   static const _staging = 'https://staging.zeno.sa/api/v1';
-  static const _production = 'https://ams.torido.co/api/v1';
+  static const _production = 'https://ams.siwaan.net/api/v1';
 
   /// Resolved per access so switching environment at runtime takes effect
   /// without a restart.
@@ -88,7 +88,7 @@ abstract final class EndPoints {
   static String get reverbHost => switch (AppEnvironment.current) {
     AppEnvironment.dev => _reverbHostDev,
     AppEnvironment.staging => 'staging.zeno.sa',
-    AppEnvironment.production => 'ams.torido.co',
+    AppEnvironment.production => 'ams.siwaan.net',
   };
 
   static int get reverbPort => switch (AppEnvironment.current) {

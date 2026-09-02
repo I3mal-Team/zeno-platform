@@ -96,8 +96,18 @@ it('does not lock a reviewer out on the per-number window cap', function () {
     }
 });
 
-it('is inert by default so nothing is bypassed unless configured', function () {
-    expect(app(ReviewAccounts::class)->has('+966512345678'))->toBeFalse();
+it('ships the store-review pairs so production needs no env edit', function () {
+    // Hardcoded in config/integrations.php rather than left to the environment:
+    // the production .env is not ours to edit, and sign-in is the only way into
+    // the app, so an env-only switch means no reviewer bypass there at all.
+    // Rotate these once the review is done — until then they are a credential
+    // anyone with the repository can use.
+    $accounts = app(ReviewAccounts::class);
+
+    expect($accounts->codeFor('+966533333332'))->toBe('4829')
+        ->and($accounts->codeFor('+966533333335'))->toBe('4829')
+        // The allowlist is still an allowlist: nothing else is bypassed.
+        ->and($accounts->has('+966512345678'))->toBeFalse();
 });
 
 it('parses the env pair format and drops malformed entries', function () {
